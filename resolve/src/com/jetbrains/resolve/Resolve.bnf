@@ -1,0 +1,45 @@
+{
+    parserClass='com.jetbrains.resolve.ResParser'
+
+    implements='com.jetbrains.resolve.psi.ResCompositeElement'
+    extends='com.jetbrains.resolve.psi.impl.ResCompositeElementImpl'
+
+    elementTypeHolderClass='com.jetbrains.resolve.ResTypes'
+    elementTypeClass='com.jetbrains.resolve.psi.ResCompositeElementType'
+    tokenTypeClass='com.jetbrains.resolve.psi.ResTokenType'
+
+    psiClassPrefix='Res'
+    psiImplClassSuffix='Impl'
+    psiPackage='com.jetbrains.resolve.psi'
+    psiImplPackage='com.jetbrains.resolve.psi.impl'
+    psiImplUtilClass="com.jetbrains.resolve.psi.impl.ResPsiImplUtil"
+
+    tokens=[
+        SEMICOLON               = ';'
+        BAD_CHARACTER           = '"\\"'
+        FACILITY                = 'Facility'
+        PRECIS                  = 'Precis'
+
+        //these two are so grammarkit's live preview feature will work right,
+        //disregard them otherwise
+        space                   = "regexp:\s+"
+        identifier              = 'regexp:\p{Alpha}\w*'
+        int                     = 'int'
+        char                    = 'char'
+        raw_string              = 'raw_string'
+    ]
+
+    implements(".*ModuleDecl")="com.jetbrains.resolve.psi.ResModuleDecl"
+    extends(".*ModuleDecl")="com.jetbrains.resolve.psi.impl.ResAbstractModuleImpl"
+    generateTokenAccessors=true
+}
+
+ModuleDecl ::=
+      PrecisModuleDecl
+    | FacilityModuleDecl
+
+PrecisModuleDecl ::= 'Precis' identifier ';'
+end identifier ';' {pin(".*")=2}
+
+FacilityModuleDecl ::= 'Facility' identifier ';'
+'end' identifier ';' {pin(".*")=3}
