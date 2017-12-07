@@ -13,7 +13,6 @@
     <orderEntry type="module" module-name="core-impl" />
     <orderEntry type="module" module-name="lang-api" />
     <orderEntry type="module" module-name="lang-impl" />
-    <orderEntry type="module" module-name="resolve-open-api" />
     <orderEntry type="module" module-name="platform-main" />
   </component>
 </module>
