@@ -9,7 +9,10 @@ public class ResolveIcons {
     return IconLoader.getIcon(path, ResolveIcons.class);
   }
 
-  public static final Icon ResolveFile = load("/icons/com/jetbrains/resolve/resolveFile.png");
+  public static final Icon RESOLVE_FILE = load("/icons/com/jetbrains/resolve/resolveFile.png");
 
-  public static final Icon Resolve = load("/icons/com/jetbrains/resolve/tool_icon.png");
+  public static final Icon RESOLVE = load("/icons/com/jetbrains/resolve/tool_icon.png");
+
+  public static final Icon PRECIS = load("/icons/com/jetbrains/resolve/precis.png");
+  public static final Icon FACILITY = load("/icons/com/jetbrains/resolve/facility.png");
 }

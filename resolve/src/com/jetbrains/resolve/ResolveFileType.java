@@ -45,6 +45,6 @@ public class ResolveFileType extends LanguageFileType {
   @Nullable
   @Override
   public Icon getIcon() {
-    return ResolveIcons.ResolveFile;
+    return ResolveIcons.RESOLVE_FILE;
   }
 }

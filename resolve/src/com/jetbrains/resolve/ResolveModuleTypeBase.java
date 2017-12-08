@@ -33,7 +33,7 @@ public abstract class ResolveModuleTypeBase<T extends ModuleBuilder> extends Mod
   }
 
   public Icon getNodeIcon(final boolean isOpened) {
-    return ResolveIcons.Resolve;
+    return ResolveIcons.RESOLVE;
   }
 
   @Override

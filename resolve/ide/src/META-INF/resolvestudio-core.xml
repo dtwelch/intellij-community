@@ -63,6 +63,7 @@
     <usageFilteringRuleProvider implementation="com.intellij.usages.impl.ImportUsageFilteringRuleProvider"/>
     <applicationService serviceImplementation="com.intellij.usages.impl.ImportFilteringUsageViewSetting"/>
 
+    <!-- TODO: Add the github xdrop theme that I prefer over the one pre-packaged here -->
     <!--<bundledColorScheme path="/colorSchemes/monokai"/>
     <bundledColorScheme path="/colorSchemes/twilight"/>
     <bundledColorScheme path="/colorSchemes/WarmNeon"/>
@@ -75,13 +76,9 @@
 
     <!--<toolWindow id="Python Console" anchor="bottom" icon="PythonIcons.Python.PythonConsoleToolWindow"
                 factoryClass="com.jetbrains.python.console.PythonConsoleToolWindowFactory" secondary="false"/>
-
-
-
     <directoryIndexExcludePolicy implementation="com.jetbrains.python.PyDirectoryIndexExcludePolicy"/>-->
 
   </extensions>
-<!--
   <actions>
     <group id="PlatformOpenProjectGroup">
       <action id="NewDirectoryProject" class="com.jetbrains.resolve.newProject.ResolveStudioNewProjectAction"/>
@@ -94,9 +91,6 @@
       <add-to-group group-id="FileOpenGroup" anchor="after" relative-to-action="OpenFile"/>
     </action>
 
-    <action id="RerunFailedTests" class="com.intellij.execution.testframework.actions.RerunFailedTestsAction"
-            icon="AllIcons.RunConfigurations.RerunFailedTests"/>
-
     <group id="WelcomeScreen.Platform.NewProject">
       <action id="WelcomeScreen.CreateDirectoryProject" class="com.jetbrains.resolve.newProject.steps.ResolveStudioNewProjectStep"
               icon="AllIcons.Welcome.CreateNewProject"/>
@@ -104,6 +98,19 @@
 
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
+
+    <action id="ReportProblem" class="com.jetbrains.resolve.ReportProblemAction" text="Report Problem...">
+      <add-to-group group-id="HelpMenu" anchor="before" relative-to-action="TechnicalSupport"/>
+    </action>
+
+    <action id="RenameProject" class="com.intellij.platform.renameProject.RenameProjectAction">
+      <add-to-group group-id="FileOpenGroup" anchor="after" relative-to-action="RenameFile"/>
+    </action>
+
+    <!--
+    <action id="RerunFailedTests" class="com.intellij.execution.testframework.actions.RerunFailedTestsAction"
+            icon="AllIcons.RunConfigurations.RerunFailedTests"/>
+    <action overrides="true" id="ForceStepInto" class="com.intellij.openapi.actionSystem.EmptyAction"/>
 
     <group>
       <action id="MarkSourceRoot" class="com.intellij.ide.projectView.actions.MarkJavaSourceRootAction"/>
@@ -113,17 +120,7 @@
       <add-to-group group-id="MarkRootGroup"/>
     </group>
 
-    <action overrides="true" id="ForceStepInto" class="com.intellij.openapi.actionSystem.EmptyAction"/>
-
     <group id="TypeHierarchyPopupMenu">
-    </group>
-
-    <action id="ReportProblem" class="com.jetbrains.python.ReportProblemAction" text="Report Problem...">
-      <add-to-group group-id="HelpMenu" anchor="before" relative-to-action="TechnicalSupport"/>
-    </action>
-
-    <action id="RenameProject" class="com.intellij.platform.renameProject.RenameProjectAction">
-      <add-to-group group-id="FileOpenGroup" anchor="after" relative-to-action="RenameFile"/>
-    </action>
-  </actions>-->
+    </group>-->
+  </actions>
 </idea-plugin>
