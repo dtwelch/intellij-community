@@ -1,5 +1,5 @@
 {
-    parserClass='com.jetbrains.resolve.ResParser'
+    parserClass='com.jetbrains.resolve.parser.ResParser'
 
     implements='com.jetbrains.resolve.psi.ResCompositeElement'
     extends='com.jetbrains.resolve.psi.impl.ResCompositeElementImpl'

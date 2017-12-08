@@ -12,5 +12,6 @@
     <orderEntry type="module" module-name="lang-api" />
     <orderEntry type="module" module-name="lang-impl" />
     <orderEntry type="module" module-name="resolve-community" />
+    <orderEntry type="module" module-name="resolve-open-api" />
   </component>
 </module>
