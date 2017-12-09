@@ -15,5 +15,7 @@
     <orderEntry type="module" module-name="lang-impl" />
     <orderEntry type="module" module-name="platform-main" />
     <orderEntry type="module" module-name="resolve-open-api" />
+    <orderEntry type="module" module-name="testRunner" />
+    <orderEntry type="module" module-name="smRunner" />
   </component>
 </module>
