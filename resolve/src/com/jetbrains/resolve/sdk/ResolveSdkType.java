@@ -24,7 +24,7 @@ public class ResolveSdkType extends SdkType {
 
   @Override
   public Icon getIcon() {
-    return ResolveIcons.Resolve;
+    return ResolveIcons.RESOLVE;
   }
 
   @NotNull

@@ -5,5 +5,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="resolve-community-ide" />
+    <orderEntry type="module" module-name="platform-main" />
   </component>
 </module>

@@ -45,7 +45,7 @@ public class ResolveBaseProjectGenerator
   @Nullable
   @Override
   public Icon getLogo() {
-    return ResolveIcons.Resolve;
+    return ResolveIcons.RESOLVE;
   }
 
   @Override
