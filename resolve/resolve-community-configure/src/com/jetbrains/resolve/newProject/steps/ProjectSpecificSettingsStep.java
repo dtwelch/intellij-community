@@ -124,6 +124,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
 
       final JPanel panel = new JPanel(new VerticalFlowLayout(0, 2));
       final LabeledComponent<TextFieldWithBrowseButton> location = createLocationComponent();
+      //TODO: You want to use something like: PythonSdkChooserCombo
       final LabeledComponent<TextFieldWithBrowseButton> sdkLocation = createSdkLocationComponent();
 
       locationPanel.add(location, BorderLayout.CENTER);
@@ -133,14 +134,14 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       panel.add(sdkLocationPanel);
       return panel;
     }
-
     return super.createBasePanel();
   }
 
   protected final LabeledComponent<TextFieldWithBrowseButton> createSdkLocationComponent() {
     mySdkLocationField = new TextFieldWithBrowseButton();
     mySdkLocationField.setEditable(false);
-    /*myProjectDirectory = findSequentNonExistingUntitled();
+    /*
+    myProjectDirectory = findSequentNonExistingUntitled();
     final String projectLocation = myProjectDirectory.toString();
     myLocationField.setText(projectLocation);*/
 
