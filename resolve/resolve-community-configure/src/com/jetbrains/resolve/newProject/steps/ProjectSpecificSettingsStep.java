@@ -1,9 +1,13 @@
 package com.jetbrains.resolve.newProject.steps;
 
+import com.intellij.BundleBase;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
@@ -20,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +32,7 @@ import java.util.List;
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
   private boolean myInstallFramework;
   //@Nullable private ResolveAddSdkBox mySdkSelectionBox;
+  private TextFieldWithBrowseButton mySdkLocationField;
 
   public ProjectSpecificSettingsStep(@NotNull final DirectoryProjectGenerator<T> projectGenerator,
                                      @NotNull final AbstractNewProjectStep.AbstractCallback callback) {
@@ -112,21 +118,37 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   @Override
   protected JPanel createBasePanel() {
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
-      final BorderLayout layout = new BorderLayout();
 
-      final JPanel locationPanel = new JPanel(layout);
+      final JPanel locationPanel = new JPanel(new BorderLayout());
+      final JPanel sdkLocationPanel = new JPanel(new BorderLayout());
 
       final JPanel panel = new JPanel(new VerticalFlowLayout(0, 2));
       final LabeledComponent<TextFieldWithBrowseButton> location = createLocationComponent();
+      final LabeledComponent<TextFieldWithBrowseButton> sdkLocation = createSdkLocationComponent();
 
       locationPanel.add(location, BorderLayout.CENTER);
+      sdkLocationPanel.add(sdkLocation, BorderLayout.CENTER);
+
       panel.add(locationPanel);
-      //panel.add(createSdkSelectionPanel());
+      panel.add(sdkLocationPanel);
       return panel;
     }
 
     return super.createBasePanel();
   }
+
+  protected final LabeledComponent<TextFieldWithBrowseButton> createSdkLocationComponent() {
+    mySdkLocationField = new TextFieldWithBrowseButton();
+    mySdkLocationField.setEditable(false);
+    /*myProjectDirectory = findSequentNonExistingUntitled();
+    final String projectLocation = myProjectDirectory.toString();
+    myLocationField.setText(projectLocation);*/
+
+    final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+    mySdkLocationField.addBrowseFolderListener("Select SDK Home Directory", "Select base directory for project SDK", null, descriptor);
+    return LabeledComponent.create(mySdkLocationField, "SDK", BorderLayout.WEST);
+  }
+
 
   /*@NotNull
   private JPanel createSdkSelectionPanel() {
