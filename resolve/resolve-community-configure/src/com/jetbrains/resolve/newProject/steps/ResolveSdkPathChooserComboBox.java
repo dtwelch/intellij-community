@@ -9,7 +9,6 @@ import com.intellij.ui.ComboboxWithBrowseButton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 //TOdO:
@@ -17,11 +16,11 @@ import java.util.List;
 //PyAddSystemWideInterpreterPanel (Interpreter: |__________________| |...|)
 
 //This class is obviously modeled after "PySdkPathChoosingComboBox.kt" in the pycharm sources
+//The "<No Interpreter>" default (i.e. <No SDK>) is handled by the SdkCellListRenderer (I Think)...
 public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
-
 
   public ResolveSdkPathChooserComboBox(List<Sdk> existingSdks,
                                        @Nullable VirtualFile suggestedSdkHomeDir) {
-    super(new ComboBox<Sdk>(existingSdks.toArray()), browseActionListener);
+    super(new ComboBox<Sdk>(existingSdks.toArray()), null);
   }
 }
