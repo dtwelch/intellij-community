@@ -61,6 +61,9 @@ class PySdkPathChoosingComboBox(sdks: List<Sdk>, suggestedFile: VirtualFile?) :
       }
     }
 
+
   val items: List<Sdk>
-    get() = (0 until childComponent.itemCount).map { childComponent.getItemAt(it) }
+    get() {
+      return (0 until childComponent.itemCount).map { childComponent.getItemAt(it) }
+    }
 }
