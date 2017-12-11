@@ -1,6 +1,7 @@
 package com.jetbrains.resolve.newProject.steps;
 
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -27,6 +28,7 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
                                        @Nullable VirtualFile suggestedSdkHomeDir) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> x = getChildComponent(); //ok since getChildComponent() is final
+
     //USE coloredListCellRenderer (that is, our extension of it: ResolveColoredListCellRenderer)
 
   }
