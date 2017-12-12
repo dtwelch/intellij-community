@@ -1,10 +1,12 @@
 package com.jetbrains.resolve.sdk;
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.jetbrains.resolve.ResolveBundle;
 import com.jetbrains.resolve.ResolveIcons;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
@@ -51,6 +53,40 @@ public class ResolveSdkType extends SdkType {
       return false;
     }
     return true;
+  }
+
+  @NotNull
+  @Override
+  public FileChooserDescriptor getHomeChooserDescriptor() {
+    return new FileChooserDescriptor(true, false, false, false, false, false) {
+      @Override
+      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
+        if (files.length != 0) {
+          if (!isValidSdkHome(files[0].getPath())) {
+            throw new Exception(ResolveBundle.message("sdk.error.invalid.compiler.name", files[0].getName()));
+          }
+        }
+      }
+/*
+      @Override
+      public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
+        // TODO: add a better, customizable filtering
+        if (!file.isDirectory()) {
+          if (isWindows) {
+            String path = file.getPath();
+            boolean looksExecutable = false;
+            for (String ext : WINDOWS_EXECUTABLE_SUFFIXES) {
+              if (path.endsWith(ext)) {
+                looksExecutable = true;
+                break;
+              }
+            }
+            return looksExecutable && super.isFileVisible(file, showHiddenFiles);
+          }
+        }
+        return super.isFileVisible(file, showHiddenFiles);
+      }*/
+    }.withTitle(ResolveBundle.message("sdk.select.path")).withShowHiddenFiles(false);
   }
 
   @Nullable

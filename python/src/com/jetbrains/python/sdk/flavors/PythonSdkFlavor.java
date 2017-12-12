@@ -57,6 +57,7 @@ public abstract class PythonSdkFlavor {
   protected static Collection<String> appendSystemEnvPaths(@NotNull Collection<String> pythonPath, String envname) {
     String syspath = System.getenv(envname);
     if (syspath != null) {
+      String[] x = syspath.split(File.pathSeparator);
       pythonPath.addAll(Lists.newArrayList(syspath.split(File.pathSeparator)));
     }
     return pythonPath;
