@@ -40,16 +40,15 @@ public class ResolveSdkType extends SdkType {
   @NonNls
   @Nullable
   public String suggestHomePath() {
-    if (SystemInfo.isMac || SystemInfo.isLinux) {
-      return "~/Documents/resolve-lite";
-    }
     return null;
   }
 
   @Override
   public boolean isValidSdkHome(String path) {
-    if (getVersionString(path) == null) {
-      //RESOLVESdkService.LOG.debug("Cannot retrieve version for sdk (or the compiler-jar): " + sdkHomePath);
+    ResolveSdkService.LOG.debug("Validating Resolve sdk path: " + path);
+    String jarPath = ResolveSdkService.getResolveCompilerJarPath(path);
+    if (jarPath == null) {
+      ResolveSdkService.LOG.debug("Resolve compiler jar is not found.. ");
       return false;
     }
     return true;
@@ -67,25 +66,6 @@ public class ResolveSdkType extends SdkType {
           }
         }
       }
-/*
-      @Override
-      public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-        // TODO: add a better, customizable filtering
-        if (!file.isDirectory()) {
-          if (isWindows) {
-            String path = file.getPath();
-            boolean looksExecutable = false;
-            for (String ext : WINDOWS_EXECUTABLE_SUFFIXES) {
-              if (path.endsWith(ext)) {
-                looksExecutable = true;
-                break;
-              }
-            }
-            return looksExecutable && super.isFileVisible(file, showHiddenFiles);
-          }
-        }
-        return super.isFileVisible(file, showHiddenFiles);
-      }*/
     }.withTitle(ResolveBundle.message("sdk.select.path")).withShowHiddenFiles(false);
   }
 
