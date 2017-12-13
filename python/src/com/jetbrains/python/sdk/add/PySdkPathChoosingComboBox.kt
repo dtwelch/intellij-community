@@ -44,6 +44,7 @@ class PySdkPathChoosingComboBox(sdks: List<Sdk>, suggestedFile: VirtualFile?) :
       FileChooser.chooseFiles(descriptor, null, suggestedFile) {
         val virtualFile = it.firstOrNull() ?: return@chooseFiles
         val path = virtualFile.path
+        //this is already checked by descriptor (which comes from the PythonSdkType... I guess for safety)
         if (!pythonSdkType.isValidSdkHome(path)) return@chooseFiles
         childComponent.selectedItem =
           items.find { it.homePath == path } ?: PyDetectedSdk(path).apply {

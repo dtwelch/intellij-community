@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
+import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
 import org.jetbrains.annotations.NotNull;
@@ -34,17 +35,33 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
   public ResolveSdkPathChooserComboBox(List<Sdk> existingSdks,
                                        @Nullable VirtualFile suggestedSdkHomeDir) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
-    JComboBox<Sdk> child = getChildComponent(); //ok since getChildComponent() is final
-    child.setRenderer(new ResolveSdkListCellRenderer());
+    JComboBox<Sdk> childComponent = getChildComponent(); //ok since getChildComponent() is final
+    childComponent.setRenderer(new ResolveSdkListCellRenderer());
     addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        FileChooserDescriptor descriptor = ResolveSdkType.getInstance().getHomeChooserDescriptor();
+        ResolveSdkType sdkType = ResolveSdkType.getInstance();
+        FileChooserDescriptor descriptor = sdkType.getHomeChooserDescriptor();
         descriptor.setForcedToUseIdeaFileChooser(true);
         FileChooser.chooseFiles(descriptor, null, suggestedSdkHomeDir, new Consumer<List<VirtualFile>>() {
           @Override
           public void consume(List<VirtualFile> files) {
+            VirtualFile vFile = !files.isEmpty() ? files.get(0) : null;
+            if (vFile == null) return;
 
+            String path = vFile.getPath();
+            if (!sdkType.isValidSdkHome(path)) return;
+            List<Sdk> items = getItems();
+            Sdk detectedSdk = null;
+            for (Sdk sdk : items) {
+              if (sdk.getHomePath() == null) continue;
+              if (sdk.getHomePath().equals(path)) {
+                detectedSdk = new ResolveDetectedSdk(path);
+              }
+            }
+            if (detectedSdk != null) {
+              childComponent.setSelectedItem(detectedSdk);
+            }
           }
         });
       }
