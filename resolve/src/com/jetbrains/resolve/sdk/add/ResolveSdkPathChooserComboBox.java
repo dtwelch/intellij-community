@@ -1,15 +1,21 @@
-package com.jetbrains.resolve.newProject.steps;
+package com.jetbrains.resolve.sdk.add;
 
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.Consumer;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
+import com.jetbrains.resolve.sdk.ResolveSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +36,19 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> child = getChildComponent(); //ok since getChildComponent() is final
     child.setRenderer(new ResolveSdkListCellRenderer());
-    //now: add listener...
+    addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        FileChooserDescriptor descriptor = ResolveSdkType.getInstance().getHomeChooserDescriptor();
+        descriptor.setForcedToUseIdeaFileChooser(true);
+        FileChooser.chooseFiles(descriptor, null, suggestedSdkHomeDir, new Consumer<List<VirtualFile>>() {
+          @Override
+          public void consume(List<VirtualFile> files) {
+
+          }
+        });
+      }
+    });
   }
 
   @Nullable

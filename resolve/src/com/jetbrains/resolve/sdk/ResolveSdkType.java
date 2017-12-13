@@ -24,6 +24,10 @@ public class ResolveSdkType extends SdkType {
     super("Resolve SDK");
   }
 
+  public static ResolveSdkType getInstance() {
+    return SdkType.findInstance(ResolveSdkType.class);
+  }
+
   @Override
   public Icon getIcon() {
     return ResolveIcons.RESOLVE;
@@ -35,12 +39,12 @@ public class ResolveSdkType extends SdkType {
     return "reference.project.structure.sdk.resolve";
   }
 
-  //TEMP
   @Override
   @NonNls
   @Nullable
   public String suggestHomePath() {
-    return null;
+    VirtualFile suggestedDir = ResolveSdkUtil.suggestSdkDirectory();
+    return suggestedDir != null ? suggestedDir.getPath() : null;
   }
 
   @Override
@@ -71,8 +75,8 @@ public class ResolveSdkType extends SdkType {
 
   @Nullable
   @Override
-  public String getVersionString(@NotNull String sdkHome) {
-    return "0.0.1";
+  public String getVersionString(String sdkHome) {
+    return ResolveSdkUtil.retrieveResolveVersion(sdkHome);
   }
 
   @Override
