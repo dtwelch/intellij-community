@@ -19,9 +19,9 @@
       <implementation-class>com.jetbrains.python.console.PydevConsoleRunnerFactory</implementation-class>
     </component>
 
-    <component>
+    <!--<component>
       <implementation-class>com.jetbrains.python.facet.PythonSdkTableListener</implementation-class>
-    </component>
+    </component>-->
   </application-components>
 
 </idea-plugin>

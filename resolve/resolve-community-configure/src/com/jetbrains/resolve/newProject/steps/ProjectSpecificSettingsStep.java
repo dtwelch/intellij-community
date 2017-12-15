@@ -1,32 +1,29 @@
 package com.jetbrains.resolve.newProject.steps;
 
-import com.intellij.BundleBase;
+import com.google.common.collect.Iterables;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.HideableDecorator;
 import com.intellij.util.Consumer;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
+import com.jetbrains.resolve.sdk.ResolveSdkType;
+import com.jetbrains.resolve.sdk.add.ResolveAddNewSdkPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
@@ -114,42 +111,45 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     }*/
   }
 
-  //THIS IS ACTUALLY IT RIGHT HERE....THIS IS WHAT WE WANT to MESS WITH TO ACHIEVE THE WAY THE GO PLUGIN DOES IT:
   @Override
   protected JPanel createBasePanel() {
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
 
       final JPanel locationPanel = new JPanel(new BorderLayout());
-      final JPanel sdkLocationPanel = new JPanel(new BorderLayout());
-
       final JPanel panel = new JPanel(new VerticalFlowLayout(0, 2));
       final LabeledComponent<TextFieldWithBrowseButton> location = createLocationComponent();
-      //TODO: You want to use something like: PythonSdkChooserCombo
-      final LabeledComponent<TextFieldWithBrowseButton> sdkLocation = createSdkLocationComponent();
 
       locationPanel.add(location, BorderLayout.CENTER);
-      sdkLocationPanel.add(sdkLocation, BorderLayout.CENTER);
 
       panel.add(locationPanel);
-      panel.add(sdkLocationPanel);
+      panel.add(createSdkChooserPanel());
       return panel;
     }
     return super.createBasePanel();
   }
 
-  protected final LabeledComponent<TextFieldWithBrowseButton> createSdkLocationComponent() {
-    mySdkLocationField = new TextFieldWithBrowseButton();
-    mySdkLocationField.setEditable(false);
-    /*
-    myProjectDirectory = findSequentNonExistingUntitled();
-    final String projectLocation = myProjectDirectory.toString();
-    myLocationField.setText(projectLocation);*/
+  @NotNull
+  private JPanel createSdkChooserPanel() {
+    JPanel container = new JPanel();
 
-    final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-    mySdkLocationField.addBrowseFolderListener("Select SDK Home Directory", "Select base directory for project SDK", null, descriptor);
-    return LabeledComponent.create(mySdkLocationField, "SDK", BorderLayout.WEST);
+    final List<Sdk> existingSdks = getValidResolveSdks();
+    final Sdk preferredSdk = getPreferredSdk(existingSdks);
+
+    final String newProjectPath = getNewProjectPath();
+    final ResolveAddNewSdkPanel newEnvironmentPanel = new ResolveAddNewSdkPanel(existingSdks);
+
+    container.add(newEnvironmentPanel, BorderLayout.CENTER);
+    return container;
   }
 
+  /**
+   * Right now, just the first if existingSdks isn't empty; null otherwise. In the future we might change this to automatically
+   * select the Sdk with the latest version (would require a version comparator, for example).
+   */
+  @Nullable
+  private Sdk getPreferredSdk(@NotNull List<Sdk> existingSdks) {
+    return null;
+  }
 
   /*@NotNull
   private JPanel createSdkSelectionPanel() {
@@ -233,14 +233,14 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     }
     return preferred;
   }
-
+*/
   @NotNull
-  private static List<Sdk> getValidPythonSdks() {
-    final List<Sdk> pythonSdks = PyConfigurableInterpreterList.getInstance(null).getAllPythonSdks();
-    Iterables.removeIf(pythonSdks, sdk -> !(sdk.getSdkType() instanceof PythonSdkType) ||
+  private static List<Sdk> getValidResolveSdks() {
+    final List<Sdk> resolvesdks = ResolveConfigurableCompilerList.getInstance(null).getAllResolveSdks();
+    Iterables.removeIf(resolvesdks, sdk -> !(sdk.getSdkType() instanceof ResolveSdkType) /*||
                                           PythonSdkType.isInvalid(sdk) ||
-                                          PySdkExtKt.getAssociatedProjectPath(sdk) != null);
-    Collections.sort(pythonSdks, new PreferredSdkComparator());
-    return pythonSdks;
-  }*/
+                                          PySdkExtKt.getAssociatedProjectPath(sdk) != null*/);
+    //Collections.sort(pythonSdks, new PreferredSdkComparator());
+    return resolvesdks;
+  }
 }

@@ -6,6 +6,7 @@ import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.HashSet;
 import com.jetbrains.resolve.ResolveBundle;
 import com.jetbrains.resolve.ResolveIcons;
 import org.jdom.Element;
@@ -14,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /*
  * @author dtwelch
@@ -45,6 +49,11 @@ public class ResolveSdkType extends SdkType {
   public String suggestHomePath() {
     VirtualFile suggestedDir = ResolveSdkUtil.suggestSdkDirectory();
     return suggestedDir != null ? suggestedDir.getPath() : null;
+  }
+
+  @NotNull
+  public Collection<String> suggestHomePaths() {
+    return super.suggestHomePaths(); //This one is sufficient for now.
   }
 
   @Override

@@ -46,6 +46,8 @@ fun findBaseSdks(existingSdks: List<Sdk>): List<Sdk> {
 
 fun detectSystemWideSdks(existingSdks: List<Sdk>): List<PyDetectedSdk> {
   val existingPaths = existingSdks.map { it.homePath }.toSet()
+  val flavs = PythonSdkFlavor.getApplicableFlavors(false)
+  val suggestedhompaths = flavs.flatMap { it.suggestHomePaths() }
   return PythonSdkFlavor.getApplicableFlavors(false)
     .asSequence()
     .flatMap { it.suggestHomePaths().asSequence() }

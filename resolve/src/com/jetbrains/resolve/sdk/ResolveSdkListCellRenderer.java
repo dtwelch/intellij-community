@@ -2,6 +2,7 @@ package com.jetbrains.resolve.sdk;
 
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;

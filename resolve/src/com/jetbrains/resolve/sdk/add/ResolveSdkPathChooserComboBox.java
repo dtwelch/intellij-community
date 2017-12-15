@@ -32,8 +32,7 @@ import java.util.List;
 //that calls an SDK isValid..(..) method when ok is pressed...
 public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
 
-  public ResolveSdkPathChooserComboBox(List<Sdk> existingSdks,
-                                       @Nullable VirtualFile suggestedSdkHomeDir) {
+  public ResolveSdkPathChooserComboBox(List<Sdk> existingSdks) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> childComponent = getChildComponent(); //ok since getChildComponent() is final
     childComponent.setRenderer(new ResolveSdkListCellRenderer());
@@ -43,7 +42,8 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
         ResolveSdkType sdkType = ResolveSdkType.getInstance();
         FileChooserDescriptor descriptor = sdkType.getHomeChooserDescriptor();
         descriptor.setForcedToUseIdeaFileChooser(true);
-        FileChooser.chooseFiles(descriptor, null, suggestedSdkHomeDir, new Consumer<List<VirtualFile>>() {
+
+        FileChooser.chooseFiles(descriptor, null, null, new Consumer<List<VirtualFile>>() {
           @Override
           public void consume(List<VirtualFile> files) {
             VirtualFile vFile = !files.isEmpty() ? files.get(0) : null;

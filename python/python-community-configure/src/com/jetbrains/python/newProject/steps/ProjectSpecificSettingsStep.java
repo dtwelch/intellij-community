@@ -22,6 +22,7 @@ import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -305,6 +306,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       checkValid();
     });
 
+    //danw: this isn't needed for my purposes (adding an already existing sdk
     addLocationChangeListener(event -> myInterpreterPanel.setNewProjectPath(getNewProjectPath()));
 
     container.add(myInterpreterPanel, BorderLayout.NORTH);

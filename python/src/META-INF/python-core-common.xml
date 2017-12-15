@@ -513,9 +513,9 @@
     <internalFileTemplate name="Python Script"/>
     <internalFileTemplate name="Python Unit Test"/>
     <internalFileTemplate name="Setup Script"/>
-
+<!--
     <moduleService serviceInterface="com.jetbrains.python.psi.resolve.PythonPathCache"
-                   serviceImplementation="com.jetbrains.python.psi.resolve.PythonModulePathCache"/>
+                   serviceImplementation="com.jetbrains.python.psi.resolve.PythonModulePathCache"/>-->
 
     <problemFileHighlightFilter implementation="com.jetbrains.python.codeInsight.PyProblemFileHighlightFilter"/>
 
