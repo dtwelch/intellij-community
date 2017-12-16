@@ -3,16 +3,12 @@ package com.jetbrains.resolve.newProject.steps;
 import com.google.common.collect.Iterables;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.util.Consumer;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
@@ -27,8 +23,7 @@ import javax.swing.event.DocumentEvent;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
-  private boolean myInstallFramework;
-  //@Nullable private ResolveAddSdkBox mySdkSelectionBox;
+
   private TextFieldWithBrowseButton mySdkLocationField;
 
   public ProjectSpecificSettingsStep(@NotNull final DirectoryProjectGenerator<T> projectGenerator,
@@ -121,12 +116,11 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       result.setLayout(layout);
       layout.setAutoCreateGaps(true);
 
-
       // Create the components we will put in the form
       JLabel ipAddressLabel = new JLabel("Location:");
       TextFieldWithBrowseButton ipAddressTextField = createLocationComponentNoLabel();
-      JLabel subnetLabel = new JLabel("SDK:");
-      JTextField subnetTextField = new JTextField();
+      JLabel subnetLabel = new JLabel("Sdk:");
+      ResolveSdkPathChooserComboBox sdkComboField = createSdkComboComponentNoLabel();
 
       // Horizontally, we want to align the labels and the text fields
       // along the left (LEADING) edge
@@ -136,9 +130,10 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
                                               .addComponent(subnetLabel))
                                   .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                               .addComponent(ipAddressTextField.getTextField())
-                                              .addComponent(subnetTextField))
+                                              .addComponent(sdkComboField.getChildComponent()))
                                   .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addComponent(ipAddressTextField.getButton())));
+                                              .addComponent(ipAddressTextField.getButton())
+                                              .addComponent(sdkComboField.getButton())));
 
       // Vertically, we want to align each label with his textfield
       // on the baseline of the components
@@ -147,9 +142,10 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
                                             .addComponent(ipAddressLabel)
                                             .addComponent(ipAddressTextField.getTextField())
                                             .addComponent(ipAddressTextField.getButton()))
-                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                             .addComponent(subnetLabel)
-                                             .addComponent(subnetTextField)));
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                            .addComponent(subnetLabel)
+                                            .addComponent(sdkComboField.getChildComponent())
+                                            .addComponent(sdkComboField.getButton())));
       return result;
     }
     return super.createBasePanel();

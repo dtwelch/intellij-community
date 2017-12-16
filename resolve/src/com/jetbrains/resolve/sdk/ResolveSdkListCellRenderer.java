@@ -2,6 +2,7 @@ package com.jetbrains.resolve.sdk;
 
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.ui.ColoredListCellRenderer;
@@ -27,9 +28,15 @@ public class ResolveSdkListCellRenderer extends ColoredListCellRenderer<Object> 
   }
 
   private void appendName(@NotNull Sdk sdk) {
-    String name = sdk.getName();
-    append(name);
+    ResolveSdkType t = ResolveSdkType.getInstance();
     String homePath = sdk.getHomePath();
+    if (homePath != null) {
+      String name = t.suggestSdkName(null, homePath);
+      append(name);
+    }
+    else {
+      append(sdk.getName());
+    }
     String relHomePath = homePath != null ? FileUtil.getLocationRelativeToUserHome(homePath) : null;
     if (relHomePath != null) {
       append(" (" + relHomePath + ")", SimpleTextAttributes.GRAYED_ATTRIBUTES);
