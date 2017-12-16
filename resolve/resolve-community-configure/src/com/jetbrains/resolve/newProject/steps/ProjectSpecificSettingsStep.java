@@ -117,45 +117,39 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       JPanel result = new JPanel();
 
       // Create the layout
-      GroupLayout layout = new GroupLayout( result );
-      result.setLayout( layout );
-      layout.setAutoCreateGaps( true );
+      GroupLayout layout = new GroupLayout(result);
+      result.setLayout(layout);
+      layout.setAutoCreateGaps(true);
+
 
       // Create the components we will put in the form
-      JLabel ipAddressLabel = new JLabel( "Location:" );
+      JLabel ipAddressLabel = new JLabel("Location:");
       TextFieldWithBrowseButton ipAddressTextField = createLocationComponentNoLabel();
-      ipAddressTextField.getTextField().set(20);
-      JLabel subnetLabel = new JLabel( "Subnet:" );
-      JTextField subnetTextField = new JTextField(  );
-      JLabel gatewayLabel = new JLabel( "Gateway:" );
-      JTextField gatewayTextField = new JTextField(  );
+      JLabel subnetLabel = new JLabel("SDK:");
+      JTextField subnetTextField = new JTextField();
 
       // Horizontally, we want to align the labels and the text fields
       // along the left (LEADING) edge
-      layout.setHorizontalGroup( layout.createSequentialGroup()
-                                   .addGroup( layout.createParallelGroup( GroupLayout.Alignment.LEADING )
-                                                .addComponent( ipAddressLabel )
-                                                .addComponent( subnetLabel )
-                                                .addComponent( gatewayLabel ) )
-                                   .addGroup( layout.createParallelGroup( GroupLayout.Alignment.LEADING )
-                                                .addComponent( ipAddressTextField )
-                                                .addComponent( subnetTextField )
-                                                .addComponent( gatewayTextField ) )
-      );
+      layout.setHorizontalGroup(layout.createSequentialGroup()
+                                  .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                              .addComponent(ipAddressLabel)
+                                              .addComponent(subnetLabel))
+                                  .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                              .addComponent(ipAddressTextField.getTextField())
+                                              .addComponent(subnetTextField))
+                                  .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                              .addComponent(ipAddressTextField.getButton())));
 
       // Vertically, we want to align each label with his textfield
       // on the baseline of the components
-      layout.setVerticalGroup( layout.createSequentialGroup()
-                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
-                                              .addComponent( ipAddressLabel )
-                                              .addComponent( ipAddressTextField ) )
-                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
-                                              .addComponent( subnetLabel )
-                                              .addComponent( subnetTextField ) )
-                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
-                                              .addComponent( gatewayLabel )
-                                              .addComponent( gatewayTextField ) )
-      );
+      layout.setVerticalGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                            .addComponent(ipAddressLabel)
+                                            .addComponent(ipAddressTextField.getTextField())
+                                            .addComponent(ipAddressTextField.getButton()))
+                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                             .addComponent(subnetLabel)
+                                             .addComponent(subnetTextField)));
       return result;
     }
     return super.createBasePanel();
