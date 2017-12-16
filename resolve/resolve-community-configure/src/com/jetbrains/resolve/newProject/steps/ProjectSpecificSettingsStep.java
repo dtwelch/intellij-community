@@ -12,18 +12,18 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.util.Consumer;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
-import com.jetbrains.resolve.sdk.add.ResolveAddNewSdkPanel;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
+import com.jetbrains.resolve.sdk.add.ResolveSdkPathChooserComboBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
@@ -114,32 +114,67 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   @Override
   protected JPanel createBasePanel() {
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
+      JPanel result = new JPanel();
 
-      final JPanel locationPanel = new JPanel(new BorderLayout());
-      final JPanel panel = new JPanel(new VerticalFlowLayout(0, 2));
-      final LabeledComponent<TextFieldWithBrowseButton> location = createLocationComponent();
+      // Create the layout
+      GroupLayout layout = new GroupLayout( result );
+      result.setLayout( layout );
+      layout.setAutoCreateGaps( true );
 
-      locationPanel.add(location, BorderLayout.CENTER);
+      // Create the components we will put in the form
+      JLabel ipAddressLabel = new JLabel( "Location:" );
+      TextFieldWithBrowseButton ipAddressTextField = createLocationComponentNoLabel();
+      ipAddressTextField.getTextField().set(20);
+      JLabel subnetLabel = new JLabel( "Subnet:" );
+      JTextField subnetTextField = new JTextField(  );
+      JLabel gatewayLabel = new JLabel( "Gateway:" );
+      JTextField gatewayTextField = new JTextField(  );
 
-      panel.add(locationPanel);
-      panel.add(createSdkChooserPanel());
-      return panel;
+      // Horizontally, we want to align the labels and the text fields
+      // along the left (LEADING) edge
+      layout.setHorizontalGroup( layout.createSequentialGroup()
+                                   .addGroup( layout.createParallelGroup( GroupLayout.Alignment.LEADING )
+                                                .addComponent( ipAddressLabel )
+                                                .addComponent( subnetLabel )
+                                                .addComponent( gatewayLabel ) )
+                                   .addGroup( layout.createParallelGroup( GroupLayout.Alignment.LEADING )
+                                                .addComponent( ipAddressTextField )
+                                                .addComponent( subnetTextField )
+                                                .addComponent( gatewayTextField ) )
+      );
+
+      // Vertically, we want to align each label with his textfield
+      // on the baseline of the components
+      layout.setVerticalGroup( layout.createSequentialGroup()
+                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
+                                              .addComponent( ipAddressLabel )
+                                              .addComponent( ipAddressTextField ) )
+                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
+                                              .addComponent( subnetLabel )
+                                              .addComponent( subnetTextField ) )
+                                 .addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
+                                              .addComponent( gatewayLabel )
+                                              .addComponent( gatewayTextField ) )
+      );
+      return result;
     }
     return super.createBasePanel();
   }
 
   @NotNull
-  private JPanel createSdkChooserPanel() {
-    JPanel container = new JPanel();
+  private TextFieldWithBrowseButton createLocationComponentNoLabel() {
+    LabeledComponent<TextFieldWithBrowseButton> labeled = createLocationComponent();
+    return labeled.getComponent();
+  }
 
+  @NotNull
+  private ResolveSdkPathChooserComboBox createSdkComboComponentNoLabel() {
     final List<Sdk> existingSdks = getValidResolveSdks();
-    final Sdk preferredSdk = getPreferredSdk(existingSdks);
+    final Sdk preferredSdk = getPreferredSdk(existingSdks); //eventually perhaps.
 
-    final String newProjectPath = getNewProjectPath();
-    final ResolveAddNewSdkPanel newEnvironmentPanel = new ResolveAddNewSdkPanel(existingSdks);
-
-    container.add(newEnvironmentPanel, BorderLayout.CENTER);
-    return container;
+    List<Sdk> baseSdks = ResolveSdkUtil.findBaseSdks(existingSdks);
+    ResolveSdkPathChooserComboBox baseSdkField = new ResolveSdkPathChooserComboBox(baseSdks);
+    return baseSdkField;
   }
 
   /**

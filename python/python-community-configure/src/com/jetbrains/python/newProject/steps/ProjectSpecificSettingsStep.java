@@ -260,6 +260,9 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected JPanel createBasePanel() {
     if (myProjectGenerator instanceof PythonProjectGenerator) {
       final BorderLayout layout = new BorderLayout();
+      //Use GroupLayout to get the boxes aligned correctly, i.e.:
+      // Location: |________________________________|
+      // SDK:      |________________________________|
 
       final JPanel locationPanel = new JPanel(layout);
 
