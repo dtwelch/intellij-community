@@ -8,8 +8,6 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.platform.DirectoryProjectGenerator;
-import com.intellij.ui.DocumentAdapter;
-import com.intellij.util.Consumer;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
@@ -19,12 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
 
-  private TextFieldWithBrowseButton mySdkLocationField;
+  @Nullable private ResolveSdkPathChooserComboBox mySdkAddChooserComboBox;
 
   public ProjectSpecificSettingsStep(@NotNull final DirectoryProjectGenerator<T> projectGenerator,
                                      @NotNull final AbstractNewProjectStep.AbstractCallback callback) {
@@ -40,34 +37,23 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     return createContentPanelWithAdvancedSettingsPanel();
   }
 
-  //This will use a box to just select the SDK we're going to use...
   @Nullable
   public Sdk getSdk() {
-    /*if (!(myProjectGenerator instanceof ResolveProjectGenerator)) return null;
-    final PyAddSdkGroupPanel interpreterPanel = mySdkSelectionBox;
-    if (interpreterPanel == null) return null;
-    final PyAddSdkPanel panel = interpreterPanel.getSelectedPanel();
-    if (panel instanceof PyAddNewEnvironmentPanel) {
-      final PyAddNewEnvironmentPanel newEnvironmentPanel = (PyAddNewEnvironmentPanel)panel;
-      return new PyLazySdk("Uninitialized environment", newEnvironmentPanel::getOrCreateSdk);
+    if (!(myProjectGenerator instanceof ResolveProjectGenerator)) return null;
+    if (mySdkAddChooserComboBox != null) {
+      return mySdkAddChooserComboBox.getSelectedSdk();
     }
-    else if (panel instanceof PyAddExistingSdkPanel) {
-      return panel.getSdk();
-    }
-    else {*/
+    else {
       return null;
-   // }
+    }
   }
+
 /*
   @Nullable
   private Sdk getInterpreterPanelSdk() {
     final PyAddSdkGroupPanel interpreterPanel = mySdkSelectionBox;
     if (interpreterPanel == null) return null;
     return interpreterPanel.getSdk();
-  }
-
-  public boolean installFramework() {
-    return myInstallFramework;
   }
 
   @Override
@@ -85,26 +71,14 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     }
   }
 
-  /**
-   * @return path for project on remote side provided by user
-   */
-  /*@Nullable
-  final String getRemotePath() {
-    final PyAddSdkGroupPanel interpreterPanel = mySdkSelectionBox;
-    if (interpreterPanel == null) return null;
-    final PyAddExistingSdkPanel panel = ObjectUtils.tryCast(interpreterPanel.getSelectedPanel(), PyAddExistingSdkPanel.class);
-    if (panel == null) return null;
-    return panel.getRemotePath();
-  }*/
-
   @Override
   protected void initGeneratorListeners() {
     super.initGeneratorListeners();
-   /* if (myProjectGenerator instanceof PythonProjectGenerator) {
+    if (myProjectGenerator instanceof PythonProjectGenerator) {
       ((PythonProjectGenerator)myProjectGenerator).addSettingsStateListener(this::checkValid);
       myErrorLabel.addMouseListener(((PythonProjectGenerator)myProjectGenerator).getErrorLabelMouseListener());
-    }*/
-  }
+    }
+  }*/
 
   @Override
   protected JPanel createBasePanel() {
@@ -117,35 +91,35 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       layout.setAutoCreateGaps(true);
 
       // Create the components we will put in the form
-      JLabel ipAddressLabel = new JLabel("Location:");
-      TextFieldWithBrowseButton ipAddressTextField = createLocationComponentNoLabel();
-      JLabel subnetLabel = new JLabel("Sdk:");
-      ResolveSdkPathChooserComboBox sdkComboField = createSdkComboComponentNoLabel();
+      JLabel locationLabel = new JLabel("Location:");
+      TextFieldWithBrowseButton locationTextField = createLocationComponentNoLabel();
+      JLabel sdkLabel = new JLabel("Sdk:");
+      mySdkAddChooserComboBox = createSdkComboComponentNoLabel();
 
       // Horizontally, we want to align the labels and the text fields
       // along the left (LEADING) edge
       layout.setHorizontalGroup(layout.createSequentialGroup()
                                   .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addComponent(ipAddressLabel)
-                                              .addComponent(subnetLabel))
+                                              .addComponent(locationLabel)
+                                              .addComponent(sdkLabel))
                                   .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addComponent(ipAddressTextField.getTextField())
-                                              .addComponent(sdkComboField.getChildComponent()))
+                                              .addComponent(locationTextField.getTextField())
+                                              .addComponent(mySdkAddChooserComboBox.getChildComponent()))
                                   .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addComponent(ipAddressTextField.getButton())
-                                              .addComponent(sdkComboField.getButton())));
+                                              .addComponent(locationTextField.getButton())
+                                              .addComponent(mySdkAddChooserComboBox.getButton())));
 
       // Vertically, we want to align each label with his textfield
       // on the baseline of the components
       layout.setVerticalGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                            .addComponent(ipAddressLabel)
-                                            .addComponent(ipAddressTextField.getTextField())
-                                            .addComponent(ipAddressTextField.getButton()))
+                                            .addComponent(locationLabel)
+                                            .addComponent(locationTextField.getTextField())
+                                            .addComponent(locationTextField.getButton()))
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                            .addComponent(subnetLabel)
-                                            .addComponent(sdkComboField.getChildComponent())
-                                            .addComponent(sdkComboField.getButton())));
+                                            .addComponent(sdkLabel)
+                                            .addComponent(mySdkAddChooserComboBox.getChildComponent())
+                                            .addComponent(mySdkAddChooserComboBox.getButton())));
       return result;
     }
     return super.createBasePanel();
@@ -176,76 +150,6 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     return null;
   }
 
-  /*@NotNull
-  private JPanel createSdkSelectionPanel() {
-    final JPanel container = new JPanel(new BorderLayout());
-    final JPanel decoratorPanel = new JPanel(new VerticalFlowLayout());
-
-  }
-
-  @NotNull
-  private JPanel createInterpretersPanel() {
-    final JPanel container = new JPanel(new BorderLayout());
-    final JPanel decoratorPanel = new JPanel(new VerticalFlowLayout());
-
-    final List<Sdk> existingSdks = getValidPythonSdks();
-    final Sdk preferredSdk = getPreferredSdk(existingSdks);
-
-    final String newProjectPath = getNewProjectPath();
-    final PyAddNewEnvironmentPanel newEnvironmentPanel = new PyAddNewEnvironmentPanel(existingSdks, newProjectPath);
-    final PyAddExistingSdkPanel existingSdkPanel = new PyAddExistingSdkPanel(null, existingSdks, newProjectPath, preferredSdk);
-
-    final PyAddSdkPanel defaultPanel = PySdkSettings.getInstance().getUseNewEnvironmentForNewProject() ?
-                                       newEnvironmentPanel : existingSdkPanel;
-    final HideableDecorator decorator = new HideableDecorator(decoratorPanel, getProjectInterpreterTitle(defaultPanel), false);
-    decorator.setContentComponent(container);
-
-    final List<PyAddSdkPanel> panels = Arrays.asList(newEnvironmentPanel, existingSdkPanel);
-    mySdkSelectionBox = new PyAddSdkGroupPanel("New project interpreter", getIcon(), panels, defaultPanel);
-    mySdkSelectionBox.addChangeListener(() -> {
-      decorator.setTitle(getProjectInterpreterTitle(mySdkSelectionBox.getSelectedPanel()));
-      final boolean useNewEnvironment = mySdkSelectionBox.getSelectedPanel() instanceof PyAddNewEnvironmentPanel;
-      PySdkSettings.getInstance().setUseNewEnvironmentForNewProject(useNewEnvironment);
-      checkValid();
-    });
-
-    addLocationChangeListener(event -> mySdkSelectionBox.setNewProjectPath(getNewProjectPath()));
-
-    container.add(mySdkSelectionBox, BorderLayout.NORTH);
-    return decoratorPanel;
-  }*/
-
-  @NotNull
-  private String getNewProjectPath() {
-    final TextFieldWithBrowseButton field = myLocationField;
-    if (field == null) return "";
-    return field.getText().trim();
-  }
-
-  private void addLocationChangeListener(@NotNull Consumer<DocumentEvent> listener) {
-    final TextFieldWithBrowseButton field = myLocationField;
-    if (field == null) return;
-    field.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
-      @Override
-      protected void textChanged(DocumentEvent e) {
-        listener.consume(e);
-      }
-    });
-  }
-/*
-  @NotNull
-  private static String getProjectInterpreterTitle(@NotNull PyAddSdkPanel panel) {
-    final String name;
-    if (panel instanceof PyAddNewEnvironmentPanel) {
-      name = "New " + ((PyAddNewEnvironmentPanel)panel).getSelectedPanel().getEnvName() + " environment";
-    }
-    else {
-      final Sdk sdk = panel.getSdk();
-      name = sdk != null ? sdk.getName() : panel.getPanelName();
-    }
-    return "Project Interpreter: " + name;
-  }*/
-
   /*@Nullable
   private Sdk getPreferredSdk(@NotNull List<Sdk> sdks) {
     final PyFrameworkProjectGenerator projectGenerator = ObjectUtils.tryCast(getProjectGenerator(), PyFrameworkProjectGenerator.class);
@@ -257,8 +161,8 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       return python2Sdk != null ? python2Sdk : preferred;
     }
     return preferred;
-  }
-*/
+  }*/
+
   @NotNull
   private static List<Sdk> getValidResolveSdks() {
     final List<Sdk> resolvesdks = ResolveConfigurableCompilerList.getInstance(null).getAllResolveSdks();

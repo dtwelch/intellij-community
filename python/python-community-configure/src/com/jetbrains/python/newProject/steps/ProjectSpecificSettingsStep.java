@@ -132,9 +132,12 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected void registerValidators() {
     super.registerValidators();
     if (myProjectGenerator instanceof PythonProjectGenerator) {
-      addLocationChangeListener(event -> {
-        final String fileName = PathUtil.getFileName(getNewProjectPath());
-        ((PythonProjectGenerator)myProjectGenerator).locationChanged(fileName);
+      addLocationChangeListener(new Consumer<DocumentEvent>() {
+        @Override
+        public void consume(DocumentEvent event) {
+          final String fileName = PathUtil.getFileName(ProjectSpecificSettingsStep.this.getNewProjectPath());
+          ((PythonProjectGenerator)myProjectGenerator).locationChanged(fileName);
+        }
       });
       final PyAddSdkGroupPanel interpreterPanel = myInterpreterPanel;
       if (interpreterPanel != null) {
