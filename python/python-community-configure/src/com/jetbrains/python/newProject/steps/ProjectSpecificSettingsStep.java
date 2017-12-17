@@ -20,6 +20,7 @@ import com.intellij.facet.ui.ValidationResult;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
@@ -105,6 +106,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     final PyAddSdkGroupPanel interpreterPanel = myInterpreterPanel;
     if (interpreterPanel == null) return null;
     final PyAddSdkPanel panel = interpreterPanel.getSelectedPanel();
+    String x = ApplicationNamesInfo.getInstance().getLowercaseProductName();
     if (panel instanceof PyAddNewEnvironmentPanel) {
       final PyAddNewEnvironmentPanel newEnvironmentPanel = (PyAddNewEnvironmentPanel)panel;
       return new PyLazySdk("Uninitialized environment", newEnvironmentPanel::getOrCreateSdk);

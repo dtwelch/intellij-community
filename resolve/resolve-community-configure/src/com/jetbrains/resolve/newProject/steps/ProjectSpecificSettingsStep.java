@@ -49,13 +49,6 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   }
 
 /*
-  @Nullable
-  private Sdk getInterpreterPanelSdk() {
-    final PyAddSdkGroupPanel interpreterPanel = mySdkSelectionBox;
-    if (interpreterPanel == null) return null;
-    return interpreterPanel.getSdk();
-  }
-
   @Override
   protected void registerValidators() {
     super.registerValidators();
@@ -137,8 +130,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     final Sdk preferredSdk = getPreferredSdk(existingSdks); //eventually perhaps.
 
     List<Sdk> baseSdks = ResolveSdkUtil.findBaseSdks(existingSdks);
-    ResolveSdkPathChooserComboBox baseSdkField = new ResolveSdkPathChooserComboBox(baseSdks);
-    return baseSdkField;
+    return new ResolveSdkPathChooserComboBox(baseSdks);
   }
 
   /**
@@ -149,19 +141,6 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   private Sdk getPreferredSdk(@NotNull List<Sdk> existingSdks) {
     return null;
   }
-
-  /*@Nullable
-  private Sdk getPreferredSdk(@NotNull List<Sdk> sdks) {
-    final PyFrameworkProjectGenerator projectGenerator = ObjectUtils.tryCast(getProjectGenerator(), PyFrameworkProjectGenerator.class);
-    final boolean onlyPython2 = projectGenerator != null && !projectGenerator.supportsPython3();
-    final Sdk preferred = ContainerUtil.getFirstItem(sdks);
-    if (preferred == null) return null;
-    if (onlyPython2 && PythonSdkType.getLanguageLevelForSdk(preferred).isAtLeast(LanguageLevel.PYTHON30)) {
-      final Sdk python2Sdk = PythonSdkType.findPython2Sdk(sdks);
-      return python2Sdk != null ? python2Sdk : preferred;
-    }
-    return preferred;
-  }*/
 
   @NotNull
   private static List<Sdk> getValidResolveSdks() {
