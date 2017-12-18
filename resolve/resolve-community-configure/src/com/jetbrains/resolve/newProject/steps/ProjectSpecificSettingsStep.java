@@ -1,12 +1,19 @@
 package com.jetbrains.resolve.newProject.steps;
 
 import com.google.common.collect.Iterables;
+import com.intellij.BundleBase;
+import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
+import com.intellij.openapi.application.ApplicationNamesInfo;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
@@ -17,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
@@ -118,10 +127,29 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     return super.createBasePanel();
   }
 
+  /*
   @NotNull
   private TextFieldWithBrowseButton createLocationComponentNoLabel() {
     LabeledComponent<TextFieldWithBrowseButton> labeled = createLocationComponent();
     return labeled.getComponent();
+  }*/
+
+  @NotNull
+  private TextFieldWithBrowseButton createLocationComponentNoLabel() {
+    myLocationField = new TextFieldWithBrowseButton();
+    myProjectDirectory = ResolveSdkUtil.findSequentNonExistingResolveBaseDir();
+    final String projectLocation = myProjectDirectory.toString();
+    myLocationField.setText(projectLocation);
+    final int index = projectLocation.lastIndexOf(File.separator);
+    if (index > 0) {
+      JTextField textField = myLocationField.getTextField();
+      textField.select(index + 1, projectLocation.length());
+      textField.putClientProperty(DialogWrapperPeer.HAVE_INITIAL_SELECTION, true);
+    }
+
+    final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+    myLocationField.addBrowseFolderListener("Select Base Directory", "Select base directory for the project", null, descriptor);
+    return myLocationField;
   }
 
   @NotNull
