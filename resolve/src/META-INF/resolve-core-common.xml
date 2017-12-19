@@ -15,11 +15,9 @@
     <methodNavigationOffsetProvider implementation="com.jetbrains.python.codeInsight.PyMethodNavigationOffsetProvider"/>
     <copyPastePreProcessor implementation="com.jetbrains.python.editor.PythonCopyPasteProcessor"/>-->
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
-    <fileTypeDetector implementation="com.jetbrains.python.PyFileTypeDetector"/>
     <!--<editorHighlighterProvider filetype="Python" implementationClass="com.jetbrains.python.PyEditorHighlighterProvider"/>
-    <lang.syntaxHighlighterFactory language="Python" implementationClass="com.jetbrains.python.highlighting.PySyntaxHighlighterFactory"/>
     <lang.braceMatcher language="Python" implementationClass="com.jetbrains.python.PyBraceMatcher"/>-->
-    <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.python.highlighting.PySyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <!--
     <lang.commenter language="Python" implementationClass="com.jetbrains.python.PythonCommenter"/>
@@ -55,9 +53,14 @@
 
     <editor.backspaceModeOverride language="Python" implementationClass="com.intellij.codeInsight.editorActions.SmartBackspaceDisabler"/>-->
     <sdkType implementation="com.jetbrains.resolve.sdk.ResolveSdkType"/>
+
+    <internalFileTemplate name="RESOLVE File"/>
   </extensions>
 
   <actions>
+    <action id="NewResolveFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
+      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
+    </action>
     <!--
     <group id="PyTypeHierarchyPopupMenu">
       <reference ref="TypeHierarchyBase.BaseOnThisType"/>

@@ -24,18 +24,18 @@
     </component>
   </application-components>
 
-  <project-components>
+  <!--<project-components>
     <component>
       <implementation-class>com.jetbrains.resolve.ResolveModuleListener</implementation-class>
     </component>
-  </project-components>
+  </project-components>-->
 
   <module value="com.intellij.modules.xml"/>
 
   <extensions defaultExtensionNs="com.intellij">
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
 
-    <projectAttachProcessor implementation="com.intellij.platform.ModuleAttachProcessor"/>
+    <!--<projectAttachProcessor implementation="com.intellij.platform.ModuleAttachProcessor"/>-->
 
     <!--<projectConfigurable groupId="build"
                          id="com.jetbrains.python.buildout.BuildoutModulesConfigurable"
@@ -46,10 +46,10 @@
                                   order="after PlatformProjectConfigurator"/>
     <directoryProjectConfigurator implementation="com.jetbrains.python.PythonSourceRootConfigurator" id="sourceRoot"
                                   order="after sdk"/>
-    <directoryProjectConfigurator implementation="com.intellij.platform.PlatformInspectionProfileConfigurator"/>-->
+    <directoryProjectConfigurator implementation="com.intellij.platform.PlatformInspectionProfileConfigurator"/>
 
     <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
-                        serviceImplementation="com.jetbrains.resolve.ResolveModuleTypeManager"/>
+                        serviceImplementation="com.jetbrains.resolve.ResolveModuleTypeManager"/>-->
 
     <fileStructureGroupRuleProvider implementation="com.intellij.usages.impl.rules.FileGroupingRuleProvider" order="first"/>
     <!--<diffPreviewProvider implementation="com.jetbrains.python.configuration.PyDiffPreviewProvider"/>-->
