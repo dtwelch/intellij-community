@@ -6,6 +6,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
@@ -91,4 +92,27 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
     }
     return result;
   }
+
+  @NotNull
+  public List<ValidationInfo> validateAll() {
+    Sdk selected = getSelectedSdk();
+    List<ValidationInfo> result = new ArrayList<>();
+    if (selected == null) {
+      result.add(new ValidationInfo("No RESOLVE compiler Sdk selected"));
+    }
+    else if (!ResolveSdkType.getInstance().isValidSdkHome(selected.getHomePath())) {
+      result.add(new ValidationInfo("Invalid compiler Sdk selected (missing resolve.jar)"));
+    }
+    return result;
+  }
+/*
+  private fun validateSdkChooserField(): ValidationInfo? {
+    val selectedSdk = sdk
+    val message = when {
+      selectedSdk == null -> "No Python interpreter selected"
+      PythonSdkType.isInvalid(selectedSdk) -> "Choose valid Python interpreter"
+      else -> return null
+    }
+    return ValidationInfo(message, sdkChooserCombo)
+  }*/
 }

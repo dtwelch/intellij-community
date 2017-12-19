@@ -30,7 +30,7 @@ public class ResolveSdkService extends SimpleModificationTracker {
 
   public static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
     if (sdkHomePath != null) {
-      File compiler = new File(sdkHomePath + File.separator + "resolve.jar");
+      File compiler = new File(sdkHomePath + File.separator + "compiler" + File.separator + "resolve.jar");
       if (compiler.exists()) {
         return compiler.getAbsolutePath();
       }

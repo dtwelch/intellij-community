@@ -70,7 +70,9 @@ public class ResolveSdkUtil {
       return LocalFileSystem.getInstance().findFileByPath("C:\\resolve-lite-private");
     }
     if (SystemInfo.isMac || SystemInfo.isLinux) {
-      VirtualFile usrLocal = LocalFileSystem.getInstance().findFileByPath("/usr/local/resolve-lite-private");
+      final String userHome = SystemProperties.getUserHome();
+      String path = userHome + File.separator + "Documents" + File.separator + "resolve-lite-private";
+      VirtualFile usrLocal = LocalFileSystem.getInstance().findFileByPath(path);
       if (usrLocal != null) return usrLocal;
     }
     return null;

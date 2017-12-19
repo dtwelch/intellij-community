@@ -13,9 +13,13 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
+import com.intellij.util.ui.update.UiNotifyConnector;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
+import com.jetbrains.resolve.newProject.ResolveNewProjectSettings;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
@@ -57,30 +61,30 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     }
   }
 
-/*
   @Override
-  protected void registerValidators() {
-    super.registerValidators();
-    if (myProjectGenerator instanceof PythonProjectGenerator) {
-      addLocationChangeListener(event -> {
-        final String fileName = PathUtil.getFileName(getNewProjectPath());
-        ((PythonProjectGenerator)myProjectGenerator).locationChanged(fileName);
-      });
-      final PyAddSdkGroupPanel interpreterPanel = mySdkSelectionBox;
-      if (interpreterPanel != null) {
-        UiNotifyConnector.doWhenFirstShown(interpreterPanel, this::checkValid);
-      }
+  protected void initGeneratorListeners() {
+    super.initGeneratorListeners();
+    if (myProjectGenerator instanceof ResolveProjectGenerator) {
+      ((ResolveProjectGenerator<ResolveNewProjectSettings>)myProjectGenerator).addSettingsStateListener(this::checkValid);
+      //myErrorLabel.addMouseListener(((PythonProjectGenerator)myProjectGenerator).getErrorLabelMouseListener());
     }
   }
 
   @Override
-  protected void initGeneratorListeners() {
-    super.initGeneratorListeners();
-    if (myProjectGenerator instanceof PythonProjectGenerator) {
-      ((PythonProjectGenerator)myProjectGenerator).addSettingsStateListener(this::checkValid);
-      myErrorLabel.addMouseListener(((PythonProjectGenerator)myProjectGenerator).getErrorLabelMouseListener());
+  public boolean checkValid() {
+    if (!super.checkValid()) {
+      return false;
     }
-  }*/
+    if (mySdkAddChooserComboBox != null) {
+      final List<ValidationInfo> validationInfos = mySdkAddChooserComboBox.validateAll();
+
+      if (!validationInfos.isEmpty()) {
+        setErrorText(StringUtil.join(validationInfos, info -> info.message, "\n"));
+        return false;
+      }
+    }
+    return true;
+  }
 
   @Override
   protected JPanel createBasePanel() {
@@ -126,13 +130,6 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     }
     return super.createBasePanel();
   }
-
-  /*
-  @NotNull
-  private TextFieldWithBrowseButton createLocationComponentNoLabel() {
-    LabeledComponent<TextFieldWithBrowseButton> labeled = createLocationComponent();
-    return labeled.getComponent();
-  }*/
 
   @NotNull
   private TextFieldWithBrowseButton createLocationComponentNoLabel() {
