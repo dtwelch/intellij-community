@@ -38,12 +38,11 @@ public class ResFile extends PsiFileBase {
 
     @Override
     public Icon getIcon(int s) {
-        if (getEnclosedModule() == null) {
+       // if (getEnclosedModule() == null) {
             return ResolveIcons.RESOLVE_FILE;
-        }
-        else {
-            return getEnclosedModule().getIcon(0);
-        }
+      //  }
+      //  else {
+      //      return getEnclosedModule().getIcon(0);
+      //  }
     }
-
 }

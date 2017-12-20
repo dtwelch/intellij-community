@@ -5,24 +5,28 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import com.jetbrains.resolve.ResolveFileType;
 import com.jetbrains.resolve.ResolveIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class CreateResolveFileAction extends CreateFileFromTemplateAction implements DumbAware {
 
+  public static final String FILE_TEMPLATE = "RESOLVE File";
+  public static final String NEW_RESOLVE_FILE = "New RESOLVE File";
+
   public CreateResolveFileAction() {
-    super("RESOLVE File", "Creates a RESOLVE file from the specified template", ResolveIcons.RESOLVE_FILE);
+    super(NEW_RESOLVE_FILE, "", ResolveFileType.INSTANCE.getIcon());
   }
 
   @Override
   protected void buildDialog(Project project, PsiDirectory directory, @NotNull CreateFileFromTemplateDialog.Builder builder) {
-    builder.setTitle("New RESOLVE file").addKind("Empty file", ResolveIcons.RESOLVE_FILE, "RESOLVE File");
+    builder.setTitle(NEW_RESOLVE_FILE).addKind("Empty file", ResolveIcons.RESOLVE_FILE, FILE_TEMPLATE).addKind("Foo file", ResolveIcons.RESOLVE_FILE, FILE_TEMPLATE);
   }
 
   @NotNull
   @Override
   protected String getActionName(PsiDirectory directory, String newName, String templateName) {
-    return "New RESOLVE file";
+    return NEW_RESOLVE_FILE;
   }
 
   @Override
