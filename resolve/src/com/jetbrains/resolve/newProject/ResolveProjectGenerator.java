@@ -132,15 +132,4 @@ public abstract class ResolveProjectGenerator<T extends ResolveNewProjectSetting
     return myErrorLabelMouseListener;
   }
 
-  /**
-   * To be thrown if project can't be created on this sdk
-   *
-   * @author Ilya.Kazakevich
-   */
-  public static class PyNoProjectAllowedOnSdkException extends Exception {
-    /** @param reason why project can't be created */
-    PyNoProjectAllowedOnSdkException(@NotNull final String reason) {
-      super(reason);
-    }
-  }
 }

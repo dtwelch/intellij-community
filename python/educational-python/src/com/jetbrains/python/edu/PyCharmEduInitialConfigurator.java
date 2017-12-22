@@ -157,7 +157,6 @@ public class PyCharmEduInitialConfigurator {
     if (!propertiesComponent.getBoolean(CONFIGURED_V2)) {
       EditorSettingsExternalizable editorSettings = EditorSettingsExternalizable.getInstance();
       editorSettings.setEnsureNewLineAtEOF(true);
-
       propertiesComponent.setValue(CONFIGURED_V2, true);
     }
     if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {

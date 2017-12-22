@@ -1,8 +1,8 @@
 // Copyright 2000-2017 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.jetbrains.resolve.sdk;
 
-import com.intellij.ide.RecentProjectsManager;
-import com.intellij.openapi.application.ApplicationNamesInfo;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
@@ -11,17 +11,13 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.PlatformUtils;
 import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,6 +36,15 @@ public class ResolveSdkUtil {
     final String userHome = SystemProperties.getUserHome();
     return userHome.replace('/', File.separatorChar) + File.separator + "Documents"
            + File.separator + "resolvework" + File.separator + "src";
+  }
+
+  /**
+   * Retrieves root directories from RESOLVEPATH env-variable. This method doesn't consider user defined libraries,
+   * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}
+   */
+  @NotNull
+  public static Collection<VirtualFile> getResolvePathsRootsFromEnvironment() {
+    return ResolveEnvironmentPathModificationTracker.getResolveEnvironmentPathRoots();
   }
 
   @NotNull

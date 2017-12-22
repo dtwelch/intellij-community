@@ -60,6 +60,7 @@ public class PyTreeStructureProvider implements SelectableTreeStructureProvider,
                                              @NotNull Collection<AbstractTreeNode> children,
                                              ViewSettings settings) {
     final Project project = parent.getProject();
+
     final Sdk sdk = getPythonSdk(parent);
     if (sdk != null && project != null) {
       final Collection<AbstractTreeNode> newChildren = hideSkeletons(children);
