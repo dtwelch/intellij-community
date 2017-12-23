@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class RESOLVEEnvUtil {
+public class ResolveEnvUtil {
 
   @Nullable
   public static String retrieveRESOLVEPath() {

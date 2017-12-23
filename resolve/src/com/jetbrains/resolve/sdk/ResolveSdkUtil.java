@@ -11,7 +11,13 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.util.Function;
 import com.intellij.util.SystemProperties;
+import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.resolve.project.ResolveApplicationLibrariesService;
+import com.jetbrains.resolve.project.ResolveLibrariesService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +27,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.intellij.util.containers.ContainerUtil.newLinkedHashSet;
 
 public class ResolveSdkUtil {
 
@@ -113,6 +121,75 @@ public class ResolveSdkUtil {
     return null;
   }
 
+  /**
+   * Retrieves root directories from RESOLVEPATH env-variable. This method doesn't consider user defined libraries,
+   * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}
+   */
+  @NotNull
+  public static Collection<VirtualFile> getRESOLVEPathsRootsFromEnvironment() {
+    return ResolveEnvironmentPathModificationTracker.getResolveEnvironmentPathRoots();
+  }
+
+  @NotNull
+  public static Collection<VirtualFile> getRESOLVEPathSourcesRoot(@NotNull final Project project,
+                                                                  @Nullable final Module module) {
+    if (module != null) {
+      return CachedValuesManager.getManager(project).getCachedValue(
+        module, new CachedValueProvider<Collection<VirtualFile>>() {
+          @Override
+          public Result<Collection<VirtualFile>> compute() {
+            Collection<VirtualFile> result = newLinkedHashSet();
+            Project project = module.getProject();
+            result.addAll(getRESOLVEPathSourcesRootInner(project, module));
+            return Result.create(result, getSdkAndLibrariesCacheDependencies(project, module));
+          }
+        });
+    }
+    return CachedValuesManager.getManager(project).getCachedValue(project,
+                                                                  new CachedValueProvider<Collection<VirtualFile>>() {
+                                                                    @Nullable
+                                                                    @Override
+                                                                    public Result<Collection<VirtualFile>> compute() {
+                                                                      return Result.create(getRESOLVEPathSourcesRootInner(project, null),
+                                                                                           getSdkAndLibrariesCacheDependencies(project,
+                                                                                                                               null));
+                                                                    }
+                                                                  });
+  }
+
+  @NotNull
+  private static Collection<Object> getSdkAndLibrariesCacheDependencies(@NotNull Project project,
+                                                                        @Nullable Module module) {
+    Collection<Object> dependencies = ContainerUtil.newArrayList(
+      (Object[])ResolveLibrariesService.getModificationTrackers(project, module));
+    ContainerUtil.addAllNotNull(dependencies);
+    return dependencies;
+  }
+
+  @NotNull
+  private static List<VirtualFile> getRESOLVEPathSourcesRootInner(@NotNull Project project, @Nullable Module module) {
+    return ContainerUtil.mapNotNull(getRESOLVEPathRoots(project, module),
+                                    new RetrieveSubDirectoryOrSelfFunction("src"));
+  }
+
+  @NotNull
+  private static Collection<VirtualFile> getRESOLVEPathRoots(@NotNull Project project, @Nullable Module module) {
+    Collection<VirtualFile> roots = ContainerUtil.newArrayList();
+    if (ResolveApplicationLibrariesService.getInstance().isUsingRESOLVEPathFromSystemEnvironment()) {
+      roots.addAll(getRESOLVEPathsRootsFromEnvironment());
+    }
+    roots.addAll(module != null ?
+                 ResolveLibrariesService.getUserDefinedLibraries(module) :
+                 ResolveLibrariesService.getUserDefinedLibraries(project));
+    return roots;
+  }
+
+  public static boolean isResolveSdkLibRoot(@NotNull VirtualFile root) {
+    return root.isInLocalFileSystem() &&
+           root.isDirectory() &&
+           retrieveResolveVersion(root.getPath()) != null;
+  }
+
   @Nullable
   public static String parseResolveVersion(@NotNull String text) {
     Matcher matcher = RESOLVE_VERSION_PATTERN.matcher(text);
@@ -122,4 +199,17 @@ public class ResolveSdkUtil {
     return null;
   }
 
+  private static class RetrieveSubDirectoryOrSelfFunction implements Function<VirtualFile, VirtualFile> {
+    @NotNull
+    private final String subdirName;
+
+    RetrieveSubDirectoryOrSelfFunction(@NotNull String subdirName) {
+      this.subdirName = subdirName;
+    }
+
+    @Override
+    public VirtualFile fun(VirtualFile file) {
+      return file == null || FileUtil.namesEqual(subdirName, file.getName()) ? file : file.findChild(subdirName);
+    }
+  }
 }

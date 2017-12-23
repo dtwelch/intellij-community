@@ -5,7 +5,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
-import com.jetbrains.resolve.project.RESOLVEEnvUtil;
+import com.jetbrains.resolve.project.ResolveEnvUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class ResolveEnvironmentPathModificationTracker {
   private final Collection<VirtualFile> resolvePathRoots = ContainerUtil.newLinkedHashSet();
 
   public ResolveEnvironmentPathModificationTracker() {
-    String resPath = RESOLVEEnvUtil.retrieveRESOLVEPath();
+    String resPath = ResolveEnvUtil.retrieveRESOLVEPath();
     if (resPath != null) {
       String home = SystemProperties.getUserHome();
       for (String s : StringUtil.split(resPath, File.pathSeparator)) {

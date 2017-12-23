@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-class RESOLVELibrariesState {
+class ResolveLibrariesState {
     @NotNull
     private Collection<String> urls = ContainerUtil.newArrayList();
 

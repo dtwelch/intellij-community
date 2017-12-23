@@ -22,6 +22,8 @@
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <internalFileTemplate name="RESOLVE File"/>
 
+    <library.presentationProvider implementation="com.jetbrains.resolve.sdk.RESOLVESdkLibraryPresentationProvider"/>
+
 
     <!--
     <lang.commenter language="Python" implementationClass="com.jetbrains.python.PythonCommenter"/>
