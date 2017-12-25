@@ -5,7 +5,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
-import com.jetbrains.resolve.project.ResolveEnvUtil;
+import com.jetbrains.resolve.library.ResolveEnvUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

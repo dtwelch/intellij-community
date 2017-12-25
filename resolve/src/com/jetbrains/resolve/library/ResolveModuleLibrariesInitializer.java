@@ -1,20 +1,4 @@
-/*
- * Copyright 2013-2016 Sergey Ignatov, Alexander Zolotov, Florin Patan
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.ProjectTopics;
 import com.intellij.ide.util.PropertiesComponent;
@@ -27,7 +11,9 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.impl.InheritedJdkOrderEntryImpl;
 import com.intellij.openapi.roots.impl.OrderEntryUtil;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.Library;
@@ -51,23 +37,18 @@ import java.util.Set;
 public class ResolveModuleLibrariesInitializer implements ModuleComponent {
   private static final String RESOLVE_LIB_NAME = "RESOLVEPATH";
   private static final String RESOLVE_LIBRARIES_NOTIFICATION_HAD_BEEN_SHOWN = "resolve.libraries.notification.had.been.shown";
-  private static final String RESOLVE_VENDORING_NOTIFICATION_HAD_BEEN_SHOWN = "resolve.vendoring.notification.had.been.shown";
   private static final int UPDATE_DELAY = 300;
-  private static boolean isTestingMode;
 
   private final Alarm myAlarm;
   private final MessageBusConnection myConnection;
   private boolean myModuleInitialized;
 
   @NotNull
-  private final Set<VirtualFile> myLastHandledRESOLVEPathSourcesRoots =
-    ContainerUtil.newHashSet();
+  private final Set<VirtualFile> myLastHandledRESOLVEPathSourcesRoots = ContainerUtil.newHashSet();
   @NotNull
-  private final Set<VirtualFile> myLastHandledExclusions =
-    ContainerUtil.newHashSet();
+  private final Set<VirtualFile> myLastHandledExclusions = ContainerUtil.newHashSet();
   @NotNull
-  private final Set<LocalFileSystem.WatchRequest> myWatchedRequests =
-    ContainerUtil.newHashSet();
+  private final Set<LocalFileSystem.WatchRequest> myWatchedRequests = ContainerUtil.newHashSet();
 
   @NotNull
   private final Module myModule;
@@ -124,12 +105,7 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
   private void scheduleUpdate(int delay) {
     myAlarm.cancelAllRequests();
     UpdateRequest updateRequest = new UpdateRequest();
-    if (isTestingMode) {
-      ApplicationManager.getApplication().invokeLater(updateRequest);
-    }
-    else {
-      myAlarm.addRequest(updateRequest, delay);
-    }
+    myAlarm.addRequest(updateRequest, delay);
   }
 
   private void attachLibraries(@NotNull final Collection<VirtualFile> libraryRoots, final Set<VirtualFile> exclusions) {
@@ -188,6 +164,8 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
 
     final ModifiableModelsProvider modelsProvider = ModifiableModelsProvider.SERVICE.getInstance();
     final ModifiableRootModel model = modelsProvider.getModuleModifiableModel(myModule);
+    String x = model.getSdkName();
+    Sdk m = model.getSdk();
     final LibraryOrderEntry goLibraryEntry = OrderEntryUtil.findLibraryOrderEntry(model, getLibraryName());
     if (goLibraryEntry != null) {
       ApplicationManager.getApplication().runWriteAction(new Runnable() {
@@ -245,52 +223,6 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
                                                                                                  notificationListener);
       Notifications.Bus.notify(notification, project);
     }
-  }
-
-  private void showVendoringNotification() {
-    if (!myModuleInitialized || myModule.isDisposed()) {
-      return;
-    }
-    final Project project = myModule.getProject();
-       /* String version = GoSdkService.getInstance(project).getSdkVersion(myModule);
-        if ( !GoVendoringUtil.supportsVendoring(version) || GoVendoringUtil.supportsVendoringByDefault(version) ) {
-            return;
-        }
-        if ( GoModuleSettings.getInstance(myModule).getVendoringEnabled()!=ThreeState.UNSURE ) {
-            return;
-        }
-
-        PropertiesComponent propertiesComponent = PropertiesComponent.getInstance(project);
-        boolean shownAlready;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (propertiesComponent) {
-            shownAlready = propertiesComponent.getBoolean(RESOLVE_VENDORING_NOTIFICATION_HAD_BEEN_SHOWN, false);
-            if ( !shownAlready ) {
-                propertiesComponent.setValue(RESOLVE_VENDORING_NOTIFICATION_HAD_BEEN_SHOWN, String.valueOf(true));
-            }
-        }
-
-        if ( !shownAlready ) {
-            NotificationListener.Adapter notificationListener = new NotificationListener.Adapter() {
-                @Override
-                protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
-                    if ( event.getEventType()==HyperlinkEvent.EventType.ACTIVATED && "configure".equals(event.getDescription()) ) {
-                        RESOLVEModuleSettings.showModulesConfigurable(project);
-                    }
-                }
-            };
-            Notification notification = GoConstants.GO_NOTIFICATION_GROUP.createNotification("Vendoring usage is detected",
-                    "<p><strong>vendor</strong> directory usually means that project uses Go Vendor Experiment.</p>\n" +
-                            "<p>Selected Go SDK version support vendoring but it's disabled by default.</p>\n" +
-                            "<p>You may want to explicitly enabled Go Vendor Experiment in the <a href='configure'>project settings</a>.</p>",
-                    NotificationType.INFORMATION, notificationListener);
-            Notifications.Bus.notify(notification, project);
-        }*/
-  }
-
-  @Override
-  public void initComponent() {
-
   }
 
   @Override

@@ -2,9 +2,13 @@ package com.jetbrains.resolve.newProject.steps;
 
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ModifiableModelsProvider;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.intellij.platform.ProjectGeneratorPeer;
@@ -21,14 +25,20 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
 
     final ProjectSpecificSettingsStep settingsStep = (ProjectSpecificSettingsStep)step;
     final DirectoryProjectGenerator generator = settingsStep.getProjectGenerator();
-    Sdk sdk = settingsStep.getSdk();
+    Sdk sdk = settingsStep.getOrCreateSdk();
 
     final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer);
     final Project newProject = generateProject(settingsStep, settings);
-    if (settings instanceof ResolveNewProjectSettings) {
-      sdk = ((ResolveNewProjectSettings)settings).getSdk();
-    }
+
     if (newProject != null && generator instanceof ResolveProjectGenerator) {
+      ModuleManager x =  ModuleManager.getInstance(newProject);
+      Module[] vb =  x.getModules();
+
+      final ModifiableModelsProvider modelsProvider = ModifiableModelsProvider.SERVICE.getInstance();
+      final ModifiableRootModel model = modelsProvider.getModuleModifiableModel(vb[0]);
+      String N = model.getSdkName();
+      Sdk m = model.getSdk();
+
       SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk);
     }
   }
@@ -52,7 +62,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
     }
     if (projectSettings instanceof ResolveNewProjectSettings) {
       final ResolveNewProjectSettings newProjectSettings = (ResolveNewProjectSettings)projectSettings;
-      newProjectSettings.setSdk(settingsStep.getSdk());
+      newProjectSettings.setSdk(settingsStep.getOrCreateSdk());
       //newProjectSettings.setInstallFramework(settingsStep.installFramework());
       //newProjectSettings.setRemotePath(settingsStep.getRemotePath());
     }

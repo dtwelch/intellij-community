@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;

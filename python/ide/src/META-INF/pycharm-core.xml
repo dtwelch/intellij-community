@@ -34,9 +34,6 @@
     </component>
   </project-components>
 
-
-
-
   <module value="com.intellij.modules.xml"/>
 
   <extensions defaultExtensionNs="com.intellij">

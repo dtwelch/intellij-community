@@ -18,10 +18,14 @@ package com.jetbrains.python.newProject.steps;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ModifiableModelsProvider;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
@@ -70,6 +74,14 @@ public class PythonGenerateProjectCallback<T> extends AbstractNewProjectStep.Abs
     }
 
     if (newProject != null && generator instanceof PythonProjectGenerator) {
+      ModuleManager x =  ModuleManager.getInstance(newProject);
+      Module[] vb =  x.getModules();
+
+      final ModifiableModelsProvider modelsProvider = ModifiableModelsProvider.SERVICE.getInstance();
+      final ModifiableRootModel model = modelsProvider.getModuleModifiableModel(vb[0]);
+      String N = model.getSdkName();
+      Sdk m = model.getSdk();
+
       SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk);
       final List<Sdk> sdks = PythonSdkType.getAllSdks();
       for (Sdk s : sdks) {

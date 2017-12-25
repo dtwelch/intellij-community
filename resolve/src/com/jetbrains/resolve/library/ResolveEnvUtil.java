@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathMacros;
@@ -38,7 +38,7 @@ public class ResolveEnvUtil {
       result = "C:\\resolvework";
     }
     else {
-      result = ".";
+      result = "";
     }
     return result;
   }

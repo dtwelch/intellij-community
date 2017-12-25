@@ -10,17 +10,20 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.DirectoryProjectGenerator;
 import com.intellij.util.ui.update.UiNotifyConnector;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveNewProjectSettings;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
+import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import com.jetbrains.resolve.sdk.add.ResolveSdkPathChooserComboBox;
@@ -51,14 +54,20 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   }
 
   @Nullable
-  public Sdk getSdk() {
+  public Sdk getOrCreateSdk() {
     if (!(myProjectGenerator instanceof ResolveProjectGenerator)) return null;
     if (mySdkAddChooserComboBox != null) {
-      return mySdkAddChooserComboBox.getSelectedSdk();
+      Sdk sdk = mySdkAddChooserComboBox.getSelectedSdk();
+      if (sdk instanceof ResolveDetectedSdk) {
+        List<Sdk> allSdks = ResolveSdkUtil.findBaseSdks();
+        VirtualFile homeDir = sdk.getHomeDirectory();
+        if (homeDir == null) return null;
+        return SdkConfigurationUtil.setupSdk(allSdks.toArray(new Sdk[0]), homeDir, ResolveSdkType.getInstance(),
+                                      false, null, null);
+      }
+      return sdk;
     }
-    else {
-      return null;
-    }
+    return null;
   }
 
   @Override

@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;

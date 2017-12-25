@@ -16,8 +16,8 @@ import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.util.Function;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
-import com.jetbrains.resolve.project.ResolveApplicationLibrariesService;
-import com.jetbrains.resolve.project.ResolveLibrariesService;
+import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
+import com.jetbrains.resolve.library.ResolveLibrariesService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,6 +140,7 @@ public class ResolveSdkUtil {
           public Result<Collection<VirtualFile>> compute() {
             Collection<VirtualFile> result = newLinkedHashSet();
             Project project = module.getProject();
+            List<VirtualFile> root = getRESOLVEPathSourcesRootInner(project, module);
             result.addAll(getRESOLVEPathSourcesRootInner(project, module));
             return Result.create(result, getSdkAndLibrariesCacheDependencies(project, module));
           }

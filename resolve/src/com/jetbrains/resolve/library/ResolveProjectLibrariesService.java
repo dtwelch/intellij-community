@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
@@ -14,12 +14,8 @@ import org.jetbrains.annotations.NotNull;
       scheme = StorageScheme.DIRECTORY_BASED)
   }
 )
-public class ResolveProjectLibrariesService
-  extends
-  ResolveLibrariesService<ResolveLibrariesState> {
-  public static ResolveProjectLibrariesService getInstance(
-    @NotNull Project project) {
-    return ServiceManager.getService(project,
-                                     ResolveProjectLibrariesService.class);
+public class ResolveProjectLibrariesService extends ResolveLibrariesService<ResolveLibrariesState> {
+  public static ResolveProjectLibrariesService getInstance(@NotNull Project project) {
+    return ServiceManager.getService(project, ResolveProjectLibrariesService.class);
   }
 }

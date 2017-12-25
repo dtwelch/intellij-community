@@ -24,6 +24,8 @@ import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ModifiableModelsProvider;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;

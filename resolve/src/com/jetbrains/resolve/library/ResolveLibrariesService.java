@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.project;
+package com.jetbrains.resolve.library;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -44,10 +44,10 @@ public class ResolveLibrariesService<T extends ResolveLibrariesState>
   }
 
   @NotNull
-  public static Collection<? extends VirtualFile> getUserDefinedLibraries(
-    @NotNull Module module) {
+  public static Collection<? extends VirtualFile> getUserDefinedLibraries(@NotNull Module module) {
     Set<VirtualFile> result = ContainerUtil.newLinkedHashSet();
-    result.addAll(resolveLangRootsFromUrls(ResolveModuleLibrariesService.getInstance(module).getLibraryRootUrls()));
+    ResolveModuleLibrariesService serv = ResolveModuleLibrariesService.getInstance(module);
+    result.addAll(resolveLangRootsFromUrls(serv.getLibraryRootUrls()));
     result.addAll(getUserDefinedLibraries(module.getProject()));
     return result;
   }
