@@ -25,7 +25,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
 
     final ProjectSpecificSettingsStep settingsStep = (ProjectSpecificSettingsStep)step;
     final DirectoryProjectGenerator generator = settingsStep.getProjectGenerator();
-    Sdk sdk = settingsStep.getOrCreateSdk();
+    Sdk sdk = settingsStep.setupAndGetSdk();
 
     final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer);
     final Project newProject = generateProject(settingsStep, settings);
@@ -62,7 +62,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
     }
     if (projectSettings instanceof ResolveNewProjectSettings) {
       final ResolveNewProjectSettings newProjectSettings = (ResolveNewProjectSettings)projectSettings;
-      newProjectSettings.setSdk(settingsStep.getOrCreateSdk());
+      newProjectSettings.setSdk(settingsStep.setupAndGetSdk());
       //newProjectSettings.setInstallFramework(settingsStep.installFramework());
       //newProjectSettings.setRemotePath(settingsStep.getRemotePath());
     }

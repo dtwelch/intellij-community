@@ -1,17 +1,21 @@
-package com.jetbrains.resolve.sdk.add;
+package com.jetbrains.resolve.newProject.steps;
 
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
+import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +35,9 @@ import java.util.List;
 //When I select an invalid home directory for SDK a box should come up saying this isn't a valid sdk dir (like in
 //goland).. a similar thing is done in the file directory browser for pycharm. Check how they do it. Likely a listener
 //that calls an SDK isValid..(..) method when ok is pressed...
-public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
+public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
 
-  public ResolveSdkPathChooserComboBox(List<Sdk> existingSdks) {
+  public ResolveSdkChooserComboBox(List<Sdk> existingSdks) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> childComponent = getChildComponent(); //ok since getChildComponent() is final
     childComponent.setRenderer(new ResolveSdkListCellRenderer());
@@ -53,15 +57,15 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
             String path = vFile.getPath();
             if (!sdkType.isValidSdkHome(path)) return;
             List<Sdk> items = getItems();
-            Sdk detectedSdk = null;
-            for (Sdk sdk : items) {
-              if (sdk.getHomePath() == null) continue;
-              if (sdk.getHomePath().equals(path)) {
-                detectedSdk = new ResolveDetectedSdk(path);
+            Sdk sdk = null;
+            for (Sdk s : items) {
+              if (s.getHomePath() == null) continue;
+              if (s.getHomePath().equals(path)) {
+                sdk = new ResolveDetectedSdk(path);
               }
             }
-            if (detectedSdk != null) {
-              childComponent.setSelectedItem(detectedSdk);
+            if (sdk != null) {
+              setSelectedSdk(sdk);
             }
           }
         });
@@ -74,12 +78,12 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
     Sdk result = null;
     JComboBox<Sdk> child = getChildComponent();
     if (child.getSelectedItem() instanceof Sdk) {
-      result = (Sdk) child.getSelectedItem();
+      result = (Sdk)child.getSelectedItem();
     }
     return result;
   }
 
-  public void setSelectedSdk(@NotNull Sdk value) {
+  public void setSelectedSdk(Sdk value) {
     getChildComponent().setSelectedItem(value);
   }
 
@@ -105,14 +109,4 @@ public class ResolveSdkPathChooserComboBox extends ComponentWithBrowseButton<JCo
     }
     return result;
   }
-/*
-  private fun validateSdkChooserField(): ValidationInfo? {
-    val selectedSdk = sdk
-    val message = when {
-      selectedSdk == null -> "No Python interpreter selected"
-      PythonSdkType.isInvalid(selectedSdk) -> "Choose valid Python interpreter"
-      else -> return null
-    }
-    return ValidationInfo(message, sdkChooserCombo)
-  }*/
 }
