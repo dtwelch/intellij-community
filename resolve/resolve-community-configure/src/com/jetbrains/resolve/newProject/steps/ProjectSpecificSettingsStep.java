@@ -25,7 +25,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
@@ -47,31 +50,10 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   }
 
   @Nullable
-  public Sdk setupAndGetSdk() {
+  public Sdk getSdk() {
     if (!(myProjectGenerator instanceof ResolveProjectGenerator)) return null;
     if (mySdkAddChooserComboBox != null) {
-      Sdk sdk = mySdkAddChooserComboBox.getSelectedSdk();
-      if (sdk instanceof ResolveDetectedSdk) {
-        List<Sdk> allSdks = ResolveSdkUtil.findBaseSdks();
-        VirtualFile homeDir = sdk.getHomeDirectory();
-        if (homeDir == null) return null;
-        sdk = SdkConfigurationUtil.setupSdk(allSdks.toArray(new Sdk[0]), homeDir, ResolveSdkType.getInstance(),
-                                      false, null, null);
-
-        if (sdk == null) return null;
-        final ResolveConfigurableCompilerList interpreterList = ResolveConfigurableCompilerList.getInstance(null);
-        final ProjectSdksModel projectSdksModel = interpreterList.getModel();
-        if (projectSdksModel.findSdk(sdk) == null) {
-          projectSdksModel.addSdk(sdk);
-          try {
-            projectSdksModel.apply();
-          }
-          catch (ConfigurationException e) {
-            //LOG.error("Error adding new python interpreter " + e.getMessage());
-          }
-        }
-      }
-      return sdk;
+      return mySdkAddChooserComboBox.getSelectedSdk();
     }
     return null;
   }
@@ -166,8 +148,15 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
 
   @NotNull
   private ResolveSdkChooserComboBox createSdkComboComponentNoLabel() {
-    List<Sdk> baseSdks = ResolveSdkUtil.findBaseSdks();
-    return new ResolveSdkChooserComboBox(baseSdks);
+    List<Sdk> baseSdks = new ArrayList<>(); //ResolveSdkUtil.findBaseSdks();
+    ResolveSdkChooserComboBox combo = new ResolveSdkChooserComboBox(baseSdks);
+    combo.addChangedListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        checkValid();
+      }
+    });
+    return combo;
   }
 
 }

@@ -10,7 +10,9 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.PathsChooserComponent;
 import com.intellij.util.Consumer;
+import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
@@ -36,11 +38,13 @@ import java.util.List;
 //goland).. a similar thing is done in the file directory browser for pycharm. Check how they do it. Likely a listener
 //that calls an SDK isValid..(..) method when ok is pressed...
 public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
+  private final List<ActionListener> myChangedListeners = ContainerUtil.createLockFreeCopyOnWriteList();
 
   public ResolveSdkChooserComboBox(List<Sdk> existingSdks) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> childComponent = getChildComponent(); //ok since getChildComponent() is final
     childComponent.setRenderer(new ResolveSdkListCellRenderer());
+    childComponent.addItem(null);
     addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -48,25 +52,17 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
         FileChooserDescriptor descriptor = sdkType.getHomeChooserDescriptor();
         descriptor.setForcedToUseIdeaFileChooser(true);
 
-        FileChooser.chooseFiles(descriptor, null, null, new Consumer<List<VirtualFile>>() {
+        FileChooser.chooseFiles(descriptor, null, ResolveSdkUtil.suggestSdkDirectory(), new Consumer<List<VirtualFile>>() {
           @Override
           public void consume(List<VirtualFile> files) {
-            VirtualFile vFile = !files.isEmpty() ? files.get(0) : null;
-            if (vFile == null) return;
-
-            String path = vFile.getPath();
-            if (!sdkType.isValidSdkHome(path)) return;
-            List<Sdk> items = getItems();
-            Sdk sdk = null;
-            for (Sdk s : items) {
-              if (s.getHomePath() == null) continue;
-              if (s.getHomePath().equals(path)) {
-                sdk = new ResolveDetectedSdk(path);
-              }
+            if (files.size() != 1) return;
+            String homeDir = files.get(0).getPath();
+            Sdk c = SdkConfigurationUtil.createAndAddSDK(homeDir, ResolveSdkType.getInstance());
+            if (c != null) {
+              getChildComponent().addItem(c);
+              setSelectedSdk(c);
             }
-            if (sdk != null) {
-              setSelectedSdk(sdk);
-            }
+            ResolveSdkChooserComboBox.this.notifyChanged(null);
           }
         });
       }
@@ -85,6 +81,16 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
 
   public void setSelectedSdk(Sdk value) {
     getChildComponent().setSelectedItem(value);
+  }
+
+  private void notifyChanged(ActionEvent e) {
+    for (ActionListener changedListener : myChangedListeners) {
+      changedListener.actionPerformed(e);
+    }
+  }
+
+  public void addChangedListener(ActionListener listener) {
+    myChangedListeners.add(listener);
   }
 
   @NotNull

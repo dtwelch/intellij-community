@@ -200,6 +200,21 @@ public class ResolveSdkUtil {
     return null;
   }
 
+  @NotNull
+  static Collection<VirtualFile> getSdkDirectoriesToAttach(@NotNull String sdkPath) {
+    // src is enough at the moment, possible process binaries from pkg
+    return ContainerUtil.createMaybeSingletonList(getSdkSrcDir(sdkPath));
+  }
+
+  @Nullable
+  private static VirtualFile getSdkSrcDir(@NotNull String sdkPath) {
+    String srcPath = "src";
+    VirtualFile file = VirtualFileManager.getInstance()
+      .findFileByUrl(VfsUtilCore.pathToUrl(
+        FileUtil.join(sdkPath, srcPath)));
+    return file != null && file.isDirectory() ? file : null;
+  }
+
   private static class RetrieveSubDirectoryOrSelfFunction implements Function<VirtualFile, VirtualFile> {
     @NotNull
     private final String subdirName;

@@ -2,6 +2,7 @@ package com.jetbrains.resolve.sdk;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.util.SimpleModificationTracker;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -70,10 +71,11 @@ public class ResolveSdkType extends SdkType {
   @NotNull
   @Override
   public FileChooserDescriptor getHomeChooserDescriptor() {
-    return new FileChooserDescriptor(true, false, false, false, false, false) {
+    return new FileChooserDescriptor(false, true, false, false, false, false) {
       @Override
       public void validateSelectedFiles(VirtualFile[] files) throws Exception {
         if (files.length != 0) {
+
           if (!isValidSdkHome(files[0].getPath())) {
             throw new Exception(ResolveBundle.message("sdk.error.invalid.compiler.name", files[0].getName()));
           }
@@ -100,7 +102,7 @@ public class ResolveSdkType extends SdkType {
   @Nullable
   @Override
   public AdditionalDataConfigurable createAdditionalDataConfigurable(
-      @NotNull SdkModel sdkModel, @NotNull SdkModificator sdkModificator) {
+    @NotNull SdkModel sdkModel, @NotNull SdkModificator sdkModificator) {
     return null;
   }
 
@@ -112,5 +114,24 @@ public class ResolveSdkType extends SdkType {
 
   @Override
   public void saveAdditionalData(
-      @NotNull SdkAdditionalData additionalData, @NotNull Element additional) {}
+    @NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
+  }
+
+  @Override
+  public void setupSdkPaths(@NotNull Sdk sdk) {
+    String versionString = sdk.getVersionString();
+    if (versionString == null) {
+      throw new RuntimeException("SDK version is not defined");
+    }
+    SdkModificator modificator = sdk.getSdkModificator();
+    String path = sdk.getHomePath();
+    if (path == null) return;
+    modificator.setHomePath(path);
+
+    for (VirtualFile file : ResolveSdkUtil.getSdkDirectoriesToAttach(path)) {
+      modificator.addRoot(file, OrderRootType.CLASSES);
+      modificator.addRoot(file, OrderRootType.SOURCES);
+    }
+    modificator.commitChanges();
+  }
 }

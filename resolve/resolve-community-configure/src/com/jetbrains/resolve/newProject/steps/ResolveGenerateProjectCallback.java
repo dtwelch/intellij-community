@@ -25,9 +25,9 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
 
     final ProjectSpecificSettingsStep settingsStep = (ProjectSpecificSettingsStep)step;
     final DirectoryProjectGenerator generator = settingsStep.getProjectGenerator();
-    Sdk sdk = settingsStep.setupAndGetSdk();
+    Sdk sdk = settingsStep.getSdk();
 
-    final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer);
+    final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer, sdk);
     final Project newProject = generateProject(settingsStep, settings);
 
     if (newProject != null && generator instanceof ResolveProjectGenerator) {
@@ -54,7 +54,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
   @Nullable
   public static Object computeProjectSettings(DirectoryProjectGenerator<?> generator,
                                               final ProjectSpecificSettingsStep settingsStep,
-                                              @NotNull final ProjectGeneratorPeer projectGeneratorPeer) {
+                                              @NotNull final ProjectGeneratorPeer projectGeneratorPeer, @Nullable Sdk sdk) {
     Object projectSettings = null;
     if (generator instanceof ResolveProjectGenerator) {
       final ResolveProjectGenerator<?> projectGenerator = (ResolveProjectGenerator<?>)generator;
@@ -62,7 +62,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
     }
     if (projectSettings instanceof ResolveNewProjectSettings) {
       final ResolveNewProjectSettings newProjectSettings = (ResolveNewProjectSettings)projectSettings;
-      newProjectSettings.setSdk(settingsStep.setupAndGetSdk());
+      newProjectSettings.setSdk(sdk);
       //newProjectSettings.setInstallFramework(settingsStep.installFramework());
       //newProjectSettings.setRemotePath(settingsStep.getRemotePath());
     }
