@@ -4,22 +4,15 @@ import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.DialogWrapperPeer;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.DirectoryProjectGenerator;
-import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveNewProjectSettings;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
-import com.jetbrains.resolve.sdk.ResolveDetectedSdk;
-import com.jetbrains.resolve.sdk.ResolveSdkType;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +56,6 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     super.initGeneratorListeners();
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
       ((ResolveProjectGenerator<ResolveNewProjectSettings>)myProjectGenerator).addSettingsStateListener(this::checkValid);
-      //myErrorLabel.addMouseListener(((PythonProjectGenerator)myProjectGenerator).getErrorLabelMouseListener());
     }
   }
 
@@ -158,5 +150,4 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
     });
     return combo;
   }
-
 }
