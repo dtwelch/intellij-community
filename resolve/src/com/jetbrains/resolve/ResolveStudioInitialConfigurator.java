@@ -3,14 +3,22 @@ package com.jetbrains.resolve;
 import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.intention.IntentionActionBean;
 import com.intellij.codeInsight.intention.IntentionManager;
+import com.intellij.execution.Executor;
+import com.intellij.execution.ExecutorRegistryImpl;
 import com.intellij.ide.AppLifecycleListener;
 import com.intellij.ide.GeneralSettings;
+import com.intellij.ide.SelectInTarget;
+import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
+import com.intellij.ide.scopeView.ScopeViewPane;
 import com.intellij.ide.ui.UISettings;
 import com.intellij.ide.ui.customization.ActionUrl;
 import com.intellij.ide.ui.customization.CustomActionsSchema;
 import com.intellij.ide.ui.customization.CustomizationUtil;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.EventLog;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
@@ -19,8 +27,13 @@ import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.ExtensionsArea;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.keymap.Keymap;
+import com.intellij.openapi.keymap.ex.KeymapManagerEx;
+import com.intellij.openapi.keymap.impl.KeymapImpl;
 import com.intellij.openapi.keymap.impl.ui.Group;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.*;
 import com.intellij.platform.DirectoryProjectConfigurator;
 import com.intellij.platform.PlatformProjectViewOpener;
@@ -103,6 +116,7 @@ public class ResolveStudioInitialConfigurator {
     if (!propertiesComponent.getBoolean(CONFIGURED_V2)) {
       EditorSettingsExternalizable editorSettings = EditorSettingsExternalizable.getInstance();
       editorSettings.setEnsureNewLineAtEOF(true);
+      editorSettings.isDndEnabled()
       propertiesComponent.setValue(CONFIGURED_V2, true);
     }
     if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {
@@ -284,6 +298,60 @@ public class ResolveStudioInitialConfigurator {
     final ExtensionPoint<ProjectAttachProcessor> point = Extensions.getRootArea().getExtensionPoint(ProjectAttachProcessor.EP_NAME);
     for (ProjectAttachProcessor attachProcessor : Extensions.getExtensions(ProjectAttachProcessor.EP_NAME)) {
       point.unregisterExtension(attachProcessor);
+    }
+  }
+
+  private static void patchProjectAreaExtensions(@NotNull final Project project) {
+    //Executor debugExecutor = DefaultDebugExecutor.getDebugExecutorInstance();
+    //unregisterAction(debugExecutor.getId(), ExecutorRegistryImpl.RUNNERS_GROUP);
+    //unregisterAction(debugExecutor.getContextActionId(), ExecutorRegistryImpl.RUN_CONTEXT_GROUP);
+
+    ExtensionsArea projectArea = Extensions.getArea(project);
+
+    for (SelectInTarget target : Extensions.getExtensions(SelectInTarget.EP_NAME, project)) {
+      if (ToolWindowId.FAVORITES_VIEW.equals(target.getToolWindowId()) /*|| ToolWindowId.STRUCTURE_VIEW.equals(target.getToolWindowId())*/) {
+        projectArea.getExtensionPoint(SelectInTarget.EP_NAME).unregisterExtension(target);
+      }
+    }
+
+    for (AbstractProjectViewPane pane : Extensions.getExtensions(AbstractProjectViewPane.EP_NAME, project)) {
+      if (pane.getId().equals(ScopeViewPane.ID)) {
+        Disposer.dispose(pane);
+        projectArea.getExtensionPoint(AbstractProjectViewPane.EP_NAME).unregisterExtension(pane);
+      }
+    }
+  }
+
+  private static void unregisterAction(String actionId, String groupId) {
+    ActionManager actionManager = ActionManager.getInstance();
+    AnAction action = actionManager.getAction(actionId);
+    if (action != null) {
+      AnAction actionGroup = actionManager.getAction(groupId);
+      if (actionGroup != null && actionGroup instanceof DefaultActionGroup) {
+        ((DefaultActionGroup)actionGroup).remove(action);
+        actionManager.unregisterAction(actionId);
+      }
+    }
+  }
+
+  private static void patchKeymap() {
+    Set<String> droppedActions = ContainerUtil.newHashSet(
+      "AddToFavoritesPopup",
+      "DatabaseView.ImportDataSources",
+      "CompileDirty", "Compile",
+      // hidden
+      "AddNewFavoritesList", "EditFavorites", "RenameFavoritesList", "RemoveFavoritesList");
+    KeymapManagerEx keymapManager = KeymapManagerEx.getInstanceEx();
+
+
+    for (Keymap keymap : keymapManager.getAllKeymaps()) {
+      if (keymap.canModify()) continue;
+
+      KeymapImpl keymapImpl = (KeymapImpl)keymap;
+
+      for (String id : keymapImpl.getOwnActionIds()) {
+        if (droppedActions.contains(id)) keymapImpl.clearOwnActionsId(id);
+      }
     }
   }
 }
