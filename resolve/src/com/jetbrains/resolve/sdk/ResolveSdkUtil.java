@@ -61,22 +61,6 @@ public class ResolveSdkUtil {
     return FileUtil.findSequentNonexistentFile(new File(resolveWorkBaseDir), "newComponent", "");
   }
 
-  @NotNull
-  public static List<Sdk> findBaseSdks(@NotNull List<Sdk> existingSdks) {
-    VirtualFile sdkDir = suggestSdkDirectory();
-    Set<String> existingPaths = existingSdks.stream().map(e -> e.getHomePath()).collect(Collectors.toSet());
-    List<Sdk> result = new ArrayList<>(existingSdks);
-    if (sdkDir != null && !existingPaths.contains(sdkDir.getPath())) {
-      result.add(new ResolveDetectedSdk(sdkDir.getPath()));
-    }
-    return result;
-  }
-
-  @NotNull
-  public static List<Sdk> findBaseSdks() {
-    return findBaseSdks(Collections.emptyList());
-  }
-
   @Nullable
   public static VirtualFile suggestSdkDirectory() {
     if (SystemInfo.isWindows) {

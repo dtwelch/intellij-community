@@ -6,6 +6,9 @@ import com.intellij.codeInsight.intention.IntentionManager;
 import com.intellij.ide.AppLifecycleListener;
 import com.intellij.ide.GeneralSettings;
 import com.intellij.ide.ui.UISettings;
+import com.intellij.ide.ui.customization.ActionUrl;
+import com.intellij.ide.ui.customization.CustomActionsSchema;
+import com.intellij.ide.ui.customization.CustomizationUtil;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.EventLog;
 import com.intellij.openapi.application.ApplicationManager;
@@ -15,37 +18,32 @@ import com.intellij.openapi.editor.ex.EditorSettingsExternalizable;
 import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.ExtensionsArea;
-import com.intellij.openapi.fileChooser.impl.FileChooserUtil;
 import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.openapi.project.DumbAwareRunnable;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.project.ProjectManagerListener;
+import com.intellij.openapi.keymap.impl.ui.Group;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
-import com.intellij.openapi.startup.StartupManager;
-import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.Ref;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.*;
 import com.intellij.platform.DirectoryProjectConfigurator;
 import com.intellij.platform.PlatformProjectViewOpener;
-import com.intellij.profile.codeInspection.InspectionProjectProfileManager;
 import com.intellij.projectImport.ProjectAttachProcessor;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
+import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
+import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
+ *
  * @author dtwelch
  */
 @SuppressWarnings({"UtilityClassWithoutPrivateConstructor", "UtilityClassWithPublicConstructor"})
@@ -55,8 +53,6 @@ public class ResolveStudioInitialConfigurator {
   @NonNls private static final String CONFIGURED = "ResolveStudio.InitialConfiguration";
   @NonNls private static final String CONFIGURED_V1 = "ResolveStudio.InitialConfiguration.V1";
   @NonNls private static final String CONFIGURED_V2 = "ResolveStudio.InitialConfiguration.V2";
-  @NonNls private static final String CONFIGURED_V3 = "ResolveStudio.InitialConfiguration.V3";
-  @NonNls private static final String CONFIGURED_V4 = "ResolveStudio.InitialConfiguration.V4";
 
   private static final Set<String> HIDDEN_ACTIONS = ContainerUtil.newHashSet("CopyAsPlainText", "CopyAsRichText", "EditorPasteSimple",
                                                                              "Folding", "Generate", "CompareClipboardWithSelection",
@@ -73,6 +69,7 @@ public class ResolveStudioInitialConfigurator {
                                                                              "Mark Directory As", "CompareTwoFiles", "ShowFilePath",
                                                                              "ChangesView.ApplyPatch", "TemplateProjectProperties",
                                                                              "ExportToHTML", "SaveAll", "Export/Import Actions",
+                                                                             "Synchronize",
                                                                              "Line Separators", "ToggleReadOnlyAttribute",
                                                                              "Macros", "EditorToggleCase", "EditorJoinLines",
                                                                              "FillParagraph",
@@ -86,6 +83,12 @@ public class ResolveStudioInitialConfigurator {
                                                                              "Goto Error/Bookmark Actions", "GoToEditPointGroup",
                                                                              "Change Navigation Actions", "Method Navigation Actions",
                                                                              "EvaluateExpression", "Pause", "ViewBreakpoints", "SaveAs");
+
+  public static class First {
+    public First() {
+      patchRootAreaExtensions();
+    }
+  }
 
   /**
    * @noinspection UnusedParameters
@@ -124,15 +127,9 @@ public class ResolveStudioInitialConfigurator {
 
       EditorSettingsExternalizable.getInstance().setVirtualSpace(false);
       EditorSettingsExternalizable.getInstance().getOptions().ARE_LINE_NUMBERS_SHOWN = true;
-      final CodeStyleSettings settings = CodeStyleSettingsManager.getInstance().getCurrentSettings();
-      settings.getCommonSettings(PythonLanguage.getInstance()).ALIGN_MULTILINE_PARAMETERS_IN_CALLS = true;
+
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMemoryIndicator(false);
-      final String ignoredFilesList = fileTypeManager.getIgnoredFilesList();
-      ApplicationManager
-        .getApplication().invokeLater(() -> ApplicationManager.getApplication()
-        .runWriteAction(() -> FileTypeManager.getInstance().setIgnoredFilesList(ignoredFilesList + ";*$py.class")));
-      PyCodeInsightSettings.getInstance().SHOW_IMPORT_POPUP = false;
     }
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
     editorColorsScheme.setEditorFontSize(14);
@@ -145,22 +142,14 @@ public class ResolveStudioInitialConfigurator {
           ApplicationManager.getApplication().invokeLater(() -> {
             if (!propertiesComponent.isValueSet(DISPLAYED_PROPERTY)) {
               GeneralSettings.getInstance().setShowTipsOnStartup(false);
-              patchKeymap();
+              //patchKeymap();
               propertiesComponent.setValue(DISPLAYED_PROPERTY, "true");
             }
           });
         }
       }
-
-      //??
-      @Override
-      public void appFrameCreated(String[] commandLineArgs, @NotNull Ref<Boolean> willOpenProject) {
-        if (!propertiesComponent.isValueSet(CONFIGURED_V3)) {
-          propertiesComponent.setValue(CONFIGURED_V3, "true");
-        }
-      }
     });
-
+/*
     connection.subscribe(ProjectManager.TOPIC, new ProjectManagerListener() {
       @Override
       public void projectOpened(final Project project) {
@@ -210,7 +199,57 @@ public class ResolveStudioInitialConfigurator {
           }
         });
       }
-    });
+    });*/
+  }
+
+  private static void patchMainMenu() {
+    final CustomActionsSchema schema = new CustomActionsSchema();
+
+    final JTree actionsTree = new Tree();
+    Group rootGroup = new Group("root", null, null);
+    final DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup);
+    DefaultTreeModel model = new DefaultTreeModel(root);
+    actionsTree.setModel(model);
+
+    schema.fillActionGroups(root);
+    for (int i = 0; i < root.getChildCount(); i++) {
+      final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)root.getChildAt(i);
+      if ("Main menu".equals(getItemId(treeNode))) {
+        hideActionFromMainMenu(root, schema, treeNode);
+      }
+      hideActions(schema, root, treeNode, HIDDEN_ACTIONS);
+    }
+    CustomActionsSchema.getInstance().copyFrom(schema);
+  }
+
+  private static void hideActionFromMainMenu(@NotNull final DefaultMutableTreeNode root,
+                                             @NotNull final CustomActionsSchema schema, DefaultMutableTreeNode mainMenu){
+    final HashSet<String> menuItems = ContainerUtil.newHashSet("VCS", "Refactor", "Window", "Run");
+    hideActions(schema, root, mainMenu, menuItems);
+  }
+
+  private static void hideActions(@NotNull CustomActionsSchema schema, @NotNull DefaultMutableTreeNode root,
+                                  @NotNull final TreeNode actionGroup, Set<String> items) {
+    for(int i = 0; i < actionGroup.getChildCount(); i++){
+      final DefaultMutableTreeNode child = (DefaultMutableTreeNode)actionGroup.getChildAt(i);
+      final int childCount = child.getChildCount();
+      final String childId = getItemId(child);
+      if (childId != null && items.contains(childId)){
+        final TreePath treePath = TreeUtil.getPath(root, child);
+        final ActionUrl url = CustomizationUtil.getActionUrl(treePath, ActionUrl.DELETED);
+        schema.addAction(url);
+      }
+      else if (childCount > 0) {
+        hideActions(schema, child, child, items);
+      }
+    }
+  }
+
+  @Nullable
+  private static String getItemId(@NotNull final DefaultMutableTreeNode child) {
+    final Object userObject = child.getUserObject();
+    if (userObject instanceof String) return (String)userObject;
+    return userObject instanceof Group ? ((Group)userObject).getName() : null;
   }
 
   private static void patchRootAreaExtensions() {
