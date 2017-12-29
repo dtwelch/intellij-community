@@ -3,8 +3,6 @@ package com.jetbrains.resolve;
 import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.intention.IntentionActionBean;
 import com.intellij.codeInsight.intention.IntentionManager;
-import com.intellij.execution.Executor;
-import com.intellij.execution.ExecutorRegistryImpl;
 import com.intellij.ide.AppLifecycleListener;
 import com.intellij.ide.GeneralSettings;
 import com.intellij.ide.SelectInTarget;
@@ -26,14 +24,18 @@ import com.intellij.openapi.editor.ex.EditorSettingsExternalizable;
 import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.ExtensionsArea;
+import com.intellij.openapi.fileChooser.impl.FileChooserUtil;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
 import com.intellij.openapi.keymap.impl.KeymapImpl;
 import com.intellij.openapi.keymap.impl.ui.Group;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.wm.*;
 import com.intellij.platform.DirectoryProjectConfigurator;
 import com.intellij.platform.PlatformProjectViewOpener;
@@ -116,7 +118,6 @@ public class ResolveStudioInitialConfigurator {
     if (!propertiesComponent.getBoolean(CONFIGURED_V2)) {
       EditorSettingsExternalizable editorSettings = EditorSettingsExternalizable.getInstance();
       editorSettings.setEnsureNewLineAtEOF(true);
-      editorSettings.isDndEnabled()
       propertiesComponent.setValue(CONFIGURED_V2, true);
     }
     if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {
@@ -156,64 +157,20 @@ public class ResolveStudioInitialConfigurator {
           ApplicationManager.getApplication().invokeLater(() -> {
             if (!propertiesComponent.isValueSet(DISPLAYED_PROPERTY)) {
               GeneralSettings.getInstance().setShowTipsOnStartup(false);
-              //patchKeymap();
+              patchKeymap();
               propertiesComponent.setValue(DISPLAYED_PROPERTY, "true");
             }
           });
         }
       }
     });
-/*
+
     connection.subscribe(ProjectManager.TOPIC, new ProjectManagerListener() {
       @Override
       public void projectOpened(final Project project) {
-        if (FileChooserUtil.getLastOpenedFile(project) == null) {
-          FileChooserUtil.setLastOpenedFile(project, VfsUtil.getUserHomeDir());
-        }
-
         patchProjectAreaExtensions(project);
-
-        StartupManager.getInstance(project).runWhenProjectIsInitialized(new DumbAwareRunnable() {
-          @Override
-          public void run() {
-            if (project.isDisposed()) return;
-            updateInspectionsProfile();
-            openProjectStructure();
-          }
-
-          private void openProjectStructure() {
-            ToolWindowManager.getInstance(project).invokeLater(new Runnable() {
-              int count = 0;
-
-              @Override
-              public void run() {
-                if (project.isDisposed()) return;
-                if (count++ < 3) { // we need to call this after ToolWindowManagerImpl.registerToolWindowsFromBeans
-                  ToolWindowManager.getInstance(project).invokeLater(this);
-                  return;
-                }
-                ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project");
-                if (toolWindow != null && toolWindow.getType() != ToolWindowType.SLIDING) {
-                  toolWindow.activate(null);
-                }
-              }
-            });
-          }
-
-          private void updateInspectionsProfile() {
-            final String[] codes = new String[]{"W29", "E501"};
-            final VirtualFile baseDir = project.getBaseDir();
-            final PsiDirectory directory = PsiManager.getInstance(project).findDirectory(baseDir);
-            if (directory != null) {
-              InspectionProjectProfileManager.getInstance(project).getCurrentProfile().modifyToolSettings(
-                Key.<PyPep8Inspection>create(PyPep8Inspection.INSPECTION_SHORT_NAME), directory,
-                inspection -> Collections.addAll(inspection.ignoredErrors, codes)
-              );
-            }
-          }
-        });
       }
-    });*/
+    });
   }
 
   private static void patchMainMenu() {
@@ -342,7 +299,6 @@ public class ResolveStudioInitialConfigurator {
       // hidden
       "AddNewFavoritesList", "EditFavorites", "RenameFavoritesList", "RemoveFavoritesList");
     KeymapManagerEx keymapManager = KeymapManagerEx.getInstanceEx();
-
 
     for (Keymap keymap : keymapManager.getAllKeymaps()) {
       if (keymap.canModify()) continue;
