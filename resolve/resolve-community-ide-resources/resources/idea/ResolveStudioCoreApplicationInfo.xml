@@ -4,8 +4,8 @@
   <version major="1" minor="0" />
   <company name="Clemson University" url="https://www.cs.clemson.edu/resolve/"/>
   <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
-  <logo url="/pycharm_core_logo.png" textcolor="ffffff" progressColor="fffd9a" progressX="114" progressY="278" progressHeight="3"/>
-  <about url="/pycharm_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="cccccc"
+  <logo url="/resolvestudio_core_logo.png" textcolor="ffffff" progressColor="fffd9a" progressX="114" progressY="278" progressHeight="3"/>
+  <about url="/resolvestudio_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="cccccc"
          copyrightForeground="cccccc" linkColor="ffffff"/>
   <icon size32="/PyCharmCore32.png" size16="/PyCharmCore16.png" ico="PyCharmCore.ico"/>
   <package code="__PACKAGE_CODE__"/>
