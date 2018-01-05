@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
   name = ResolveConstants.RESOLVE_LIBRARIES_SERVICE_NAME,
   storages = {
     @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-    @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/" +
-                                ResolveConstants.RESOLVE_LIBRARIES_CONFIG_FILE,
+    @Storage(id = "dir",
+      file = StoragePathMacros.PROJECT_CONFIG_DIR + "/" + ResolveConstants.RESOLVE_LIBRARIES_CONFIG_FILE,
       scheme = StorageScheme.DIRECTORY_BASED)
   }
 )

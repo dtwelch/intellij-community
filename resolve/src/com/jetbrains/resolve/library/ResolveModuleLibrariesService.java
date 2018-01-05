@@ -12,13 +12,9 @@ import org.jetbrains.annotations.NotNull;
   name = ResolveConstants.RESOLVE_LIBRARIES_SERVICE_NAME,
   storages = @Storage(file = StoragePathMacros.MODULE_FILE)
 )
-public class ResolveModuleLibrariesService
-  extends
-  ResolveLibrariesService<ResolveLibrariesState> {
+public class ResolveModuleLibrariesService extends ResolveLibrariesService<ResolveLibrariesState> {
 
-  public static ResolveModuleLibrariesService getInstance(
-    @NotNull Module module) {
-    return ModuleServiceManager.getService(module,
-                                           ResolveModuleLibrariesService.class);
+  public static ResolveModuleLibrariesService getInstance(@NotNull Module module) {
+    return ModuleServiceManager.getService(module, ResolveModuleLibrariesService.class);
   }
 }

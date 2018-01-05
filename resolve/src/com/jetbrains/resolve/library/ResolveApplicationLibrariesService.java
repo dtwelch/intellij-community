@@ -11,9 +11,8 @@ import org.jetbrains.annotations.NotNull;
   storages = @Storage(file = StoragePathMacros.APP_CONFIG + "/" +
                              "resolveLibraries.xml")
 )
-public class ResolveApplicationLibrariesService extends
-                                                ResolveLibrariesService<ResolveApplicationLibrariesService
-                                                                                                  .RESOLVEApplicationLibrariesState> {
+public class ResolveApplicationLibrariesService
+  extends ResolveLibrariesService<ResolveApplicationLibrariesService.RESOLVEApplicationLibrariesState> {
 
   @NotNull
   @Override

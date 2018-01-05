@@ -99,8 +99,7 @@ public class ResolveLibrariesService<T extends ResolveLibrariesState>
   }
 
   @NotNull
-  private static Collection<? extends VirtualFile> resolveLangRootsFromUrls(
-    @NotNull Collection<String> urls) {
+  private static Collection<? extends VirtualFile> resolveLangRootsFromUrls(@NotNull Collection<String> urls) {
     return ContainerUtil.mapNotNull(urls, new Function<String, VirtualFile>() {
       @Override
       public VirtualFile fun(String url) {

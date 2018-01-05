@@ -216,11 +216,11 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
           //}
         }
       };
-      Notification notification = ResolveConstants.RESOLVE_NOTIFICATION_GROUP.createNotification("RESOLVEPATH was detected",
-                                                                                                 "We've detected some libraries from your RESOLVEPATH.\n" +
-                                                                                                 "You may want to add extra libraries in <a href='configure'>RESOLVE Libraries configuration</a>.",
-                                                                                                 NotificationType.INFORMATION,
-                                                                                                 notificationListener);
+      Notification notification = ResolveConstants.RESOLVE_NOTIFICATION_GROUP
+        .createNotification("RESOLVEPATH was detected", "We've detected some libraries from your RESOLVEPATH.\n" +
+                                                        "You may want to add extra libraries in <a href='configure'>RESOLVE Libraries configuration</a>.",
+                            NotificationType.INFORMATION,
+                            notificationListener);
       Notifications.Bus.notify(notification, project);
     }
   }
@@ -238,7 +238,6 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
 
   @Override
   public void projectOpened() {
-
   }
 
   @Override
@@ -259,15 +258,11 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
       synchronized (myLastHandledRESOLVEPathSourcesRoots) {
         final Collection<VirtualFile> goPathSourcesRoots = ResolveSdkUtil.getRESOLVEPathSourcesRoot(project, myModule);
         //ResolveSdkUtil.getRESOLVEPathSources(project, myModule);
-        final Set<VirtualFile> excludeRoots =
-          ContainerUtil.newHashSet(ProjectRootManager
-                                     .getInstance(project).getContentRoots());
+        final Set<VirtualFile> excludeRoots = ContainerUtil.newHashSet(ProjectRootManager.getInstance(project).getContentRoots());
         ProgressIndicatorProvider.checkCanceled();
-        if (!myLastHandledRESOLVEPathSourcesRoots
-          .equals(goPathSourcesRoots) ||
+        if (!myLastHandledRESOLVEPathSourcesRoots.equals(goPathSourcesRoots) ||
             !myLastHandledExclusions.equals(excludeRoots)) {
-          final Collection<VirtualFile> includeRoots =
-            gatherIncludeRoots(goPathSourcesRoots, excludeRoots);
+          final Collection<VirtualFile> includeRoots = gatherIncludeRoots(goPathSourcesRoots, excludeRoots);
           ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -283,11 +278,9 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
           myLastHandledExclusions.clear();
           myLastHandledExclusions.addAll(excludeRoots);
 
-          List<String> paths =
-            ContainerUtil.map(goPathSourcesRoots, VirtualFile::getPath);
+          List<String> paths = ContainerUtil.map(goPathSourcesRoots, VirtualFile::getPath);
           myWatchedRequests.clear();
-          myWatchedRequests.addAll(LocalFileSystem
-                                     .getInstance().addRootsToWatch(paths, true));
+          myWatchedRequests.addAll(LocalFileSystem.getInstance().addRootsToWatch(paths, true));
         }
       }
     }

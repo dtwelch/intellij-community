@@ -193,9 +193,7 @@ public class ResolveSdkUtil {
   @Nullable
   private static VirtualFile getSdkSrcDir(@NotNull String sdkPath) {
     String srcPath = "src";
-    VirtualFile file = VirtualFileManager.getInstance()
-      .findFileByUrl(VfsUtilCore.pathToUrl(
-        FileUtil.join(sdkPath, srcPath)));
+    VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(VfsUtilCore.pathToUrl(FileUtil.join(sdkPath, srcPath)));
     return file != null && file.isDirectory() ? file : null;
   }
 

@@ -64,8 +64,7 @@ public class ResolveEnvironmentPathModificationTracker {
   private void recalculateFiles() {
     Collection<VirtualFile> result = ContainerUtil.newLinkedHashSet();
     for (String path : pathsToTrack) {
-      ContainerUtil.addIfNotNull(result, LocalFileSystem.getInstance()
-        .findFileByPath(path));
+      ContainerUtil.addIfNotNull(result, LocalFileSystem.getInstance().findFileByPath(path));
     }
     updateResolvePathRoots(result);
   }
@@ -80,7 +79,6 @@ public class ResolveEnvironmentPathModificationTracker {
   }
 
   public static Collection<VirtualFile> getResolveEnvironmentPathRoots() {
-    return ServiceManager.getService(ResolveEnvironmentPathModificationTracker.class)
-      .getResolvePathRoots();
+    return ServiceManager.getService(ResolveEnvironmentPathModificationTracker.class).getResolvePathRoots();
   }
 }
