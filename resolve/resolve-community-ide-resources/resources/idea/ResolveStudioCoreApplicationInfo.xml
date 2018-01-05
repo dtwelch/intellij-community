@@ -12,7 +12,7 @@
   <names product="RESOLVE" fullname="RESOLVE Studio" script="rstudio"/>
 
   <welcome-screen logo-url="/ResolveStudioCoreWelcomeScreen.png"/>
-  <customize-ide-wizard provider="com.jetbrains.resolve.ResolveStudioCustomizeIDEWizardStepsProvider"/>
+  <!--<customize-ide-wizard provider="com.jetbrains.resolve.ResolveStudioCustomizeIDEWizardStepsProvider"/>-->
 
   <documentation url="https://www.jetbrains.com/pycharm/documentation"/>
   <support url="https://intellij-support.jetbrains.com/hc/en-us#"/>

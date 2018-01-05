@@ -139,7 +139,6 @@ public class ResolveStudioInitialConfigurator {
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
-
       EditorSettingsExternalizable.getInstance().setVirtualSpace(false);
       EditorSettingsExternalizable.getInstance().getOptions().ARE_LINE_NUMBERS_SHOWN = true;
 

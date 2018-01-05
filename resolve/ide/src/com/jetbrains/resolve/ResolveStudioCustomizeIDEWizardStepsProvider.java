@@ -16,13 +16,11 @@ public class ResolveStudioCustomizeIDEWizardStepsProvider implements CustomizeID
         addMarkdownPlugin(featuredPlugins);
       }
     };
-
+    /*
     steps.add(new CustomizeUIThemeStepPanel());
-
     if (CustomizeLauncherScriptStep.isAvailable()) {
       steps.add(new CustomizeLauncherScriptStep());
     }
-
-    steps.add(new CustomizeFeaturedPluginsStepPanel(groups));
+    steps.add(new CustomizeFeaturedPluginsStepPanel(groups));*/
   }
 }
