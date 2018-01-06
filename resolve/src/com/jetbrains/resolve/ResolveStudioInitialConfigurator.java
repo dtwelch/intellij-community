@@ -150,18 +150,12 @@ public class ResolveStudioInitialConfigurator {
 
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMemoryIndicator(false);
-    }
-    final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
-    editorColorsScheme.setEditorFontSize(14);
 
-   // AppEditorFontOptions.getInstance().
-    //check out: AppEditorFontOptions#getInstance()
-      //         AppEditorFontOptionsPanel
-      //          AppEditorFontConfigurable
-    FontPreferencesImpl prefs = new FontPreferencesImpl();
-    prefs.setLineSpacing(3);
-    editorColorsScheme.setFontPreferences(prefs);
-   // editorColorsScheme.setFontPreferences(new ResolveFontPreferences());
+      final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
+      editorColorsScheme.setEditorFontSize(16);
+      //editorColorsScheme.setEditorFontName();
+      EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
+    }
 
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {

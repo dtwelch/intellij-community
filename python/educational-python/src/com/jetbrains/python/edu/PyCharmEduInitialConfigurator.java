@@ -16,6 +16,7 @@
 package com.jetbrains.python.edu;
 
 import com.google.common.collect.Sets;
+import com.intellij.application.options.EditorFontsConstants;
 import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.intention.IntentionActionBean;
 import com.intellij.codeInsight.intention.IntentionManager;
@@ -38,8 +39,12 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.EditorSettingsExternalizable;
 import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.Extensions;
@@ -173,8 +178,12 @@ public class PyCharmEduInitialConfigurator {
       uiSettings.setHideToolStripes(false);
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
-      uiSettings.setShowMainToolbar(false);
+      uiSettings.setShowMainToolbar(true);
 
+      ////OK This messes with the literal IDE's UI (menus and stuff) See Prefs > Appearance and Behavior > Appearance
+      // you have to select "override default" however in order for it to take effect...
+      //uiSettings.setFontSize(17);
+      
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
@@ -188,9 +197,12 @@ public class PyCharmEduInitialConfigurator {
       final String ignoredFilesList = fileTypeManager.getIgnoredFilesList();
       ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> FileTypeManager.getInstance().setIgnoredFilesList(ignoredFilesList + ";*$py.class")));
       PyCodeInsightSettings.getInstance().SHOW_IMPORT_POPUP = false;
+
+      final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
+      editorColorsScheme.setEditorFontSize(16);
+      //editorColorsScheme.setEditorFontName();
+      EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
     }
-    final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
-    editorColorsScheme.setEditorFontSize(16);
 
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {
