@@ -57,14 +57,12 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
                                               @NotNull final ProjectGeneratorPeer projectGeneratorPeer, @Nullable Sdk sdk) {
     Object projectSettings = null;
     if (generator instanceof ResolveProjectGenerator) {
-      final ResolveProjectGenerator<?> projectGenerator = (ResolveProjectGenerator<?>)generator;
+      final ResolveProjectGenerator projectGenerator = (ResolveProjectGenerator)generator;
       projectSettings = projectGenerator.getProjectSettings();
     }
     if (projectSettings instanceof ResolveNewProjectSettings) {
       final ResolveNewProjectSettings newProjectSettings = (ResolveNewProjectSettings)projectSettings;
       newProjectSettings.setSdk(sdk);
-      //newProjectSettings.setInstallFramework(settingsStep.installFramework());
-      //newProjectSettings.setRemotePath(settingsStep.getRemotePath());
     }
     return projectSettings;
   }

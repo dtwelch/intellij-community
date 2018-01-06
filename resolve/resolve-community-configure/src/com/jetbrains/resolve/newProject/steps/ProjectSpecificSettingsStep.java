@@ -11,7 +11,6 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
-import com.jetbrains.resolve.newProject.ResolveNewProjectSettings;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +36,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected JPanel createAndFillContentPanel() {
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
       // Allow generator to display custom error
-      ((ResolveProjectGenerator<?>)myProjectGenerator).setErrorCallback(this::setErrorText);
+      ((ResolveProjectGenerator)myProjectGenerator).setErrorCallback(this::setErrorText);
     }
     return createContentPanelWithAdvancedSettingsPanel();
   }
@@ -55,7 +54,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected void initGeneratorListeners() {
     super.initGeneratorListeners();
     if (myProjectGenerator instanceof ResolveProjectGenerator) {
-      ((ResolveProjectGenerator<ResolveNewProjectSettings>)myProjectGenerator).addSettingsStateListener(this::checkValid);
+      ((ResolveProjectGenerator)myProjectGenerator).addSettingsStateListener(this::checkValid);
     }
   }
 
