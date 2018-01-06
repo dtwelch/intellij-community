@@ -65,7 +65,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
  * @author dtwelch
  */
 @SuppressWarnings({"UtilityClassWithoutPrivateConstructor", "UtilityClassWithPublicConstructor"})
@@ -153,7 +152,7 @@ public class ResolveStudioInitialConfigurator {
 
       final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
       editorColorsScheme.setEditorFontSize(16);
-      //editorColorsScheme.setEditorFontName();
+      editorColorsScheme.setEditorFontName("IsabelleText");
       EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
     }
 
@@ -202,18 +201,18 @@ public class ResolveStudioInitialConfigurator {
   }
 
   private static void hideActionFromMainMenu(@NotNull final DefaultMutableTreeNode root,
-                                             @NotNull final CustomActionsSchema schema, DefaultMutableTreeNode mainMenu){
+                                             @NotNull final CustomActionsSchema schema, DefaultMutableTreeNode mainMenu) {
     final HashSet<String> menuItems = ContainerUtil.newHashSet("VCS", "Refactor", "Window", "Run");
     hideActions(schema, root, mainMenu, menuItems);
   }
 
   private static void hideActions(@NotNull CustomActionsSchema schema, @NotNull DefaultMutableTreeNode root,
                                   @NotNull final TreeNode actionGroup, Set<String> items) {
-    for(int i = 0; i < actionGroup.getChildCount(); i++){
+    for (int i = 0; i < actionGroup.getChildCount(); i++) {
       final DefaultMutableTreeNode child = (DefaultMutableTreeNode)actionGroup.getChildAt(i);
       final int childCount = child.getChildCount();
       final String childId = getItemId(child);
-      if (childId != null && items.contains(childId)){
+      if (childId != null && items.contains(childId)) {
         final TreePath treePath = TreeUtil.getPath(root, child);
         final ActionUrl url = CustomizationUtil.getActionUrl(treePath, ActionUrl.DELETED);
         schema.addAction(url);
@@ -274,7 +273,8 @@ public class ResolveStudioInitialConfigurator {
     ExtensionsArea projectArea = Extensions.getArea(project);
 
     for (SelectInTarget target : Extensions.getExtensions(SelectInTarget.EP_NAME, project)) {
-      if (ToolWindowId.FAVORITES_VIEW.equals(target.getToolWindowId()) /*|| ToolWindowId.STRUCTURE_VIEW.equals(target.getToolWindowId())*/) {
+      if (ToolWindowId.FAVORITES_VIEW
+        .equals(target.getToolWindowId()) /*|| ToolWindowId.STRUCTURE_VIEW.equals(target.getToolWindowId())*/) {
         projectArea.getExtensionPoint(SelectInTarget.EP_NAME).unregisterExtension(target);
       }
     }
