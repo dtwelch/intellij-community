@@ -28,21 +28,8 @@ public class ResolveProjectGenerator extends DirectoryProjectGeneratorBase<Resol
   private final List<SettingsListener> myListeners = ContainerUtil.newArrayList();
   protected Consumer<String> myErrorCallback;
 
-  protected ResolveProjectGenerator() {
-  }
-
   public final void setErrorCallback(@NotNull final Consumer<String> errorCallback) {
     myErrorCallback = errorCallback;
-  }
-
-  @Nullable
-  public JComponent getSettingsPanel(File baseDir) throws ProcessCanceledException {
-    return null;
-  }
-
-  @Nullable
-  public JPanel extendBasePanel() throws ProcessCanceledException {
-    return null;
   }
 
   @Override

@@ -25,7 +25,7 @@ public class ResolveStudioNewProjectStep extends AbstractNewProjectStep {
     @NotNull
     @Override
     protected DirectoryProjectGenerator createEmptyProjectGenerator() {
-      return new ResolveBaseProjectGenerator();
+      return new ResolveProjectGenerator();
     }
 
     @NotNull
