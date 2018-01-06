@@ -20,8 +20,7 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class ResolveProjectGenerator<T extends ResolveNewProjectSettings>
-    extends DirectoryProjectGeneratorBase<T> {
+public abstract class ResolveProjectGenerator<T extends ResolveNewProjectSettings> extends DirectoryProjectGeneratorBase<T> {
   private static final Logger LOGGER = Logger.getInstance(ResolveProjectGenerator.class);
 
   private final List<SettingsListener> myListeners = ContainerUtil.newArrayList();
