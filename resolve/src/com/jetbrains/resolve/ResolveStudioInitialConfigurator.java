@@ -153,7 +153,11 @@ public class ResolveStudioInitialConfigurator {
       final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
       editorColorsScheme.setEditorFontSize(16);
       editorColorsScheme.setEditorFontName("IsabelleText");
+      editorColorsScheme.setLineSpacing(.9f);
+
       EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
+      EditorColorsManager.getInstance().getGlobalScheme().setEditorFontName("IsabelleText");
+      EditorColorsManager.getInstance().getGlobalScheme().setLineSpacing(.9f);
     }
 
     MessageBusConnection connection = bus.connect();
@@ -266,10 +270,6 @@ public class ResolveStudioInitialConfigurator {
   }
 
   private static void patchProjectAreaExtensions(@NotNull final Project project) {
-    //Executor debugExecutor = DefaultDebugExecutor.getDebugExecutorInstance();
-    //unregisterAction(debugExecutor.getId(), ExecutorRegistryImpl.RUNNERS_GROUP);
-    //unregisterAction(debugExecutor.getContextActionId(), ExecutorRegistryImpl.RUN_CONTEXT_GROUP);
-
     ExtensionsArea projectArea = Extensions.getArea(project);
 
     for (SelectInTarget target : Extensions.getExtensions(SelectInTarget.EP_NAME, project)) {
@@ -283,18 +283,6 @@ public class ResolveStudioInitialConfigurator {
       if (pane.getId().equals(ScopeViewPane.ID)) {
         Disposer.dispose(pane);
         projectArea.getExtensionPoint(AbstractProjectViewPane.EP_NAME).unregisterExtension(pane);
-      }
-    }
-  }
-
-  private static void unregisterAction(String actionId, String groupId) {
-    ActionManager actionManager = ActionManager.getInstance();
-    AnAction action = actionManager.getAction(actionId);
-    if (action != null) {
-      AnAction actionGroup = actionManager.getAction(groupId);
-      if (actionGroup != null && actionGroup instanceof DefaultActionGroup) {
-        ((DefaultActionGroup)actionGroup).remove(action);
-        actionManager.unregisterAction(actionId);
       }
     }
   }
