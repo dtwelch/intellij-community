@@ -190,7 +190,7 @@ public class PyCharmEduInitialConfigurator {
       PyCodeInsightSettings.getInstance().SHOW_IMPORT_POPUP = false;
     }
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
-    editorColorsScheme.setEditorFontSize(14);
+    editorColorsScheme.setEditorFontSize(16);
 
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {

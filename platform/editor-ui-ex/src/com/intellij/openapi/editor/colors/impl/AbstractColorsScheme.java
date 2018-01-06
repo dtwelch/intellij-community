@@ -213,6 +213,7 @@ public abstract class AbstractColorsScheme extends EditorFontCacheImpl implement
     fontSize = EditorFontsConstants.checkAndFixEditorFontSize(fontSize);
     ensureEditableFontPreferences().register(myFontPreferences.getFontFamily(), fontSize);
     initFonts();
+
   }
 
   @Override

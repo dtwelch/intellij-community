@@ -1,5 +1,6 @@
 package com.jetbrains.resolve;
 
+import com.intellij.application.options.editor.fonts.AppEditorFontConfigurable;
 import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.intention.IntentionActionBean;
 import com.intellij.codeInsight.intention.IntentionManager;
@@ -18,8 +19,13 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.colors.FontPreferences;
+import com.intellij.openapi.editor.colors.ModifiableFontPreferences;
+import com.intellij.openapi.editor.colors.impl.AppEditorFontOptions;
+import com.intellij.openapi.editor.colors.impl.FontPreferencesImpl;
 import com.intellij.openapi.editor.ex.EditorSettingsExternalizable;
 import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.Extensions;
@@ -45,6 +51,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.jetbrains.resolve.editor.ResolveFontPreferences;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -135,7 +142,6 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMainToolbar(false);
-
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
@@ -147,6 +153,15 @@ public class ResolveStudioInitialConfigurator {
     }
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
     editorColorsScheme.setEditorFontSize(14);
+
+   // AppEditorFontOptions.getInstance().
+    //check out: AppEditorFontOptions#getInstance()
+      //         AppEditorFontOptionsPanel
+      //          AppEditorFontConfigurable
+    FontPreferencesImpl prefs = new FontPreferencesImpl();
+    prefs.setLineSpacing(3);
+    editorColorsScheme.setFontPreferences(prefs);
+   // editorColorsScheme.setFontPreferences(new ResolveFontPreferences());
 
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {
