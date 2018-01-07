@@ -52,6 +52,11 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
           public void consume(List<VirtualFile> files) {
             if (files.size() != 1) return;
             String homeDir = files.get(0).getPath();
+
+            //Idea: do this in two steps. First call setupSdk (or createSdk), then using "equals", check if it already appears in the
+            //combo list
+            //I'm not actually sure if I want to "add" the SDK here... think about the options panel... I want to
+            //add it to the table as part of this step.
             Sdk c = SdkConfigurationUtil.createAndAddSDK(homeDir, ResolveSdkType.getInstance());
             if (c != null) {
               getChildComponent().addItem(c);

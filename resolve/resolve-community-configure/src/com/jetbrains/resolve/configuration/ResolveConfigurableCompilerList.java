@@ -49,8 +49,9 @@ public class ResolveConfigurableCompilerList {
   public List<Sdk> getAllResolveSdks(@Nullable final Project project) {
     List<Sdk> result = new ArrayList<>();
     Sdk[] sdks = getModel().getSdks();
-    for (Sdk sdk : getModel().getSdks()) {
+    for (Sdk sdk : sdks) {
       if (sdk.getSdkType() instanceof ResolveSdkType) {
+        String x = sdk.getName();
         result.add(sdk);
       }
     }

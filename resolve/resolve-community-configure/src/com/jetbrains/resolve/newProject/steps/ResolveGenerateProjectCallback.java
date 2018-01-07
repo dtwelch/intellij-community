@@ -27,6 +27,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
     final DirectoryProjectGenerator generator = settingsStep.getProjectGenerator();
     Sdk sdk = settingsStep.getSdk();
 
+
     final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer, sdk);
     final Project newProject = generateProject(settingsStep, settings);
 

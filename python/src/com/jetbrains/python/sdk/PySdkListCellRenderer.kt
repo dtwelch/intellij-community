@@ -19,6 +19,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.SdkModificator
 import com.intellij.openapi.projectRoots.SdkType
+import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.ColoredListCellRenderer
@@ -53,6 +54,7 @@ open class PySdkListCellRenderer(private val sdkModifiers: Map<Sdk, SdkModificat
       is String -> append(value)
       null -> append("<No interpreter>")
     }
+
   }
 
   private fun appendName(sdk: Sdk) {

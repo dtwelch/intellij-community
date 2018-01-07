@@ -46,6 +46,27 @@ public class ResolveSdkUtil {
            + File.separator + "resolvework" + File.separator + "src";
   }
 
+
+  /*fun findBaseSdks(existingSdks: List<Sdk>): List<Sdk> {
+    val existing = existingSdks.filter { it.isSystemWide }
+    val detected = detectSystemWideSdks(existingSdks)
+    return existing + detected
+  }
+
+  fun detectSystemWideSdks(existingSdks: List<Sdk>): List<PyDetectedSdk> {
+    val existingPaths = existingSdks.map { it.homePath }.toSet()
+    val flavs = PythonSdkFlavor.getApplicableFlavors(false)
+    val suggestedhompaths = flavs.flatMap { it.suggestHomePaths() }
+    return PythonSdkFlavor.getApplicableFlavors(false)
+      .asSequence()
+      .flatMap { it.suggestHomePaths().asSequence() }
+    .filter { it !in existingPaths }
+    .map { PyDetectedSdk(it) }
+    .sortedWith(compareBy<PyDetectedSdk>({ it.guessedLanguageLevel },
+                { it.homePath }).reversed())
+    .toList()
+  }*/
+
   /**
    * Retrieves root directories from RESOLVEPATH env-variable. This method doesn't consider user defined libraries,
    * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}

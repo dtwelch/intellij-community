@@ -50,10 +50,13 @@ public class ResolveStudioNewProjectStep extends AbstractNewProjectStep {
 
     @NotNull
     @Override
+    @SuppressWarnings("unchecked")
     public AnAction[] getActions(@NotNull DirectoryProjectGenerator generator, @NotNull AbstractCallback callback) {
       if (generator instanceof ResolveProjectGenerator) {
         ProjectSpecificAction group =
-          new ProjectSpecificAction(generator, new ProjectSpecificSettingsStep<>(generator, new ResolveGenerateProjectCallback()));
+          new ProjectSpecificAction(generator,
+                                    new ProjectSpecificSettingsStep<ResolveStudioNewProjectStep>(generator,
+                                                                                                 new ResolveGenerateProjectCallback()));
         return group.getChildren(null);
       }
       else {

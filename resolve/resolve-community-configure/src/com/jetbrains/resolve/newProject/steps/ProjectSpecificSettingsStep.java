@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.platform.DirectoryProjectGenerator;
+import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.newProject.ResolveProjectGenerator;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
@@ -139,7 +140,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
 
   @NotNull
   private ResolveSdkChooserComboBox createSdkComboComponentNoLabel() {
-    List<Sdk> baseSdks = new ArrayList<>(); //ResolveSdkUtil.findBaseSdks();
+    List<Sdk> baseSdks = ResolveConfigurableCompilerList.getInstance(null).getAllResolveSdks();
     ResolveSdkChooserComboBox combo = new ResolveSdkChooserComboBox(baseSdks);
     combo.addChangedListener(new ActionListener() {
       @Override
