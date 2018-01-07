@@ -19,27 +19,26 @@ import org.jetbrains.annotations.Nullable;
 
 public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.AbstractCallback<T> {
 
+  /**
+   * This gets called when a user, on the SDK and project location selection screen, clicks create. So we can add each
+   * sdk in the combo box chooser to the projectSdkModel and whichever one is selected is the one for which we finally call
+   *  {@code SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk).  I think...
+   * @param step
+   * @param projectGeneratorPeer
+   */
   @Override
   public void consume(@Nullable ProjectSettingsStepBase<T> step, @NotNull ProjectGeneratorPeer<T> projectGeneratorPeer) {
     if (!(step instanceof ProjectSpecificSettingsStep)) return;
 
     final ProjectSpecificSettingsStep settingsStep = (ProjectSpecificSettingsStep)step;
     final DirectoryProjectGenerator generator = settingsStep.getProjectGenerator();
-    Sdk sdk = settingsStep.getSdk();
+    Sdk sdk = settingsStep.getSdk();  //this will setup the sdk and give it to us.. then here we'll add it...
 
-
+    //
     final Object settings = computeProjectSettings(generator, settingsStep, projectGeneratorPeer, sdk);
     final Project newProject = generateProject(settingsStep, settings);
 
     if (newProject != null && generator instanceof ResolveProjectGenerator) {
-      ModuleManager x =  ModuleManager.getInstance(newProject);
-      Module[] vb =  x.getModules();
-
-      final ModifiableModelsProvider modelsProvider = ModifiableModelsProvider.SERVICE.getInstance();
-      final ModifiableRootModel model = modelsProvider.getModuleModifiableModel(vb[0]);
-      String N = model.getSdkName();
-      Sdk m = model.getSdk();
-
       SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk);
     }
   }
