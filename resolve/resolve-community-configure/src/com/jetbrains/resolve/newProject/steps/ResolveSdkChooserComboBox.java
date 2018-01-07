@@ -58,17 +58,20 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
             //I'm not actually sure if I want to "add" the SDK here... think about the options panel... I want to
             //add it to the table as part of this step.
             // SEE:
-            //  ProjectJdkConfigurable.java
             //  PythonSdkChooserCombo.java
             //  PythonSdkPathChoosingComboBox.kt
             //  PyConfigurableInterpreterList.java  (contains the sdk tracking model which allows syncig between menus, etc)
 
+            /*
+             * When user clicks "create" on Sdk selection screen, {@code ResolveGenerateProjectCallback#consume} takes it from there.
+             */
             Sdk sdk = SdkConfigurationUtil.setupSdk(existingSdks.toArray(new Sdk[existingSdks.size()]),
                                                     homeDir,
                                                     ResolveSdkType.getInstance(),
                                                     true,
                                                     null,
                                                     null);
+            //do this + the Project Model stuff here as well (see python srcs).
             if (sdk != null) {
               getChildComponent().addItem(sdk);
               setSelectedSdk(sdk);
