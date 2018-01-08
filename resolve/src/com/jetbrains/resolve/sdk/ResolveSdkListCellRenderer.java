@@ -28,15 +28,13 @@ public class ResolveSdkListCellRenderer extends ColoredListCellRenderer<Object> 
   }
 
   private void appendName(@NotNull Sdk sdk) {
-    ResolveSdkType t = ResolveSdkType.getInstance();
+    SdkTypeId t = sdk.getSdkType();
+    if (t instanceof ResolveSdkType) {
+      String x = t.getName();
+    }
+    String m = sdk.getName();
+    append(m);
     String homePath = sdk.getHomePath();
-    if (homePath != null) {
-      String name = t.suggestSdkName(null, homePath);
-      append(name);
-    }
-    else {
-      append(sdk.getName());
-    }
     String relHomePath = homePath != null ? FileUtil.getLocationRelativeToUserHome(homePath) : null;
     if (relHomePath != null) {
       append(" (" + relHomePath + ")", SimpleTextAttributes.GRAYED_ATTRIBUTES);

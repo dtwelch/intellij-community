@@ -1,15 +1,19 @@
 package com.jetbrains.resolve.newProject.steps;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.resolve.configuration.ResolveConfigurableCompilerList;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
@@ -22,17 +26,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-//TOdO:
-//SdkListCellRenderer  (take a look at this for rendering the comboboxwith browse buttons with icons a la goland...
-//PyAddSystemWideInterpreterPanel (Interpreter: |__________________| |...|)
-
-//This class is obviously modeled after "PySdkPathChoosingComboBox.kt" in the pycharm sources
-//The "<No Interpreter>" default (i.e. <No SDK>) is handled by the SdkCellListRenderer (I Think)...
-
-//When I select an invalid home directory for SDK a box should come up saying this isn't a valid sdk dir (like in
-//goland).. a similar thing is done in the file directory browser for pycharm. Check how they do it. Likely a listener
-//that calls an SDK isValid..(..) method when ok is pressed...
 public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
+  private static final Logger LOG = Logger.getInstance(ResolveSdkChooserComboBox.class);
+
   private final List<ActionListener> myChangedListeners = ContainerUtil.createLockFreeCopyOnWriteList();
 
   public ResolveSdkChooserComboBox(List<Sdk> existingSdks) {
@@ -62,18 +58,23 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
             //  PythonSdkPathChoosingComboBox.kt
             //  PyConfigurableInterpreterList.java  (contains the sdk tracking model which allows syncig between menus, etc)
 
-            /*
-             * When user clicks "create" on Sdk selection screen, {@code ResolveGenerateProjectCallback#consume} takes it from there.
-             */
-            Sdk sdk = SdkConfigurationUtil.setupSdk(existingSdks.toArray(new Sdk[existingSdks.size()]),
-                                                    homeDir,
-                                                    ResolveSdkType.getInstance(),
-                                                    true,
-                                                    null,
-                                                    null);
+            final ResolveConfigurableCompilerList interpreterList = ResolveConfigurableCompilerList.getInstance(null);
+            final Sdk[] sdks = interpreterList.getModel().getSdks();
+
+            Sdk sdk = SdkConfigurationUtil.setupSdk(sdks, homeDir, ResolveSdkType.getInstance(), true, null, null);
             //do this + the Project Model stuff here as well (see python srcs).
             if (sdk != null) {
-              getChildComponent().addItem(sdk);
+              final ProjectSdksModel projectSdksModel = interpreterList.getModel();
+              if (projectSdksModel.findSdk(sdk) == null) {
+                projectSdksModel.addSdk(sdk);
+                try {
+                  projectSdksModel.apply();
+                }
+                catch (ConfigurationException e) {
+                  LOG.error("Error adding new resolve compiler " + e.getMessage());
+                }
+                getChildComponent().addItem(sdk);
+              }
               setSelectedSdk(sdk);
             }
             ResolveSdkChooserComboBox.this.notifyChanged(null);
