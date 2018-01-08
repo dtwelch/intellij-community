@@ -48,16 +48,6 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
           public void consume(List<VirtualFile> files) {
             if (files.size() != 1) return;
             VirtualFile homeDir = files.get(0);
-
-            //Idea: do this in two steps. First call setupSdk (or createSdk), then using "equals", check if it already appears in the
-            //combo list
-            //I'm not actually sure if I want to "add" the SDK here... think about the options panel... I want to
-            //add it to the table as part of this step.
-            // SEE:
-            //  PythonSdkChooserCombo.java
-            //  PythonSdkPathChoosingComboBox.kt
-            //  PyConfigurableInterpreterList.java  (contains the sdk tracking model which allows syncig between menus, etc)
-
             final ResolveConfigurableCompilerList interpreterList = ResolveConfigurableCompilerList.getInstance(null);
             final Sdk[] sdks = interpreterList.getModel().getSdks();
 
@@ -106,16 +96,6 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
 
   public void addChangedListener(ActionListener listener) {
     myChangedListeners.add(listener);
-  }
-
-  @NotNull
-  public List<Sdk> getItems() {
-    List<Sdk> result = new ArrayList<>();
-    JComboBox<Sdk> child = getChildComponent();
-    for (int i = 0; i < child.getItemCount(); i++) {
-      result.add(child.getItemAt(i));
-    }
-    return result;
   }
 
   @NotNull
