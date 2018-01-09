@@ -76,7 +76,6 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
 
   @Override
   public void apply() throws ConfigurationException {
-
   }
 
   private class MySdkModelListener implements SdkModel.Listener {
@@ -86,17 +85,17 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
 
     @Override
     public void sdkAdded(Sdk sdk) {
-      updateSdkList(true);
+      //updateSdkList(true);
     }
 
     @Override
     public void beforeSdkRemove(Sdk sdk) {
-      updateSdkList(true);
+      //updateSdkList(true);
     }
 
     @Override
     public void sdkChanged(Sdk sdk, String previousName) {
-      updateSdkList(true);
+      //updateSdkList(true);
     }
 
     @Override
@@ -109,11 +108,11 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
     public void consume(Sdk sdk) {
       if (sdk == null) return;
 
-      if (myProjectSdksModel.findSdk(sdk.getName()) == null) {
-        myProjectSdksModel.addSdk(sdk);
+      if (projectSdksModel.findSdk(sdk.getName()) == null) {
+        projectSdksModel.addSdk(sdk);
       }
-      updateSdkList(false);
-      setSelectedSdk(sdk);
+      //updateSdkList(false);
+      //setSelectedSdk(sdk);
     }
   }
 }
