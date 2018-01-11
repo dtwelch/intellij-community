@@ -4,15 +4,15 @@
 
   <xi:include href="/META-INF/python-community-configure-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <extensions defaultExtensionNs="com.intellij">
-    <projectConfigurable groupId="project"
-                         id="com.jetbrains.python.configuration.PythonContentEntriesConfigurable"
-                         displayName="Project Structure"
-                         provider="com.jetbrains.python.configuration.PythonContentEntriesConfigurableProvider"/>
-    <projectConfigurable groupId="project"
+    <projectConfigurable groupId="voo"
+                         displayName="Resolve"
+                         groupWeight="177"/>
+
+    <projectConfigurable groupId="voo"
                          id="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
-                         displayName="Project Interpreter"
+                         displayName="RESOLVEPATH"
                          instance="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"/>
-    <projectConfigurable groupId="project"
+    <projectConfigurable groupId="voo"
                          id="com.jetbrains.python.configuration.PyDependenciesConfigurable"
                          displayName="Project Dependencies"
                          provider="com.jetbrains.python.configuration.PyDependenciesConfigurableProvider"/>

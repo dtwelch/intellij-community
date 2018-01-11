@@ -21,12 +21,11 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> implements DumbAware {
 
-  @Nullable private ResolveSdkChooserComboBox mySdkAddChooserComboBox;
+  @Nullable private ResolveSdkChooserCombo mySdkAddChooserComboBox;
 
   public ProjectSpecificSettingsStep(@NotNull final DirectoryProjectGenerator<T> projectGenerator,
                                      @NotNull final AbstractNewProjectStep.AbstractCallback callback) {
@@ -139,9 +138,9 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   }
 
   @NotNull
-  private ResolveSdkChooserComboBox createSdkComboComponentNoLabel() {
+  private ResolveSdkChooserCombo createSdkComboComponentNoLabel() {
     List<Sdk> baseSdks = ResolveConfigurableCompilerList.getInstance(null).getAllResolveSdks();
-    ResolveSdkChooserComboBox combo = new ResolveSdkChooserComboBox(baseSdks);
+    ResolveSdkChooserCombo combo = new ResolveSdkChooserCombo(baseSdks);
     combo.addChangedListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {

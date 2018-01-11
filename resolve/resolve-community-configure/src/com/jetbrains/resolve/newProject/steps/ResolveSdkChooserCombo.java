@@ -26,12 +26,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboBox<Sdk>> {
-  private static final Logger LOG = Logger.getInstance(ResolveSdkChooserComboBox.class);
+public class ResolveSdkChooserCombo extends ComponentWithBrowseButton<JComboBox<Sdk>> {
+  private static final Logger LOG = Logger.getInstance(ResolveSdkChooserCombo.class);
 
   private final List<ActionListener> myChangedListeners = ContainerUtil.createLockFreeCopyOnWriteList();
 
-  public ResolveSdkChooserComboBox(List<Sdk> existingSdks) {
+  public ResolveSdkChooserCombo(List<Sdk> existingSdks) {
     super(new ComboBox<>(existingSdks.toArray(new Sdk[existingSdks.size()])), null);
     JComboBox<Sdk> childComponent = getChildComponent(); //ok since getChildComponent() is final
     childComponent.setRenderer(new ResolveSdkListCellRenderer());
@@ -63,16 +63,17 @@ public class ResolveSdkChooserComboBox extends ComponentWithBrowseButton<JComboB
                 catch (ConfigurationException e) {
                   LOG.error("Error adding new resolve compiler " + e.getMessage());
                 }
-                getChildComponent().addItem(sdk);
               }
-              setSelectedSdk(sdk);
             }
-            ResolveSdkChooserComboBox.this.notifyChanged(null);
+            getChildComponent().addItem(sdk);
+            setSelectedSdk(sdk);
+            ResolveSdkChooserCombo.this.notifyChanged(null);
           }
         });
       }
     });
   }
+  //public static void chooseSdk()
 
   @Nullable
   public Sdk getSelectedSdk() {

@@ -1,21 +1,37 @@
 package com.jetbrains.resolve.configuration;
 
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.FixedSizeButton;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ComboboxWithBrowseButton;
+import com.intellij.util.Consumer;
 import com.intellij.util.NullableConsumer;
 import com.intellij.util.ui.JBUI;
+import com.jetbrains.resolve.newProject.steps.ResolveSdkChooserCombo;
+import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
+import com.jetbrains.resolve.sdk.ResolveSdkType;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ResolveRootConfigurable implements UnnamedConfigurable {
@@ -24,9 +40,12 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
   private MySdkModelListener sdkModelListener = new MySdkModelListener();
   private ResolveConfigurableCompilerList compilerList;
   private ProjectSdksModel projectSdksModel;
+
+  private Set<Sdk> initialSdkSet;
+
   private JButton detailsButton;
   private JPanel mainPanel;
-  private ComboBox<Sdk> sdkComboChooser;
+  private ComboBox<Object> sdkComboChooser;
 
   //NOTES:
   //--refreshSdkList() on line 156 in PythonSdkDetailsDialog is where the sdk list gets queried and updated from the InterpreterListModel.
@@ -37,7 +56,7 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
   public ResolveRootConfigurable(@NotNull Project project) {
     this.project = project;
     layoutPanel();
-    //initContent();
+    initContent();
   }
 
   public void layoutPanel() {
@@ -46,7 +65,6 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
     //final Dimension preferredSize = sdkComboChooser.getPreferredSize();
     this.sdkComboChooser = new ComboBox<>();
     this.detailsButton = new FixedSizeButton();
-
     final GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
     c.insets = JBUI.insets(2);
@@ -61,6 +79,74 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
     c.gridy = 0;
     c.weightx = 0.0;
     this.mainPanel.add(this.detailsButton, c);
+  }
+
+  public void initContent() {
+    this.compilerList = ResolveConfigurableCompilerList.getInstance(this.project);
+
+    this.projectSdksModel = compilerList.getModel();
+    this.initialSdkSet = projectSdksModel.getProjectSdks().keySet();
+    this.projectSdksModel.addListener(sdkModelListener);
+
+    this.detailsButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ResolveSdkType sdkType = ResolveSdkType.getInstance();
+        FileChooserDescriptor descriptor = sdkType.getHomeChooserDescriptor();
+        descriptor.setForcedToUseIdeaFileChooser(true);
+
+        FileChooser.chooseFiles(descriptor, null, ResolveSdkUtil.suggestSdkDirectory(), new Consumer<java.util.List<VirtualFile>>() {
+          @Override
+          public void consume(List<VirtualFile> files) {
+            if (files.size() != 1) return;
+            VirtualFile homeDir = files.get(0);
+            final ResolveConfigurableCompilerList interpreterList = ResolveConfigurableCompilerList.getInstance(null);
+            final Sdk[] sdks = interpreterList.getModel().getSdks();
+            Sdk sdk = SdkConfigurationUtil.setupSdk(sdks, homeDir, ResolveSdkType.getInstance(), true, null, null);
+            if (sdk != null) {
+              if (projectSdksModel.findSdk(sdk.getName()) == null) {
+                projectSdksModel.addSdk(sdk);
+              }
+              updateSdkList(false);
+              //setSelectedSdk(sdk);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  @Override
+  public void reset() {
+    updateSdkList(false);
+    final Sdk sdk = getSdk();
+    setSelectedSdk(sdk);
+  }
+
+  private void setSelectedSdk(@Nullable final Sdk selectedSdk) {
+    sdkComboChooser.getModel().setSelectedItem(
+      selectedSdk == null ? null : this.projectSdksModel.findSdk(selectedSdk.getName()));
+  }
+
+  @Nullable
+  protected Sdk getSdk() {
+    return ProjectRootManager.getInstance(project).getProjectSdk();
+  }
+
+  private void updateSdkList(boolean preserveSelection) {
+    final List<Sdk> sdkList = compilerList.getAllResolveSdks(project);
+    Sdk selection = preserveSelection ? (Sdk)sdkComboChooser.getSelectedItem() : null;
+    if (!sdkList.contains(selection)) {
+      selection = null;
+    }
+    // if the selection is a non-matching virtualenv, show it anyway
+    if (selection != null && !sdkList.contains(selection)) {
+      sdkList.add(0, selection);
+    }
+    List<Object> items = new ArrayList<>(sdkList);
+    items.add(null);
+    this.sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
+    this.sdkComboChooser.setModel(new CollectionComboBoxModel<>(items, selection));
   }
 
   @Nullable
@@ -85,34 +171,19 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
 
     @Override
     public void sdkAdded(Sdk sdk) {
-      //updateSdkList(true);
+      updateSdkList(true);
     }
 
     @Override
     public void beforeSdkRemove(Sdk sdk) {
-      //updateSdkList(true);
     }
 
     @Override
     public void sdkChanged(Sdk sdk, String previousName) {
-      //updateSdkList(true);
     }
 
     @Override
     public void sdkHomeSelected(Sdk sdk, String newSdkHome) {
-    }
-  }
-
-  private class SdkAddedCallback implements NullableConsumer<Sdk> {
-    @Override
-    public void consume(Sdk sdk) {
-      if (sdk == null) return;
-
-      if (projectSdksModel.findSdk(sdk.getName()) == null) {
-        projectSdksModel.addSdk(sdk);
-      }
-      //updateSdkList(false);
-      //setSelectedSdk(sdk);
     }
   }
 }
