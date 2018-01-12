@@ -96,6 +96,7 @@ public class RESOLVEROOTConfigurable implements Configurable {
     //noinspection unchecked
     sdkComboChooser.getComboBox().setRenderer(new ResolveSdkListCellRenderer());
 
+    detailsButton = sdkComboChooser.getButton();
     GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
     c.anchor = GridBagConstraints.NORTH;
@@ -113,7 +114,7 @@ public class RESOLVEROOTConfigurable implements Configurable {
     this.projectSdksModel = compilerList.getModel();
     this.initialSdkSet = projectSdksModel.getProjectSdks().keySet();
     this.projectSdksModel.addListener(sdkModelListener);
-/*
+
     this.detailsButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -134,19 +135,19 @@ public class RESOLVEROOTConfigurable implements Configurable {
                 projectSdksModel.addSdk(sdk);
               }
               updateSdkList(false);
-              //setSelectedSdk(sdk);
+              setSelectedSdk(sdk);
             }
           }
         });
       }
-    });*/
+    });
   }
 
   @Override
   public void reset() {
-    /*updateSdkList(false);
+    updateSdkList(false);
     final Sdk sdk = getSdk();
-    setSelectedSdk(sdk);*/
+    setSelectedSdk(sdk);
   }
 
   private void setSelectedSdk(@Nullable final Sdk selectedSdk) {
