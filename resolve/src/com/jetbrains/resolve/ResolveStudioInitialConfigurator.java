@@ -130,6 +130,7 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMainToolbar(false);
+      uiSettings.setShowNavigationBar(true);
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
@@ -138,17 +139,15 @@ public class ResolveStudioInitialConfigurator {
 
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMemoryIndicator(false);
-
-      final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
-      editorColorsScheme.setEditorFontSize(16);
-      editorColorsScheme.setEditorFontName("IsabelleText");
-      editorColorsScheme.setLineSpacing(.9f);
-
-      EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
-      EditorColorsManager.getInstance().getGlobalScheme().setEditorFontName("IsabelleText");
-      EditorColorsManager.getInstance().getGlobalScheme().setLineSpacing(.9f);
     }
+    final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
+    editorColorsScheme.setEditorFontSize(16);
+    editorColorsScheme.setEditorFontName("IsabelleText");
+    editorColorsScheme.setLineSpacing(.9f);
 
+    EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
+    EditorColorsManager.getInstance().getGlobalScheme().setEditorFontName("IsabelleText");
+    EditorColorsManager.getInstance().getGlobalScheme().setLineSpacing(.9f);
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {
       @Override

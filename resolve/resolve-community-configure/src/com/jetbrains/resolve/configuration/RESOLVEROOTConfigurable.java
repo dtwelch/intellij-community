@@ -1,9 +1,10 @@
 package com.jetbrains.resolve.configuration;
 
+import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
@@ -15,14 +16,13 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.FixedSizeButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.CollectionComboBoxModel;
-import com.intellij.ui.ComboboxWithBrowseButton;
+import com.intellij.ui.FontComboBox;
 import com.intellij.util.Consumer;
-import com.intellij.util.NullableConsumer;
 import com.intellij.util.ui.JBUI;
-import com.jetbrains.resolve.newProject.steps.ResolveSdkChooserCombo;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
 import com.jetbrains.resolve.sdk.ResolveSdkType;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ResolveRootConfigurable implements UnnamedConfigurable {
+public class RESOLVEROOTConfigurable implements Configurable {
 
   @NotNull private final Project project;
   private MySdkModelListener sdkModelListener = new MySdkModelListener();
@@ -53,32 +53,26 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
   //in the combobox list refer to PyActiveSdkConfigurable to figure out how this is done....
   //--reset() is where we'll populate the combobox (not init()) see comment on reset() in UnnamedConfigurable.java.
 
-  public ResolveRootConfigurable(@NotNull Project project) {
+  public RESOLVEROOTConfigurable(@NotNull Project project) {
     this.project = project;
     layoutPanel();
     initContent();
   }
 
   public void layoutPanel() {
-    final GridBagLayout layout = new GridBagLayout();
-    this.mainPanel = new JPanel(layout);
-    //final Dimension preferredSize = sdkComboChooser.getPreferredSize();
     this.sdkComboChooser = new ComboBox<>();
-    this.detailsButton = new FixedSizeButton();
-    final GridBagConstraints c = new GridBagConstraints();
+    this.sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
+    this.mainPanel = new JPanel(new GridBagLayout());
+
+    GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
     c.insets = JBUI.insets(2);
-
+    c.anchor = GridBagConstraints.NORTH;
     c.gridx = 0;
     c.gridy = 0;
-    c.weightx = 0.1;
-    this.mainPanel.add(sdkComboChooser, c);
-
-    c.insets = JBUI.insets(2, 0, 2, 2);
-    c.gridx = 1;
-    c.gridy = 0;
-    c.weightx = 0.0;
-    this.mainPanel.add(this.detailsButton, c);
+    c.weighty = 1;
+    c.weightx = 1;
+    mainPanel.add(sdkComboChooser, c);
   }
 
   public void initContent() {
@@ -87,7 +81,7 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
     this.projectSdksModel = compilerList.getModel();
     this.initialSdkSet = projectSdksModel.getProjectSdks().keySet();
     this.projectSdksModel.addListener(sdkModelListener);
-
+/*
     this.detailsButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -113,14 +107,14 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
           }
         });
       }
-    });
+    });*/
   }
 
   @Override
   public void reset() {
-    updateSdkList(false);
+    /*updateSdkList(false);
     final Sdk sdk = getSdk();
-    setSelectedSdk(sdk);
+    setSelectedSdk(sdk);*/
   }
 
   private void setSelectedSdk(@Nullable final Sdk selectedSdk) {
@@ -134,7 +128,7 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
   }
 
   private void updateSdkList(boolean preserveSelection) {
-    final List<Sdk> sdkList = compilerList.getAllResolveSdks(project);
+    /*final List<Sdk> sdkList = compilerList.getAllResolveSdks(project);
     Sdk selection = preserveSelection ? (Sdk)sdkComboChooser.getSelectedItem() : null;
     if (!sdkList.contains(selection)) {
       selection = null;
@@ -146,7 +140,7 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
     List<Object> items = new ArrayList<>(sdkList);
     items.add(null);
     this.sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
-    this.sdkComboChooser.setModel(new CollectionComboBoxModel<>(items, selection));
+    this.sdkComboChooser.setModel(new CollectionComboBoxModel<>(items, selection));*/
   }
 
   @Nullable
@@ -162,6 +156,12 @@ public class ResolveRootConfigurable implements UnnamedConfigurable {
 
   @Override
   public void apply() throws ConfigurationException {
+  }
+
+  @Nls
+  @Override
+  public String getDisplayName() {
+    return "RESOLVEROOT";
   }
 
   private class MySdkModelListener implements SdkModel.Listener {

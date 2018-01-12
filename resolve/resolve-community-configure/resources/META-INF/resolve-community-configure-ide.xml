@@ -4,15 +4,7 @@
 
   <xi:include href="/META-INF/resolve-community-configure-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <extensions defaultExtensionNs="com.intellij">
-    <projectConfigurable groupId="root" groupWeight="177" dynamic="false" key="sdksettings.control.main.configurable.name" bundle="com.jetbrains.resolve.ResolveBundle"
+    <projectConfigurable groupId="root" groupWeight="177" dynamic="true" key="sdk.settings.configurable.name" bundle="com.jetbrains.resolve.ResolveBundle"
                          provider="com.jetbrains.resolve.configuration.ResolveSdkSetttingsConfigurableProvider" id="project.resolve.settings"/>
-    <projectConfigurable id="vcs.Subversion" displayName="Subversion" instance="org.jetbrains.idea.svn.SvnConfigurable$General"
-                         parentId="project.resolve.settings" groupWeight="-500">
-    <!--<projectConfigurable groupId="root"
-                         id="com.jetbrains.resolve.configuration.ResolveActiveModuleConfigurable"
-                         displayName="Project Interprssssetser"
-                         instance="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"/>-->
-
-    <filetype.prebuiltStubsProvider filetype="Python" implementationClass="com.jetbrains.python.psi.impl.stubs.PyPrebuiltStubsProvider"/>-->
   </extensions>
 </idea-plugin>
