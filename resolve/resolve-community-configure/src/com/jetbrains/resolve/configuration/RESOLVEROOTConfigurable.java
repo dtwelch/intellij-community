@@ -72,7 +72,14 @@ public class RESOLVEROOTConfigurable implements Configurable {
     c.gridy = 0;
     c.weighty = 1;
     c.weightx = 1;
-    mainPanel.add(sdkComboChooser, c);
+    this.mainPanel.add(this.sdkComboChooser, c);
+
+    this.detailsButton = new FixedSizeButton();
+    c.insets = JBUI.insets(2, 0, 2, 2);
+    c.gridx = 1;
+    c.weighty = 0.0;
+    c.weightx = 0.0;
+    this.mainPanel.add(this.detailsButton, c);
   }
 
   public void initContent() {
