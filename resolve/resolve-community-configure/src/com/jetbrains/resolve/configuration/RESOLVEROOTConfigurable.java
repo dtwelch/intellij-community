@@ -13,9 +13,11 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.FixedSizeButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.CollectionComboBoxModel;
+import com.intellij.ui.ComboboxWithBrowseButton;
 import com.intellij.ui.FontComboBox;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
@@ -59,10 +61,17 @@ public class RESOLVEROOTConfigurable implements Configurable {
     initContent();
   }
 
+  /* THIS ONE IS CLOSER TO WORKING
   public void layoutPanel() {
-    this.sdkComboChooser = new ComboBox<>();
-    this.sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
     this.mainPanel = new JPanel(new GridBagLayout());
+    sdkComboChooser = new ComboBox<>();
+    sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
+
+    final Dimension preferredSize = sdkComboChooser.getPreferredSize();
+    sdkComboChooser.setPreferredSize(preferredSize);
+    detailsButton = new FixedSizeButton();
+    //noinspection SuspiciousNameCombination
+    detailsButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
 
     GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
@@ -72,14 +81,30 @@ public class RESOLVEROOTConfigurable implements Configurable {
     c.gridy = 0;
     c.weighty = 1;
     c.weightx = 1;
-    this.mainPanel.add(this.sdkComboChooser, c);
+    mainPanel.add(sdkComboChooser, c);
 
-    this.detailsButton = new FixedSizeButton();
     c.insets = JBUI.insets(2, 0, 2, 2);
     c.gridx = 1;
     c.weighty = 0.0;
     c.weightx = 0.0;
-    this.mainPanel.add(this.detailsButton, c);
+    mainPanel.add(detailsButton, c);
+  }*/
+
+  public void layoutPanel() {
+    mainPanel = new JPanel(new GridBagLayout());
+    ComboboxWithBrowseButton sdkComboChooser = new ComboboxWithBrowseButton();
+    //noinspection unchecked
+    sdkComboChooser.getComboBox().setRenderer(new ResolveSdkListCellRenderer());
+
+    GridBagConstraints c = new GridBagConstraints();
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.anchor = GridBagConstraints.NORTH;
+    c.insets = JBUI.insets(2);
+    c.gridx = 0;
+    c.gridy = 0;
+    c.weightx = 0.1;
+    c.weighty = 1;
+    mainPanel.add(sdkComboChooser, c);
   }
 
   public void initContent() {

@@ -17,5 +17,6 @@
     <orderEntry type="library" name="Gradle" level="project" />
     <orderEntry type="library" name="Guava" level="project" />
     <orderEntry type="module" module-name="vcs-impl" />
+    <orderEntry type="module" module-name="python-community" />
   </component>
 </module>
