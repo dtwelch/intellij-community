@@ -42,7 +42,7 @@ public class ResolveEnvUtil {
       result = "C:\\resolvework";
     }
     else {
-      result = "";
+      throw new IllegalStateException("Currently unrecognized/unsupported system..");
     }
     return result;
   }

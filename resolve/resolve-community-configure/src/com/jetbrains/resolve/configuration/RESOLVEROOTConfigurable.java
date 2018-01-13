@@ -39,9 +39,6 @@ public class RESOLVEROOTConfigurable implements Configurable {
   private MySdkModelListener sdkModelListener = new MySdkModelListener();
   private ResolveConfigurableCompilerList compilerList;
   private ProjectSdksModel projectSdksModel;
-  private boolean mySdkSettingsWereModified = false;
-
-  private Set<Sdk> initialSdkSet;
 
   private JButton detailsButton;
   private JPanel mainPanel;
@@ -81,7 +78,6 @@ public class RESOLVEROOTConfigurable implements Configurable {
     this.compilerList = ResolveConfigurableCompilerList.getInstance(this.project);
 
     this.projectSdksModel = compilerList.getModel();
-    this.initialSdkSet = projectSdksModel.getProjectSdks().keySet();
     this.projectSdksModel.addListener(sdkModelListener);
 
     this.detailsButton.addActionListener(new ActionListener() {
@@ -167,7 +163,6 @@ public class RESOLVEROOTConfigurable implements Configurable {
 
   @Override
   public void apply() throws ConfigurationException {
-    mySdkSettingsWereModified = false;
     final Sdk selectedSdk = getSelectedSdk();
 
     if (selectedSdk != null) {
