@@ -1,6 +1,6 @@
 package com.jetbrains.resolve.configuration;
 
-import com.intellij.openapi.application.ApplicationBundle;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
@@ -9,16 +9,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.ui.FixedSizeButton;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ComboboxWithBrowseButton;
-import com.intellij.ui.FontComboBox;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import com.jetbrains.resolve.sdk.ResolveSdkListCellRenderer;
@@ -42,12 +39,13 @@ public class RESOLVEROOTConfigurable implements Configurable {
   private MySdkModelListener sdkModelListener = new MySdkModelListener();
   private ResolveConfigurableCompilerList compilerList;
   private ProjectSdksModel projectSdksModel;
+  private boolean mySdkSettingsWereModified = false;
 
   private Set<Sdk> initialSdkSet;
 
   private JButton detailsButton;
   private JPanel mainPanel;
-  private ComboBox<Object> sdkComboChooser;
+  private ComboboxWithBrowseButton sdkComboChooser;
 
   //NOTES:
   //--refreshSdkList() on line 156 in PythonSdkDetailsDialog is where the sdk list gets queried and updated from the InterpreterListModel.
@@ -61,38 +59,9 @@ public class RESOLVEROOTConfigurable implements Configurable {
     initContent();
   }
 
-  /* THIS ONE IS CLOSER TO WORKING
-  public void layoutPanel() {
-    this.mainPanel = new JPanel(new GridBagLayout());
-    sdkComboChooser = new ComboBox<>();
-    sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
-
-    final Dimension preferredSize = sdkComboChooser.getPreferredSize();
-    sdkComboChooser.setPreferredSize(preferredSize);
-    detailsButton = new FixedSizeButton();
-    //noinspection SuspiciousNameCombination
-    detailsButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
-
-    GridBagConstraints c = new GridBagConstraints();
-    c.fill = GridBagConstraints.HORIZONTAL;
-    c.insets = JBUI.insets(2);
-    c.anchor = GridBagConstraints.NORTH;
-    c.gridx = 0;
-    c.gridy = 0;
-    c.weighty = 1;
-    c.weightx = 1;
-    mainPanel.add(sdkComboChooser, c);
-
-    c.insets = JBUI.insets(2, 0, 2, 2);
-    c.gridx = 1;
-    c.weighty = 0.0;
-    c.weightx = 0.0;
-    mainPanel.add(detailsButton, c);
-  }*/
-
   public void layoutPanel() {
     mainPanel = new JPanel(new GridBagLayout());
-    ComboboxWithBrowseButton sdkComboChooser = new ComboboxWithBrowseButton();
+    sdkComboChooser = new ComboboxWithBrowseButton();
     //noinspection unchecked
     sdkComboChooser.getComboBox().setRenderer(new ResolveSdkListCellRenderer());
 
@@ -146,23 +115,23 @@ public class RESOLVEROOTConfigurable implements Configurable {
   @Override
   public void reset() {
     updateSdkList(false);
-    final Sdk sdk = getSdk();
+    final Sdk sdk = getCurrentProjectSdk();
     setSelectedSdk(sdk);
   }
 
   private void setSelectedSdk(@Nullable final Sdk selectedSdk) {
-    sdkComboChooser.getModel().setSelectedItem(
+    sdkComboChooser.getComboBox().setSelectedItem(
       selectedSdk == null ? null : this.projectSdksModel.findSdk(selectedSdk.getName()));
   }
 
   @Nullable
-  protected Sdk getSdk() {
+  protected Sdk getCurrentProjectSdk() {
     return ProjectRootManager.getInstance(project).getProjectSdk();
   }
 
   private void updateSdkList(boolean preserveSelection) {
-    /*final List<Sdk> sdkList = compilerList.getAllResolveSdks(project);
-    Sdk selection = preserveSelection ? (Sdk)sdkComboChooser.getSelectedItem() : null;
+    final List<Sdk> sdkList = compilerList.getAllResolveSdks(project);
+    Sdk selection = preserveSelection ? (Sdk)sdkComboChooser.getComboBox().getSelectedItem() : null;
     if (!sdkList.contains(selection)) {
       selection = null;
     }
@@ -171,9 +140,10 @@ public class RESOLVEROOTConfigurable implements Configurable {
       sdkList.add(0, selection);
     }
     List<Object> items = new ArrayList<>(sdkList);
-    items.add(null);
-    this.sdkComboChooser.setRenderer(new ResolveSdkListCellRenderer());
-    this.sdkComboChooser.setModel(new CollectionComboBoxModel<>(items, selection));*/
+    //noinspection unchecked
+    sdkComboChooser.getComboBox().setRenderer(new ResolveSdkListCellRenderer());
+    //noinspection unchecked
+    sdkComboChooser.getComboBox().setModel(new CollectionComboBoxModel<>(items, selection));
   }
 
   @Nullable
@@ -182,13 +152,35 @@ public class RESOLVEROOTConfigurable implements Configurable {
     return mainPanel;
   }
 
+  @Nullable
+  private Sdk getSelectedSdk() {
+    final Sdk selectedItem = (Sdk)sdkComboChooser.getComboBox().getSelectedItem();
+    return selectedItem == null ? null : projectSdksModel.findSdk(selectedItem);
+  }
+
   @Override
   public boolean isModified() {
-    return false;
+    Sdk projectSdk = getCurrentProjectSdk();
+    final Sdk selectedSdk = getSelectedSdk();
+    return !Comparing.equal(projectSdk, selectedSdk);
   }
 
   @Override
   public void apply() throws ConfigurationException {
+    mySdkSettingsWereModified = false;
+    final Sdk selectedSdk = getSelectedSdk();
+
+    if (selectedSdk != null) {
+      updateSdkList(false);
+      projectSdksModel.apply();
+      setSelectedSdk(selectedSdk);
+    }
+    setSdk(selectedSdk);
+  }
+
+  protected void setSdk(final Sdk item) {
+    ApplicationManager.getApplication()
+      .runWriteAction(() -> ProjectRootManager.getInstance(this.project).setProjectSdk(item));
   }
 
   @Nls
@@ -198,9 +190,6 @@ public class RESOLVEROOTConfigurable implements Configurable {
   }
 
   private class MySdkModelListener implements SdkModel.Listener {
-
-    public MySdkModelListener() {
-    }
 
     @Override
     public void sdkAdded(Sdk sdk) {
