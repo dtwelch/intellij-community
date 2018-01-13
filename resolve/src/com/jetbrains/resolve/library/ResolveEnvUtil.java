@@ -16,6 +16,10 @@ public class ResolveEnvUtil {
   public static String retrieveRESOLVEPath() {
   if (ApplicationManager.getApplication().isUnitTestMode()) return null;
 
+  //THE IDE Won't Attempt to read environmental variables. It will instead rely on configurables (see preferences menu)
+    //if you run the compiler from the commandline, these of course are fine. If they are set, the IDE doesn't care about them
+    //the onus is on the user to make sure the IDE settings reflect their preferred ROOT and PATH dir. And of course there are defaults
+    //so...
   //String path = EnvironmentUtil.getValue("RESOLVEPATH");
   //if (path == null) {
     String path = getDefaultPath(); //TODO: For now... eventually retrieve it from seom configurable...
