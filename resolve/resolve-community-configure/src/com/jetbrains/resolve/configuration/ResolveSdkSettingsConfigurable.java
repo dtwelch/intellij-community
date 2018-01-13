@@ -15,7 +15,7 @@ import static com.intellij.util.containers.ContainerUtil.newArrayList;
 public class ResolveSdkSettingsConfigurable extends SearchableConfigurable.Parent.Abstract implements Configurable.NoScroll {
 
   @NotNull private final Project project;
-  private ResolveGeneralConfigurationPanel mappings;
+  private ResolveGeneralConfigurationPanel general;
 
   public ResolveSdkSettingsConfigurable(@NotNull Project project) {
     this.project = project;
@@ -23,8 +23,8 @@ public class ResolveSdkSettingsConfigurable extends SearchableConfigurable.Paren
 
   @Override
   public JComponent createComponent() {
-    this.mappings = new ResolveGeneralConfigurationPanel(project);
-    return this.mappings;
+    this.general = new ResolveGeneralConfigurationPanel(project);
+    return this.general;
   }
 
   @NotNull

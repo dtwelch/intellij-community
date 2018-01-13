@@ -16,13 +16,13 @@ public class ResolveEnvUtil {
   public static String retrieveRESOLVEPath() {
   if (ApplicationManager.getApplication().isUnitTestMode()) return null;
 
-  String path = EnvironmentUtil.getValue("RESOLVEPATH");
-  if (path == null) {
-    path = getDefaultPath();
-  }
-  else {
-    path = PathMacros.getInstance().getValue("RESOLVEPATH");
-  }
+  //String path = EnvironmentUtil.getValue("RESOLVEPATH");
+  //if (path == null) {
+    String path = getDefaultPath(); //TODO: For now... eventually retrieve it from seom configurable...
+  //}
+  //else {
+  //  path = PathMacros.getInstance().getValue("RESOLVEPATH");
+  //}
   return path;
   }
 
