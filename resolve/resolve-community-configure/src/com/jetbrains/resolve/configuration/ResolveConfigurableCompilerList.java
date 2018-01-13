@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * From yole: Manages the SDK model shared between PythonSdkConfigurable and PyActiveSdkConfigurable.
+ * From yole: Manages the SDK model shared between PythonSdkConfigurable and ResolveActiveCompilerConfigurable.
  *
  * @author dtwelch (tweaked from original sources by yole)
  */

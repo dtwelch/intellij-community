@@ -1,9 +1,7 @@
 package com.jetbrains.resolve.library;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.PathMacros;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.util.EnvironmentUtil;
 import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +19,9 @@ public class ResolveEnvUtil {
     //the onus is on the user to make sure the IDE settings reflect their preferred ROOT and PATH dir. And of course there are defaults
     //so...
   //String path = EnvironmentUtil.getValue("RESOLVEPATH");
+
   //if (path == null) {
-    String path = getDefaultPath(); //TODO: For now... eventually retrieve it from seom configurable...
+    String path = getDefaultRootPath(); //TODO: For now... eventually retrieve it from seom configurable...
   //}
   //else {
   //  path = PathMacros.getInstance().getValue("RESOLVEPATH");
@@ -31,7 +30,7 @@ public class ResolveEnvUtil {
   }
 
   @NotNull
-  public static String getDefaultPath() {
+  public static String getDefaultRootPath() {
     String result = null;
     String userHome = SystemProperties.getUserHome();
     if (SystemInfo.isMac) {

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class RESOLVEROOTConfigurable implements Configurable {
+public class ResolveActiveCompilerConfigurable implements Configurable {
 
   @NotNull private final Project project;
   private MySdkModelListener sdkModelListener = new MySdkModelListener();
@@ -50,7 +50,7 @@ public class RESOLVEROOTConfigurable implements Configurable {
   //in the combobox list refer to PyActiveSdkConfigurable to figure out how this is done....
   //--reset() is where we'll populate the combobox (not init()) see comment on reset() in UnnamedConfigurable.java.
 
-  public RESOLVEROOTConfigurable(@NotNull Project project) {
+  public ResolveActiveCompilerConfigurable(@NotNull Project project) {
     this.project = project;
     layoutPanel();
     initContent();

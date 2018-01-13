@@ -3,6 +3,8 @@ package com.jetbrains.resolve.configuration;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
+import com.jetbrains.resolve.library.ResolveLibrariesService;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,8 +38,8 @@ public class ResolveSdkSettingsConfigurable extends SearchableConfigurable.Paren
   @Override
   protected Configurable[] buildConfigurables() {
     List<Configurable> result = newArrayList();
-    result.add(new RESOLVEROOTConfigurable(project));
-    result.add(new RESOLVEPATHConfigurable(project));
+    result.add(new ResolveActiveCompilerConfigurable(project));
+    result.add(new ResolveLibraryPathConfigurable(project, ResolveApplicationLibrariesService.getInstance()));
     return toObjectArray(result, Configurable.class);
   }
 
