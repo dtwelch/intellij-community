@@ -22,7 +22,7 @@ public class ResolveGenerateProjectCallback<T> extends AbstractNewProjectStep.Ab
   /**
    * This gets called when a user, on the SDK and project location selection screen, clicks create. So we can add each
    * sdk in the combo box chooser to the projectSdkModel and whichever one is selected is the one for which we finally call
-   *  {@code SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk).  I think...
+   * {@code SdkConfigurationUtil.setDirectoryProjectSdk(newProject, sdk)}.  I think...
    * @param step
    * @param projectGeneratorPeer
    */

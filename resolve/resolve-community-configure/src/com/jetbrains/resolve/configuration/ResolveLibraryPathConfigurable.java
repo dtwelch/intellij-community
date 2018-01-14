@@ -1,6 +1,5 @@
 package com.jetbrains.resolve.configuration;
 
-import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -15,8 +14,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.IconUtil;
 import com.intellij.util.ui.JBUI;
-import com.jetbrains.resolve.ResolveBundle;
-import com.jetbrains.resolve.ResolveConstants;
+import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
 import com.jetbrains.resolve.library.ResolveEnvUtil;
 import com.jetbrains.resolve.library.ResolveLibrariesService;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
@@ -28,20 +26,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResolveLibraryPathConfigurable implements Configurable {
 
   private final ResolveLibrariesService<?> librariesService;
   private final Project project;
   private JPanel mainPanel;
+  private final String[] defaultPaths;
+
   private JButton detailsButton;
   private ListItem defaultItem;
   private final JBCheckBox useEnvResolvePathCheckBox = new JBCheckBox("Use RESOLVEPATH that's defined in the system environment");
   private ComboboxWithBrowseButton pathChooserCombo = new ComboboxWithBrowseButton();
 
-  public ResolveLibraryPathConfigurable(@NotNull Project project, @NotNull ResolveLibrariesService librariesService) {
+  public ResolveLibraryPathConfigurable(@NotNull Project project, @NotNull ResolveLibrariesService librariesService, String... defaultUrls) {
     this.project = project;
     this.librariesService = librariesService;
+    this.defaultPaths = defaultUrls;
     layoutPanel();
     initContent();
   }
@@ -87,52 +90,63 @@ public class ResolveLibraryPathConfigurable implements Configurable {
   public void initContent() {
     defaultItem = new ListItem(ResolveEnvUtil.getDefaultResolvePath(), true);
     pathChooserCombo.getComboBox().addItem(defaultItem);
+    useEnvResolvePathCheckBox.setSelected(true);
     useEnvResolvePathCheckBox.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
         FileChooserDescriptor descriptor = ResolveSdkUtil.getResolveWorkspaceChooserDescriptor();
         descriptor.setForcedToUseIdeaFileChooser(true);
-
-        FileChooser.chooseFiles(descriptor, null, ResolveSdkUtil.suggestSdkDirectory(), new Consumer<List<VirtualFile>>() {
+        /*FileChooser.chooseFiles(descriptor, null, ResolveSdkUtil.suggestResolveWorkspaceDirectory(), new Consumer<List<VirtualFile>>() {
           @Override
-          public void consume(List<VirtualFile> files) {
-            if (files.size() != 1) return;
-            VirtualFile homeDir = files.get(0);
-            final ResolveConfigurableCompilerList interpreterList = ResolveConfigurableCompilerList.getInstance(null);
-            final Sdk[] sdks = interpreterList.getModel().getSdks();
+          public void consume(java.util.List<VirtualFile> files) {
+            if (files.isEmpty()) return;
+            VirtualFile newWorkspace = files.get(0);
+            String newWorkspaceUrl = newWorkspace.getUrl();
 
-            Sdk sdk = SdkConfigurationUtil.setupSdk(sdks, homeDir, ResolveSdkType.getInstance(), true, null, null);
-            //do this + the Project Model stuff here as well (see python srcs).
-            if (sdk != null) {
-              final ProjectSdksModel projectSdksModel = interpreterList.getModel();
-              if (projectSdksModel.findSdk(sdk) == null) {
-                projectSdksModel.addSdk(sdk);
-                try {
-                  projectSdksModel.apply();
-                }
-                catch (ConfigurationException e) {
-                  LOG.error("Error adding new resolve compiler " + e.getMessage());
-                }
-              }
-            }
+            //I don't really want to add it if it matches the default though....
+            pathChooserCombo.getComboBox().addItem(files.get(0));
+            pathChooserCombo.getComboBox().addItem();
             getChildComponent().addItem(sdk);
             setSelectedSdk(sdk);
             ResolveSdkChooserCombo.this.notifyChanged(null);
           }
-        });
+        });*/
       }
     });
   }
 
   @Override
   public void reset() {
-    updatePathList(false);
-    //final Sdk sdk = getCurrentProjectSdk();
-    //setSelectedSdk(sdk);
+    pathChooserCombo.getComboBox().removeAll();
+    resetWorkspaceFromEnvironment();
+
   }
 
-  public void updatePathList(boolean preserveSelection) {
+  private void resetWorkspaceFromEnvironment() {
+    if (librariesService instanceof ResolveApplicationLibrariesService) {
+      useEnvResolvePathCheckBox.setSelected(((ResolveApplicationLibrariesService)librariesService).isUseResolvePathFromSystemEnvironment());
+      if (((ResolveApplicationLibrariesService)librariesService).isUseResolvePathFromSystemEnvironment()) {
+        addReadOnlyPaths();
+      }
+      else {
+        removeReadOnlyPaths();
+      }
+    }
+  }
+
+  private void addReadOnlyPaths() {
+    for (String url : defaultPaths) {
+      pathChooserCombo.getComboBox().addItem(new ListItem(url, true));
+    }
+  }
+
+  private void removeReadOnlyPaths() {
+    //for each element in the combo box, remove those that are marked as default.
+    /*List<ListItem> toRemove = pathChooserCombo.getComboBox().get.stream().filter(item -> item.readOnly).collect(Collectors.toList());
+    for (ListItem item : toRemove) {
+      myListModel.remove(item);
+    }*/
   }
 
   @Nls

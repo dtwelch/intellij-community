@@ -3,8 +3,10 @@ package com.jetbrains.resolve.configuration;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
-import com.jetbrains.resolve.library.ResolveLibrariesService;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +41,10 @@ public class ResolveSdkSettingsConfigurable extends SearchableConfigurable.Paren
   protected Configurable[] buildConfigurables() {
     List<Configurable> result = newArrayList();
     result.add(new ResolveActiveCompilerConfigurable(project));
-    result.add(new ResolveLibraryPathConfigurable(project, ResolveApplicationLibrariesService.getInstance()));
+
+    String[] urlsFromEnv = ContainerUtil.map2Array(ResolveSdkUtil.getResolvePathRootsFromEnvironment(), String.class, VirtualFile::getUrl);
+    result.add(new ResolveLibraryPathConfigurable(project, ResolveApplicationLibrariesService.getInstance(), urlsFromEnv));
+
     return toObjectArray(result, Configurable.class);
   }
 

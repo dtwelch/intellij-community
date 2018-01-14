@@ -24,7 +24,7 @@ public class ResolveApplicationLibrariesService
     return ServiceManager.getService(ResolveApplicationLibrariesService.class);
   }
 
-  public boolean isUsingRESOLVEPathFromSystemEnvironment() {
+  public boolean isUseResolvePathFromSystemEnvironment() {
     return state.isUsingRESOLVEPathFromSystemEnvironment();
   }
 

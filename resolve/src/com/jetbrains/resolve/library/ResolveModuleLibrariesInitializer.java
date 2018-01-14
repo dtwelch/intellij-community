@@ -13,7 +13,6 @@ import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
-import com.intellij.openapi.roots.impl.InheritedJdkOrderEntryImpl;
 import com.intellij.openapi.roots.impl.OrderEntryUtil;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.Library;
@@ -256,7 +255,7 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
     public void run() {
       final Project project = myModule.getProject();
       synchronized (myLastHandledRESOLVEPathSourcesRoots) {
-        final Collection<VirtualFile> goPathSourcesRoots = ResolveSdkUtil.getRESOLVEPathSourcesRoot(project, myModule);
+        final Collection<VirtualFile> goPathSourcesRoots = ResolveSdkUtil.getResolvePathSourcesRoot(project, myModule);
         //ResolveSdkUtil.getRESOLVEPathSources(project, myModule);
         final Set<VirtualFile> excludeRoots = ContainerUtil.newHashSet(ProjectRootManager.getInstance(project).getContentRoots());
         ProgressIndicatorProvider.checkCanceled();

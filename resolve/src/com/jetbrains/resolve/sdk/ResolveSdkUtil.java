@@ -4,6 +4,7 @@ package com.jetbrains.resolve.sdk;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
@@ -32,8 +33,6 @@ import java.util.regex.Pattern;
 
 import static com.intellij.util.containers.ContainerUtil.newLinkedHashSet;
 
-
-//TODO: We can probably get rid of this "ResolveSdkService" nonsense; move it into SdkUtil perhaps.
 public class ResolveSdkUtil {
   protected static final Logger LOG = Logger.getInstance("#com.jetbrains.resolve.sdk.ResolveSdkUtil");
 
@@ -60,6 +59,7 @@ public class ResolveSdkUtil {
     }.withTitle(ResolveBundle.message("sdk.select.workspace.path")).withShowHiddenFiles(false);
   }
 
+  @NotNull
   public static FileChooserDescriptor getResolveRootChooserDescriptor() {
     return new FileChooserDescriptor(false, true, false, false, false, false) {
       @Override
@@ -98,10 +98,14 @@ public class ResolveSdkUtil {
 
   /**
    * Retrieves root directories from RESOLVEPATH env-variable. This method doesn't consider user defined libraries,
-   * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}
+   * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}.
+   * <p>
+   * Note that right now, <tt>RESOLVEPATH</tt> is a single entity as opposed to a list of 'roots'. I've just kept it
+   * in list form for simplicity for now (the original GoLang plugin did it this way because Go apparently supports multiple
+   * semicolon-delimited GOPATHs)
    */
   @NotNull
-  public static Collection<VirtualFile> getResolvePathsRootsFromEnvironment() {
+  public static Collection<VirtualFile> getResolvePathRootsFromEnvironment() {
     return ResolveEnvironmentPathModificationTracker.getResolveEnvironmentPathRoots();
   }
 
@@ -166,17 +170,8 @@ public class ResolveSdkUtil {
     return null;
   }
 
-  /**
-   * Retrieves root directories from RESOLVEPATH env-variable. This method doesn't consider user defined libraries,
-   * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}
-   */
   @NotNull
-  public static Collection<VirtualFile> getRESOLVEPathsRootsFromEnvironment() {
-    return ResolveEnvironmentPathModificationTracker.getResolveEnvironmentPathRoots();
-  }
-
-  @NotNull
-  public static Collection<VirtualFile> getRESOLVEPathSourcesRoot(@NotNull final Project project,
+  public static Collection<VirtualFile> getResolvePathSourcesRoot(@NotNull final Project project,
                                                                   @Nullable final Module module) {
     if (module != null) {
       return CachedValuesManager.getManager(project).getCachedValue(
@@ -221,19 +216,13 @@ public class ResolveSdkUtil {
   @NotNull
   private static Collection<VirtualFile> getRESOLVEPathRoots(@NotNull Project project, @Nullable Module module) {
     Collection<VirtualFile> roots = ContainerUtil.newArrayList();
-    if (ResolveApplicationLibrariesService.getInstance().isUsingRESOLVEPathFromSystemEnvironment()) {
-      roots.addAll(getRESOLVEPathsRootsFromEnvironment());
+    if (ResolveApplicationLibrariesService.getInstance().isUseResolvePathFromSystemEnvironment()) {
+      roots.addAll(getResolvePathRootsFromEnvironment());
     }
     roots.addAll(module != null ?
                  ResolveLibrariesService.getUserDefinedLibraries(module) :
                  ResolveLibrariesService.getUserDefinedLibraries(project));
     return roots;
-  }
-
-  public static boolean isResolveSdkLibRoot(@NotNull VirtualFile root) {
-    return root.isInLocalFileSystem() &&
-           root.isDirectory() &&
-           retrieveResolveVersion(root.getPath()) != null;
   }
 
   @Nullable
@@ -247,7 +236,6 @@ public class ResolveSdkUtil {
 
   @NotNull
   static Collection<VirtualFile> getSdkDirectoriesToAttach(@NotNull String sdkPath) {
-    // src is enough at the moment, possible process binaries from pkg
     return ContainerUtil.createMaybeSingletonList(getSdkSrcDir(sdkPath));
   }
 
