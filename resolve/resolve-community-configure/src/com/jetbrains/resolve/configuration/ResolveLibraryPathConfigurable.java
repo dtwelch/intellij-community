@@ -26,8 +26,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ResolveLibraryPathConfigurable implements Configurable {
 
@@ -101,19 +99,21 @@ public class ResolveLibraryPathConfigurable implements Configurable {
           @Override
           public void consume(java.util.List<VirtualFile> files) {
             if (files.isEmpty()) return;
-            VirtualFile newWorkspace = files.get(0);
-            String newWorkspaceUrl = newWorkspace.getUrl();
-
-            //I don't really want to add it if it matches the default though....
-            pathChooserCombo.getComboBox().addItem(files.get(0));
-            pathChooserCombo.getComboBox().addItem();
-            getChildComponent().addItem(sdk);
-            setSelectedSdk(sdk);
-            ResolveSdkChooserCombo.this.notifyChanged(null);
           }
         });*/
       }
     });
+
+    if (librariesService instanceof ResolveApplicationLibrariesService) {
+      useEnvResolvePathCheckBox.addActionListener(event -> {
+        if (useEnvResolvePathCheckBox.isSelected()) {
+          addDefaultReadOnlyPaths();
+        }
+        else {
+          removeDefaultReadOnlyPaths();
+        }
+      });
+    }
   }
 
   @Override
@@ -127,21 +127,21 @@ public class ResolveLibraryPathConfigurable implements Configurable {
     if (librariesService instanceof ResolveApplicationLibrariesService) {
       useEnvResolvePathCheckBox.setSelected(((ResolveApplicationLibrariesService)librariesService).isUseResolvePathFromSystemEnvironment());
       if (((ResolveApplicationLibrariesService)librariesService).isUseResolvePathFromSystemEnvironment()) {
-        addReadOnlyPaths();
+        addDefaultReadOnlyPaths();
       }
       else {
-        removeReadOnlyPaths();
+        removeDefaultReadOnlyPaths();
       }
     }
   }
 
-  private void addReadOnlyPaths() {
+  private void addDefaultReadOnlyPaths() {
     for (String url : defaultPaths) {
       pathChooserCombo.getComboBox().addItem(new ListItem(url, true));
     }
   }
 
-  private void removeReadOnlyPaths() {
+  private void removeDefaultReadOnlyPaths() {
     //for each element in the combo box, remove those that are marked as default.
     /*List<ListItem> toRemove = pathChooserCombo.getComboBox().get.stream().filter(item -> item.readOnly).collect(Collectors.toList());
     for (ListItem item : toRemove) {
