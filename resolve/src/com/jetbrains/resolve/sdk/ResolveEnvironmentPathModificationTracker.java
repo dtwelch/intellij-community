@@ -19,7 +19,7 @@ public class ResolveEnvironmentPathModificationTracker {
   private final Collection<VirtualFile> resolvePathRoots = ContainerUtil.newLinkedHashSet();
 
   public ResolveEnvironmentPathModificationTracker() {
-    String resPath = ResolveEnvUtil.retrieveRESOLVEPath();
+    String resPath = ResolveEnvUtil.retrieveResolvePathFromEnv();
     if (resPath != null) {
       String home = SystemProperties.getUserHome();
       for (String s : StringUtil.split(resPath, File.pathSeparator)) {

@@ -131,7 +131,6 @@ public class ResolveActiveCompilerConfigurable implements Configurable {
     if (!sdkList.contains(selection)) {
       selection = null;
     }
-    // if the selection is a non-matching virtualenv, show it anyway
     if (selection != null && !sdkList.contains(selection)) {
       sdkList.add(0, selection);
     }

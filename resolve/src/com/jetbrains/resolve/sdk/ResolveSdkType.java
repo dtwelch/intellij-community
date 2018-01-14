@@ -3,11 +3,7 @@ package com.jetbrains.resolve.sdk;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.SimpleModificationTracker;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.HashSet;
 import com.jetbrains.resolve.ResolveBundle;
 import com.jetbrains.resolve.ResolveIcons;
 import org.jdom.Element;
@@ -17,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 /*
  * @author dtwelch
@@ -59,13 +53,7 @@ public class ResolveSdkType extends SdkType {
 
   @Override
   public boolean isValidSdkHome(String path) {
-    ResolveSdkService.LOG.debug("Validating Resolve sdk path: " + path);
-    String jarPath = ResolveSdkService.getResolveCompilerJarPath(path);
-    if (jarPath == null) {
-      ResolveSdkService.LOG.debug("Resolve compiler jar is not found.. ");
-      return false;
-    }
-    return true;
+    return ResolveSdkUtil.isValidSdkHome(path);
   }
 
   @NotNull
@@ -81,7 +69,7 @@ public class ResolveSdkType extends SdkType {
           }
         }
       }
-    }.withTitle(ResolveBundle.message("sdk.select.path")).withShowHiddenFiles(false);
+    }.withTitle(ResolveBundle.message("sdk.select.compiler.path")).withShowHiddenFiles(false);
   }
 
   @Nullable

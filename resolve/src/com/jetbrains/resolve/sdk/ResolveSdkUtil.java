@@ -1,9 +1,10 @@
 // Copyright 2000-2017 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.jetbrains.resolve.sdk;
 
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -16,6 +17,8 @@ import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.util.Function;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.resolve.ResolveBundle;
+import com.jetbrains.resolve.ResolveConstants;
 import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
 import com.jetbrains.resolve.library.ResolveLibrariesService;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +29,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.intellij.util.containers.ContainerUtil.newLinkedHashSet;
 
+
+//TODO: We can probably get rid of this "ResolveSdkService" nonsense; move it into SdkUtil perhaps.
 public class ResolveSdkUtil {
+  protected static final Logger LOG = Logger.getInstance("#com.jetbrains.resolve.sdk.ResolveSdkUtil");
 
   // \w   A word character, short for [a-zA-Z_0-9]
   // \s   A whitespace character
@@ -40,10 +45,55 @@ public class ResolveSdkUtil {
 
   private static final Key<String> RESOLVE_VER_DATA_KEY = Key.create("RESOLVE_VERSION_KEY");
 
-  public static String getResolvePathDefaultBaseDir() {
-    final String userHome = SystemProperties.getUserHome();
-    return userHome.replace('/', File.separatorChar) + File.separator + "Documents"
-           + File.separator + "resolvework" + File.separator + "src";
+  @NotNull
+  public static FileChooserDescriptor getResolveWorkspaceChooserDescriptor() {
+    return new FileChooserDescriptor(false, true, false, false, false, false) {
+      @Override
+      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
+        if (files.length != 0) {
+          VirtualFile selectedFile = files[0];
+          if (!selectedFile.getName().equals(ResolveConstants.RESOLVEPATH_DIR_NAME)) {
+            throw new Exception(ResolveBundle.message("sdk.error.unrecognized.workspace.name", selectedFile));
+          }
+        }
+      }
+    }.withTitle(ResolveBundle.message("sdk.select.workspace.path")).withShowHiddenFiles(false);
+  }
+
+  public static FileChooserDescriptor getResolveRootChooserDescriptor() {
+    return new FileChooserDescriptor(false, true, false, false, false, false) {
+      @Override
+      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
+        if (files.length != 0) {
+
+          if (!isValidSdkHome(files[0].getPath())) {
+            throw new Exception(ResolveBundle.message("sdk.error.invalid.compiler.name", files[0].getName()));
+          }
+        }
+      }
+    }.withTitle(ResolveBundle.message("sdk.select.compiler.path")).withShowHiddenFiles(false);
+  }
+
+  //TODO: Perhaps also insist that "valid" sdk home dirs have a well-formed VERSION.txt file...
+  public static boolean isValidSdkHome(String path) {
+    LOG.debug("Validating Resolve sdk path: " + path);
+    String jarPath = getResolveCompilerJarPath(path);
+    if (jarPath == null) {
+      LOG.debug("Resolve compiler jar is not found.. ");
+      return false;
+    }
+    return true;
+  }
+
+  @Nullable
+  public static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
+    if (sdkHomePath != null) {
+      File compiler = new File(sdkHomePath + File.separator + "compiler" + File.separator + "resolve.jar");
+      if (compiler.exists()) {
+        return compiler.getAbsolutePath();
+      }
+    }
+    return null;
   }
 
   /**
@@ -57,8 +107,19 @@ public class ResolveSdkUtil {
 
   @NotNull
   public static File findSequentNonExistingResolveBaseDir() {
-    String resolveWorkBaseDir = getResolvePathDefaultBaseDir();
+    String resolveWorkBaseDir = suggestResolveWorkspaceDirectory();
     return FileUtil.findSequentNonexistentFile(new File(resolveWorkBaseDir), "newComponent", "");
+  }
+
+  /**
+   * Returns a suggested directory for where a user may consider storing their <tt>resolvework</tt>.
+   */
+  //TODO: Create diff suggestions for Windows.
+  @NotNull
+  public static String suggestResolveWorkspaceDirectory() {
+    final String userHome = SystemProperties.getUserHome();
+    return userHome.replace('/', File.separatorChar) + File.separator + "Documents"
+           + File.separator + "resolvework" + File.separator + "src";
   }
 
   @Nullable
@@ -90,17 +151,17 @@ public class ResolveSdkUtil {
           String text = VfsUtilCore.loadText(versionFile);
           String version = parseResolveVersion(text);
           if (version == null) {
-            ResolveSdkService.LOG.debug("Cannot parse Resolve version in VERSION.txt");
+            LOG.debug("Cannot parse Resolve version in VERSION.txt");
           }
           return version;
         }
         else {
-          ResolveSdkService.LOG.debug("Cannot find Resolve version file in sdk path: " + sdkPath);
+          LOG.debug("Cannot find Resolve version file in sdk path: " + sdkPath);
         }
       }
     }
     catch (IOException e) {
-      ResolveSdkService.LOG.debug("Cannot find Resolve version file in sdk path: " + sdkPath, e);
+      LOG.debug("Cannot find Resolve version file in sdk path: " + sdkPath, e);
     }
     return null;
   }
