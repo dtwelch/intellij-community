@@ -201,7 +201,6 @@ public class ProjectConfigurable extends ProjectStructureElementConfigurable<Pro
     myContext.getDaemonAnalyzer().queueUpdate(mySettingsElement);
   }
 
-
   @Override
   public void apply() throws ConfigurationException {
     final CompilerProjectExtension compilerProjectExtension = CompilerProjectExtension.getInstance(myProject);

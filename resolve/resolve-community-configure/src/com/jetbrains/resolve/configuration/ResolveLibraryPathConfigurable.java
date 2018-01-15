@@ -1,21 +1,21 @@
 package com.jetbrains.resolve.configuration;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDialog;
+import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.ComboboxWithBrowseButton;
-import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.*;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBList;
 import com.intellij.util.IconUtil;
-import com.intellij.util.ui.JBUI;
+import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
-import com.jetbrains.resolve.library.ResolveEnvUtil;
 import com.jetbrains.resolve.library.ResolveLibrariesService;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.Nls;
@@ -24,38 +24,36 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResolveLibraryPathConfigurable implements Configurable {
 
   private final ResolveLibrariesService<?> librariesService;
   private final Project project;
-  private JPanel mainPanel;
+  private JPanel mainPanel = new JPanel(new BorderLayout());
   private final String[] defaultPaths;
+  private TextFieldWithBrowseButton pathLocationField;
+  private final CollectionListModel<ListItem> listModel = new CollectionListModel<>();
 
-  private JButton detailsButton;
-  private ListItem defaultItem;
-  private final JBCheckBox useEnvResolvePathCheckBox = new JBCheckBox("Use RESOLVEPATH that's defined in the system environment");
+  private final JBCheckBox useEnvResolvePathCheckBox = new JBCheckBox("Defer to RESOLVEPATH that's defined in the system environment");
   private ComboboxWithBrowseButton pathChooserCombo = new ComboboxWithBrowseButton();
 
-  public ResolveLibraryPathConfigurable(@NotNull Project project, @NotNull ResolveLibrariesService librariesService, String... defaultUrls) {
+  public ResolveLibraryPathConfigurable(@NotNull Project project,
+                                        @NotNull ResolveLibrariesService librariesService,
+                                        String... defaultUrls) {
     this.project = project;
     this.librariesService = librariesService;
     this.defaultPaths = defaultUrls;
-    layoutPanel();
-    initContent();
-  }
 
-  public void layoutPanel() {
-    mainPanel = new JPanel(new GridBagLayout());
-    pathChooserCombo.getComboBox().setRenderer(new ColoredListCellRenderer() {
+    JBList filesList = new JBList(listModel);
+    filesList.setCellRenderer(new ColoredListCellRenderer() {
       @Override
       protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected, boolean hasFocus) {
         ListItem item = (ListItem)value;
         String url = item.url;
         if (item.defaultUrl) {
-          append("[Default] ", SimpleTextAttributes.GRAY_ATTRIBUTES);
+          append("[DEFAULT] ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         }
         VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
         if (file != null) {
@@ -68,42 +66,51 @@ public class ResolveLibraryPathConfigurable implements Configurable {
         }
       }
     });
-    detailsButton = pathChooserCombo.getButton();
+    ToolbarDecorator decorator = ToolbarDecorator.createDecorator(filesList).disableUpDownActions()
+      .setAddAction(button -> {
+        FileChooserDialog fileChooser = FileChooserFactory.getInstance()
+          .createFileChooser(ResolveSdkUtil.getResolveWorkspaceChooserDescriptor(), null, filesList);
 
-    GridBagConstraints c = new GridBagConstraints();
-    c.fill = GridBagConstraints.HORIZONTAL;
-    c.anchor = GridBagConstraints.NORTH;
-    c.insets = JBUI.insets(2);
-    c.gridx = 0;
-    c.gridy = 0;
-    c.weightx = 0.1;
-    c.weighty = 1;
-    mainPanel.add(pathChooserCombo, c);
-    c.gridy = 1;
-    c.anchor = GridBagConstraints.NORTH;
-    c.weighty = 1;
-    mainPanel.add(useEnvResolvePathCheckBox, c);
-  }
+        VirtualFile fileToSelect = null;
+        ListItem lastItem = ContainerUtil.getLastItem(listModel.getItems());
+        if (lastItem != null) {
+          fileToSelect = VirtualFileManager.getInstance().findFileByUrl(lastItem.url);
+        }
 
-  public void initContent() {
-    defaultItem = new ListItem(ResolveEnvUtil.getDefaultResolvePath(), true);
-    pathChooserCombo.getComboBox().addItem(defaultItem);
-    useEnvResolvePathCheckBox.setSelected(true);
-    useEnvResolvePathCheckBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        FileChooserDescriptor descriptor = ResolveSdkUtil.getResolveWorkspaceChooserDescriptor();
-        descriptor.setForcedToUseIdeaFileChooser(true);
-        /*FileChooser.chooseFiles(descriptor, null, ResolveSdkUtil.suggestResolveWorkspaceDirectory(), new Consumer<List<VirtualFile>>() {
-          @Override
-          public void consume(java.util.List<VirtualFile> files) {
-            if (files.isEmpty()) return;
+        VirtualFile[] newDirectories = fileChooser.choose(null, fileToSelect);
+        if (newDirectories.length > 0) {
+          for (VirtualFile newDirectory : newDirectories) {
+            String newDirectoryUrl = newDirectory.getUrl();
+            boolean alreadyAdded = false;
+            for (ListItem item : listModel.getItems()) {
+              if (newDirectoryUrl.equals(item.url) && !item.defaultUrl) {
+                filesList.clearSelection();
+                filesList.setSelectedValue(item, true);
+                // scrollToSelection(filesList);
+                alreadyAdded = true;
+                break;
+              }
+            }
+            if (!alreadyAdded) {
+              listModel.add(new ListItem(newDirectoryUrl, false));
+            }
           }
-        });*/
-      }
-    });
-
+        }
+      })
+      .setRemoveActionUpdater(event -> {
+        for (Object selectedValue : filesList.getSelectedValuesList()) {
+          if (((ListItem)selectedValue).defaultUrl) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .setRemoveAction(button -> {
+        for (Object selectedValue : filesList.getSelectedValuesList()) {
+          listModel.remove((ListItem)selectedValue);
+        }
+      });
+    mainPanel.add(decorator.createPanel(), BorderLayout.CENTER);
     if (librariesService instanceof ResolveApplicationLibrariesService) {
       useEnvResolvePathCheckBox.addActionListener(event -> {
         if (useEnvResolvePathCheckBox.isSelected()) {
@@ -113,14 +120,17 @@ public class ResolveLibraryPathConfigurable implements Configurable {
           removeDefaultReadOnlyPaths();
         }
       });
+      mainPanel.add(useEnvResolvePathCheckBox, BorderLayout.SOUTH);
     }
   }
 
   @Override
   public void reset() {
-    pathChooserCombo.getComboBox().removeAll();
+    listModel.removeAll();
     resetWorkspaceFromEnvironment();
-
+    for (String url : librariesService.getLibraryRootUrls()) {
+      listModel.add(new ListItem(url, false));
+    }
   }
 
   private void resetWorkspaceFromEnvironment() {
@@ -137,16 +147,15 @@ public class ResolveLibraryPathConfigurable implements Configurable {
 
   private void addDefaultReadOnlyPaths() {
     for (String url : defaultPaths) {
-      pathChooserCombo.getComboBox().addItem(new ListItem(url, true));
+      listModel.add(new ListItem(url, true));
     }
   }
 
   private void removeDefaultReadOnlyPaths() {
-    //for each element in the combo box, remove those that are marked as default.
-    /*List<ListItem> toRemove = pathChooserCombo.getComboBox().get.stream().filter(item -> item.readOnly).collect(Collectors.toList());
+    List<ListItem> toRemove = listModel.getItems().stream().filter(item -> item.defaultUrl).collect(Collectors.toList());
     for (ListItem item : toRemove) {
-      myListModel.remove(item);
-    }*/
+      listModel.remove(item);
+    }
   }
 
   @Nls
