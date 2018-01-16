@@ -65,21 +65,6 @@ public class ResolveProjectGenerator extends DirectoryProjectGeneratorBase<Resol
     }
   }
 
-  /**
-   * @deprecated This method no longer has any effect. The standard interpreter chooser UI is always
-   * shown.
-   */
-  @Deprecated
-  @Contract(" -> false")
-  public boolean hideInterpreter() {
-    return false;
-  }
-
-  @Nullable
-  public BooleanFunction<ResolveProjectGenerator> beforeProjectGenerated(@Nullable final Sdk sdk) {
-    return null;
-  }
-
   public interface SettingsListener {
     void stateChanged();
   }

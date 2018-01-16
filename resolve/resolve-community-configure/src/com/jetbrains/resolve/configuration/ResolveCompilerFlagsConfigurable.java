@@ -1,48 +1,38 @@
-/*
- * Copyright 2000-2009 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.jetbrains.resolve.configuration;
 
+import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsConfiguration;
-import com.intellij.openapi.vcs.VcsShowOptionsSettingImpl;
-import com.intellij.openapi.vcs.changes.RemoteRevisionsCache;
 import com.intellij.openapi.vcs.changes.committed.CacheSettingsPanel;
+import com.intellij.ui.IdeBorderFactory;
+import com.intellij.util.ui.FormBuilder;
+import com.jetbrains.resolve.ResolveBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.awt.*;
 
-public class ResolveGeneralConfigurationPanel extends JPanel implements Configurable {
+public class ResolveCompilerFlagsConfigurable extends JPanel implements Configurable {
 
-  private JPanel myPanel;
+  private final Project project;
+  private JCheckBox autoImportStandardUses;
+  private JCheckBox compilerEnvVariables;
 
-  private final Project myProject;
-  private JCheckBox myAutoImportStandardUses;
-  private JCheckBox myCompilerEnvVariables;
-  private CacheSettingsPanel myCacheSettingsPanel;
+  public ResolveCompilerFlagsConfigurable(final Project project) {
+    this.project = project;
 
-  public ResolveGeneralConfigurationPanel(final Project project) {
-    add(new JLabel("SDADASDAS"));
-    myProject = project;
+    setLayout(new BorderLayout());
+    FormBuilder builder = FormBuilder.createFormBuilder();
+    autoImportStandardUses = new JCheckBox(ResolveBundle.message("sdk.settings.auto.import.std.uses"));
+    compilerEnvVariables = new JCheckBox(ResolveBundle.message("sdk.settings.show.compiler.env"));
+    builder.addComponent(autoImportStandardUses);
+    builder.addComponent(compilerEnvVariables);
+    JPanel result = builder.getPanel();
+    result.setBorder(IdeBorderFactory.createTitledBorder(ResolveBundle.message("sdk.settings.compiler.flags"), true));
+
+    add(result, BorderLayout.NORTH);
   }
 
   public void apply() throws ConfigurationException {
@@ -123,7 +113,7 @@ public class ResolveGeneralConfigurationPanel extends JPanel implements Configur
     for (VcsShowOptionsSettingImpl setting : myPromptOptions.keySet()) {
       myPromptOptions.get(setting).setSelected(setting.getValue());
     }
-    
+
     if (! myProject.isDefault()) {
       myTrackChangedOnServer.setSelected(settings.CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND);
       myChangedOnServerInterval.setValue(settings.CHANGED_ON_SERVER_INTERVAL);
@@ -131,11 +121,7 @@ public class ResolveGeneralConfigurationPanel extends JPanel implements Configur
       myCacheSettingsPanel.reset();
     }*/
   }
-
-  public JComponent getPanel() {
-    return myPanel;
-  }
-
+  
   @Nls
   @Override
   public String getDisplayName() {

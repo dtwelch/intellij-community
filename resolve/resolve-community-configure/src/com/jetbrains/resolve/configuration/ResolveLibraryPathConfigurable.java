@@ -112,7 +112,7 @@ public class ResolveLibraryPathConfigurable implements Configurable {
     };
     ToolbarDecorator decorator = ToolbarDecorator.createDecorator(filesList).disableUpDownActions()
       .setAddAction(addAction)
-      .setAddActionUpdater(e -> !useEnvResolvePathCheckBox.isSelected())
+      .setAddActionUpdater(e -> !useEnvResolvePathCheckBox.isSelected() && listModel.getSize() < 1)
       .setRemoveActionUpdater(event -> {
         for (Object selectedValue : filesList.getSelectedValuesList()) {
           if (((ListItem)selectedValue).defaultUrl) {
