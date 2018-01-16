@@ -14,6 +14,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.IconUtil;
 import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.ui.UIUtil;
 import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
 import com.jetbrains.resolve.library.ResolveLibrariesService;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
@@ -23,9 +24,23 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A configurable for adjusting the project's resolve path settings. Note that much of this class is derived from functionality
+ * already present in the go plugin located here: https://github.com/go-lang-plugin-org/go-lang-idea-plugin
+ * <p>
+ * Here are some things that need doing still that have implications to the design and orginization of this configurable:
+ * <ul>
+ * <li>Adjust {@code ResolveLibrariesService} to track only a single url</li>
+ * <li>Change this class accordingly; make sure users can only add a single url</li>
+ * <li>Figure out what the difference between {@link ResolveApplicationLibrariesService} and
+ * {@link com.jetbrains.resolve.library.ResolveProjectLibrariesService}</li>
+ * <li>Change this class accordingly; make sure users can only add a single url</li>
+ * </ul>
+ */
 public class ResolveLibraryPathConfigurable implements Configurable {
 
   private final ResolveLibrariesService<?> librariesService;
@@ -171,17 +186,38 @@ public class ResolveLibraryPathConfigurable implements Configurable {
     return mainPanel;
   }
 
+  @NotNull
+  private Collection<String> getUserDefinedUrls() {
+    Collection<String> libraryUrls = ContainerUtil.newArrayList();
+    for (ListItem item : listModel.getItems()) {
+      if (!item.defaultUrl) {
+        libraryUrls.add(item.url);
+      }
+    }
+    return libraryUrls;
+  }
+
   @Override
   public boolean isModified() {
-    return false;
+    return !getUserDefinedUrls().equals(librariesService.getLibraryRootUrls()) ||
+           librariesService instanceof ResolveApplicationLibrariesService &&
+           ((ResolveApplicationLibrariesService)librariesService).isUseResolvePathFromSystemEnvironment() !=
+           useEnvResolvePathCheckBox.isSelected();
   }
 
   @Override
   public void apply() throws ConfigurationException {
-   /* librariesService.setLibraryRootUrl(getSelectedPathUrl());
-    if (librariesService instanceof GoApplicationLibrariesService) {
-      ((GoApplicationLibrariesService)myLibrariesService).setUseGoPathFromSystemEnvironment(myUseEnvGoPathCheckBox.isSelected());
-    }*/
+    librariesService.setLibraryRootUrls(getUserDefinedUrls());
+    if (librariesService instanceof ResolveApplicationLibrariesService) {
+      ((ResolveApplicationLibrariesService)librariesService).setUseGoPathFromSystemEnvironment(useEnvResolvePathCheckBox.isSelected());
+    }
+  }
+
+  @Override
+  public void disposeUIResources() {
+    UIUtil.dispose(useEnvResolvePathCheckBox);
+    UIUtil.dispose(mainPanel);
+    listModel.removeAll();
   }
 
   private static class ListItem {
