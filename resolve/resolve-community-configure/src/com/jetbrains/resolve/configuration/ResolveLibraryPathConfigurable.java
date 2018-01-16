@@ -5,7 +5,6 @@ import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -33,11 +32,8 @@ public class ResolveLibraryPathConfigurable implements Configurable {
   private final Project project;
   private JPanel mainPanel = new JPanel(new BorderLayout());
   private final String[] defaultPaths;
-  private TextFieldWithBrowseButton pathLocationField;
   private final CollectionListModel<ListItem> listModel = new CollectionListModel<>();
-
   private final JBCheckBox useEnvResolvePathCheckBox = new JBCheckBox("Defer to RESOLVEPATH that's defined in the system environment");
-  private ComboboxWithBrowseButton pathChooserCombo = new ComboboxWithBrowseButton();
 
   public ResolveLibraryPathConfigurable(@NotNull Project project,
                                         @NotNull ResolveLibrariesService librariesService,
@@ -53,7 +49,7 @@ public class ResolveLibraryPathConfigurable implements Configurable {
         ListItem item = (ListItem)value;
         String url = item.url;
         if (item.defaultUrl) {
-          append("[DEFAULT] ", SimpleTextAttributes.GRAY_ATTRIBUTES);
+          append("[Default] ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         }
         VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
         if (file != null) {
@@ -66,8 +62,9 @@ public class ResolveLibraryPathConfigurable implements Configurable {
         }
       }
     });
-    ToolbarDecorator decorator = ToolbarDecorator.createDecorator(filesList).disableUpDownActions()
-      .setAddAction(button -> {
+    AnActionButtonRunnable addAction = new AnActionButtonRunnable() {
+      @Override
+      public void run(AnActionButton button) {
         FileChooserDialog fileChooser = FileChooserFactory.getInstance()
           .createFileChooser(ResolveSdkUtil.getResolveWorkspaceChooserDescriptor(), null, filesList);
 
@@ -96,7 +93,11 @@ public class ResolveLibraryPathConfigurable implements Configurable {
             }
           }
         }
-      })
+      }
+    };
+    ToolbarDecorator decorator = ToolbarDecorator.createDecorator(filesList).disableUpDownActions()
+      .setAddAction(addAction)
+      .setAddActionUpdater(e -> !useEnvResolvePathCheckBox.isSelected())
       .setRemoveActionUpdater(event -> {
         for (Object selectedValue : filesList.getSelectedValuesList()) {
           if (((ListItem)selectedValue).defaultUrl) {
