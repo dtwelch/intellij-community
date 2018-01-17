@@ -1,10 +1,8 @@
 package com.jetbrains.resolve.configuration;
 
-import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.changes.committed.CacheSettingsPanel;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.util.ui.FormBuilder;
 import com.jetbrains.resolve.ResolveBundle;
@@ -121,7 +119,7 @@ public class ResolveCompilerFlagsConfigurable extends JPanel implements Configur
       myCacheSettingsPanel.reset();
     }*/
   }
-  
+
   @Nls
   @Override
   public String getDisplayName() {
