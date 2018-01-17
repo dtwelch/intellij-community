@@ -143,11 +143,12 @@ public class ResolveStudioInitialConfigurator {
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
     editorColorsScheme.setEditorFontSize(16);
     editorColorsScheme.setEditorFontName("IsabelleText");
-    editorColorsScheme.setLineSpacing(.9f);
+    editorColorsScheme.setLineSpacing(1);
 
     EditorColorsManager.getInstance().getGlobalScheme().setEditorFontSize(16);
     EditorColorsManager.getInstance().getGlobalScheme().setEditorFontName("IsabelleText");
-    EditorColorsManager.getInstance().getGlobalScheme().setLineSpacing(.9f);
+    EditorColorsManager.getInstance().getGlobalScheme().setLineSpacing(1);
+
     MessageBusConnection connection = bus.connect();
     connection.subscribe(AppLifecycleListener.TOPIC, new AppLifecycleListener() {
       @Override

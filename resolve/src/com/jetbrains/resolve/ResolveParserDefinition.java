@@ -33,20 +33,6 @@ public class ResolveParserDefinition implements ParserDefinition {
 
   public static final TokenSet WHITESPACES = TokenSet.create(WS, NLS);
   public static final TokenSet COMMENTS = TokenSet.create(LINE_COMMENT, MULTILINE_COMMENT);
-  public static final TokenSet STRING_LITERALS = TokenSet.create(STRING, CHAR);
-  public static final TokenSet NUMBERS = TokenSet.create(INT);
-  public static final TokenSet KEYWORDS = TokenSet.create(BY, CART_PROD, CHANGING, CONCEPT, CONSTRAINTS,
-                                                          CONVENTIONS, CORRESPONDENCE, CLASSIFICATION, CHAINABLE, DECREASING, DEFINITION, DO, ELSE, END, ENSURES,
-                                                          ENHANCEMENT, EXEMPLAR, EXISTS,
-                                                          EXTENSION, EXTERNALLY, FACILITY, FAMILY, FAMILY_TYPE, FOR, FORALL, FROM, IF, REALIZATION, REALIZED,
-                                                          INDUCTIVE, INITIALIZATION, IS, MAINTAINING, MODELED, NOTICE, OPERATION, OF, OTHERWISE, PARAM_TYPE, PRECIS,
-                                                          PROCEDURE, PROG_IF, RECORD, RECURSIVE, REQUIRES, THEN, USES, VAR, WHICH_ENTAILS, WHILE, CATEGORICAL,
-                                                          IMPLICIT, THEOREM, COROLLARY, ENHANCED);
-
-  public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, PRIME, COLON_EQUALS,
-                                                           LBRACK, RBRACK, LANGLE, RANGLE, LCUP, RCUP, LCEIL, RCEIL, DBL_BAR, BAR, COLON_EQUALS_COLON,
-                                                           TRUE, FALSE);
-  public static final TokenSet PARAMETER_MODES = TokenSet.create(ALTERS, UPDATES, CLEARS, RESTORES, PRESERVES, REPLACES, EVALUATES);
 
   @NotNull
   @Override
@@ -104,6 +90,15 @@ public class ResolveParserDefinition implements ParserDefinition {
     return ResTypes.Factory.createElement(node);
   }
 
+  /**
+   * Create the root of your PSI tree (a {@link PsiFile}).
+   * <p>
+   * From IntelliJ IDEA Architectural Overview: "A PSI (Program Structure Interface) file is the root of a structure
+   * representing the contents of a file as a hierarchy of elements in a particular programming language."
+   * <p>
+   * Psi based File is to be distinguished from a {@link com.intellij.lang.FileASTNode}, which is a parse
+   * tree node that eventually becomes a {@link PsiFile}. From this, we can get it back via: {@link PsiFile#getNode}.
+   */
   @Override
   public PsiFile createFile(FileViewProvider viewProvider) {
     return new ResFile(viewProvider);
