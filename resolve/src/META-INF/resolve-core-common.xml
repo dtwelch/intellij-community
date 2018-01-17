@@ -12,7 +12,7 @@
     <applicationService serviceImplementation="com.jetbrains.resolve.sdk.ResolveEnvironmentPathModificationTracker"/>
     <projectService serviceImplementation="com.jetbrains.resolve.library.ResolveProjectLibrariesService"/>
     <moduleService serviceImplementation="com.jetbrains.resolve.library.ResolveModuleLibrariesService"/>
-
+    <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
     <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
