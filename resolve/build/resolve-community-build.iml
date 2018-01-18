@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Groovy" level="project" />
     <orderEntry type="module" module-name="platform-build-scripts" />
+    <orderEntry type="module" module-name="build" />
+    <orderEntry type="module" module-name="jps-standalone-builder" />
   </component>
 </module>

@@ -1,0 +1,5 @@
+import org.jetbrains.intellij.build.BuildTasks
+
+target("default": "Default") {
+  BuildTasks.buildProduct("org.jetbrains.intellij.build.resolvestudio.ResolveStudioProperties", ["resolve/build/groovy"], "", this)
+}
