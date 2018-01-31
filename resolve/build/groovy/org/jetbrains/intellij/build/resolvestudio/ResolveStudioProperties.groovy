@@ -47,16 +47,28 @@ class ResolveStudioProperties extends ProductProperties {
     "resolvestudioRS-$buildNumber"
   }
 
-  //Note: Null for each of these apparently means don't build one for this particular OS... So we really only want to
-  //implement the one for MacOS for now then eventually Windows (as it's objectively less important).
   @Override
-  WindowsDistributionCustomizer createWindowsCustomizer(String projectHome) {
+  LinuxDistributionCustomizer createLinuxCustomizer(String projectHome) {
     return null
   }
 
   @Override
-  LinuxDistributionCustomizer createLinuxCustomizer(String projectHome) {
-    return null
+  WindowsDistributionCustomizer createWindowsCustomizer(String projectHome) {
+    return new ResolveStudioWindowsDistributionCustomizer() {
+      {
+        //TODO: handle these for RS.. (I haven't yet figured out how to produce an MSI installer or anything)
+        installerImagesPath = "$projectHome/python/build/resources"
+        fileAssociations = [".resolve"]
+      }
+
+      @Override
+      String getFullNameIncludingEdition(ApplicationInfoProperties applicationInfo) {
+        "PyCharm Community Edition"
+      }
+
+      @Override
+      String getBaseDownloadUrlForJre() { "https://download.jetbrains.com/python" }
+    }
   }
 
   @Override
