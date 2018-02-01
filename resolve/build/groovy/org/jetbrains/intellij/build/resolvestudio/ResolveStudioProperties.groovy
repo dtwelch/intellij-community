@@ -59,6 +59,7 @@ class ResolveStudioProperties extends ProductProperties {
         //TODO: handle these for RS.. (I haven't yet figured out how to produce an MSI installer or anything)
         installerImagesPath = "$projectHome/python/build/resources"
         fileAssociations = [".resolve"]
+        bundledJreArchitecture = null;
       }
 
       @Override

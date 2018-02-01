@@ -103,6 +103,8 @@ public class ResolveSdkUtil {
    * Note that right now, <tt>RESOLVEPATH</tt> is a single entity as opposed to a list of 'roots'. I've just kept it
    * in list form for simplicity for now (the original GoLang plugin did it this way because Go apparently supports multiple
    * semicolon-delimited GOPATHs)
+   * <p>
+   * So in other words, the returned collection should always be a singleton.
    */
   @NotNull
   public static Collection<VirtualFile> getResolvePathRootsFromEnvironment() {
