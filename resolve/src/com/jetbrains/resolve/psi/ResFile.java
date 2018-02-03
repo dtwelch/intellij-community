@@ -15,34 +15,34 @@ import javax.swing.*;
 
 public class ResFile extends PsiFileBase {
 
-    public ResFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, ResolveLanguage.INSTANCE);
-    }
+  public ResFile(@NotNull FileViewProvider viewProvider) {
+    super(viewProvider, ResolveLanguage.INSTANCE);
+  }
 
-    @NotNull
-    @Override
-    public FileType getFileType() {
-        return ResolveFileType.INSTANCE;
-    }
+  @NotNull
+  @Override
+  public FileType getFileType() {
+    return ResolveFileType.INSTANCE;
+  }
 
-    @NotNull
-    @Override
-    public PsiElement[] getChildren() {
-        return super.getChildren();
-    }
+  @NotNull
+  @Override
+  public PsiElement[] getChildren() {
+    return super.getChildren();
+  }
 
-    @Nullable
-    public ResModuleDecl getEnclosedModule() {
-        return PsiTreeUtil.findChildOfType(this, ResModuleDecl.class);
-    }
+  @Nullable
+  public ResModuleDecl getEnclosedModule() {
+    return PsiTreeUtil.findChildOfType(this, ResModuleDecl.class);
+  }
 
-    @Override
-    public Icon getIcon(int s) {
-       // if (getEnclosedModule() == null) {
-            return ResolveIcons.RESOLVE_FILE;
-      //  }
-      //  else {
-      //      return getEnclosedModule().getIcon(0);
-      //  }
+  @Override
+  public Icon getIcon(int s) {
+    if (getEnclosedModule() == null) {
+      return ResolveIcons.RESOLVE_FILE;
     }
+    else {
+      return getEnclosedModule().getIcon(0);
+    }
+  }
 }

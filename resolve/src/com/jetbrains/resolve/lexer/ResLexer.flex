@@ -56,6 +56,12 @@ U_RELATION    = ("≤"|"≥"|"≠"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"�
 
 U_GREEK       = [\u0370-\u03FF]
 
+//if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
+SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<=")
+STR     = "\""
+STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
+ESCAPES = [abfnrtv]
+
 %%
 <YYINITIAL> {
 
@@ -63,6 +69,7 @@ U_GREEK       = [\u0370-\u03FF]
 {NL}+                                   { return NLS; }
 {LINE_COMMENT}                          { return LINE_COMMENT; }
 {MULTILINE_COMMENT}                     { return MULTILINE_COMMENT; }
+{STRING}                                { return STRING; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
 "'" [^\\] "'"                           { return CHAR; }
@@ -162,6 +169,37 @@ U_GREEK       = [\u0370-\u03FF]
 "otherwise"                             { return OTHERWISE; }
 "of"                                    { return OF; }
 
+"Procedure"                             { return PROCEDURE; }
+"Precis"                                { return PRECIS; }
+
+"Recursive"                             { return RECURSIVE; }
+"Recognition"                           { return RECOGNITION; }
+"Record"                                { return RECORD; }
+"requires"                              { return REQUIRES; }
+
+"then"                                  { return THEN; }
+"true"                                  { return TRUE; }
+"Theorem"                               { return THEOREM; }
+"Type"                                  { return FAMILY_TYPE; }
+"type"                                  { return PARAM_TYPE; }
+
+"uses"                                  { return USES; }
+"Var"                                   { return VAR; }
+"While"                                 { return WHILE; }
+"which_entails"                         { return WHICH_ENTAILS; }
+
+// Parameter modes
+
+"alters"                                { return ALTERS; }
+"updates"                               { return UPDATES; }
+"clears"                                { return CLEARS; }
+"restores"                              { return RESTORES; }
+"preserves"                             { return PRESERVES; }
+"replaces"                              { return REPLACES; }
+"evaluates"                             { return EVALUATES; }
+
+{MSYM}                                  { return MATHSYMBOL; }
+{SYM}                                   { return SYMBOL; }
 {IDENT}                                 { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
