@@ -15,10 +15,76 @@
     psiImplUtilClass="com.jetbrains.resolve.psi.impl.ResPsiImplUtil"
 
     tokens=[
-        SEMICOLON               = ';'
-        BAD_CHARACTER           = '"\\"'
-        FACILITY                = 'Facility'
-        PRECIS                  = 'Precis'
+        // Punctuation
+        POUND   = '#'
+        DOT     = '.'
+        LPAREN  = '('
+        RPAREN  = ')'
+        PRIME   = '′'
+
+        COLON       = ':'
+        TRICOLON    = 'ː'
+        COLON_COLON = '::'
+        SEMICOLON   = ';'
+        COMMA       = ','
+
+        // Brackets
+        DBL_BAR   = '∥'
+        LANGLE    = '⟨'
+        RANGLE    = '⟩'
+
+        LCEIL = '⌈'
+        RCEIL = '⌉'
+
+        LBRACK = '['
+        RBRACK = ']'
+
+        DBL_LBRACE = '{{'
+        DBL_RBRACE = '}}'
+
+        LBRACE  = '{'
+        RBRACE  = '}'
+        BAR     = '|'
+
+        // Builtin
+        EXISTS = '∃'
+        FORALL = '∀'
+        LAMBDA = 'λ'
+        TRI_EQUALS = '≜'
+        COLON_EQUALS = ':='
+        COLON_EQUALS_COLON = ':=:'
+        BAD_CHARACTER = '"\\"'
+
+        // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
+        // this in grammarkit's issue section. But for now this is just the way it is.
+        // Keywords (capitalized)
+        CART_PROD     = 'Cart_Prod'
+        CATEGORICAL   = 'Categorical'
+        CONCEPT       = 'Concept'
+        COROLLARY     = 'Corollary'
+        CHAINABLE     = 'Chainable'
+        DEFINES       = 'Defines'
+        DEFINITION    = 'Definition'
+        ENHANCEMENT   = 'Enhancement'
+        EXTENSION     = 'Extension'
+        FACILITY      = 'Facility'
+        IF_PROG       = 'If'
+        IMPLICIT      = 'Implicit'
+        INDUCTIVE     = 'Inductive'
+        OPERATION     = 'Operation'
+        PRECIS        = 'Precis'
+        PROCEDURE     = 'Procedure'
+        REALIZATION   = 'Realization'
+        RECOGNITION   = 'Recognition'
+        RECORD        = 'Record'
+        RECURSIVE     = 'Recursive'
+        THEOREM       = 'Theorem'
+        TYPE_FAMILY   = 'Type'
+        TYPE_PARAM    = 'type'
+        VALUED        = 'Valued'
+        VAR           = 'Var'
+        NOTICE        = 'Notice'
+        WHILE         = 'While'
 
         //these two are so grammarkit's live preview feature will work right,
         //disregard them otherwise
@@ -39,7 +105,24 @@ ModuleDecl ::=
     | FacilityModuleDecl
 
 PrecisModuleDecl ::= 'Precis' identifier ';'
+UsesList?
+//PrecisBlock
 end identifier ';' {pin(".*")=2}
 
 FacilityModuleDecl ::= 'Facility' identifier ';'
 'end' identifier ';' {pin(".*")=3}
+
+// uses, imports
+
+UsesList ::= uses UsesSpecs ';'  {pin(".*")=1}
+private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*")=1}
+
+//shouldGoDeeper (impl sets to false) here allows us to avoid adding completions for ResModuleIdentifierSpec's
+//there was an issue where qualifiers on math syms in say, global requires clauses, would resolve to a
+//ModuleIdentifierSpec during the delegate's "treeWalkUp" phase -- leaving us with a ModuleIdentifierSpec, not a file..
+//We don't want to resolve these until we're good and ready (i.e.: in {@link ResReference#processUsesImports})
+ModuleIdentifierSpec ::= ModuleIdentifier [FromClause] {pin=1 methods=[getFromLibraryIdentifier getName getIdentifier shouldGoDeeper]}
+private FromClause ::= from ModuleLibraryIdentifier {pin=1}
+
+ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}
+ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[getReferences getModuleLibraryIdentiferTextRange resolve] }

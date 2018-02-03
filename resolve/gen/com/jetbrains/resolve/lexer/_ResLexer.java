@@ -1487,7 +1487,7 @@ class _ResLexer implements FlexLexer, ResTypes {
             // fall through
           case 144: break;
           case 43: 
-            { return PROG_IF;
+            { return IF_PROG;
             } 
             // fall through
           case 145: break;
@@ -1527,7 +1527,7 @@ class _ResLexer implements FlexLexer, ResTypes {
             // fall through
           case 152: break;
           case 51: 
-            { return PARAM_TYPE;
+            { return TYPE_PARAM;
             } 
             // fall through
           case 153: break;
@@ -1552,7 +1552,7 @@ class _ResLexer implements FlexLexer, ResTypes {
             // fall through
           case 157: break;
           case 56: 
-            { return FAMILY_TYPE;
+            { return TYPE_FAMILY;
             } 
             // fall through
           case 158: break;

@@ -71,6 +71,7 @@ public class ResParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // 'Precis' identifier ';'
+  // //PrecisBlock
   // end identifier ';'
   public static boolean PrecisModuleDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisModuleDecl")) return false;
@@ -79,6 +80,43 @@ public class ResParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, PRECIS_MODULE_DECL, null);
     r = consumeTokens(b, 2, PRECIS, IDENTIFIER, SEMICOLON, END, IDENTIFIER, SEMICOLON);
     p = r; // pin = 2
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // ModuleIdentifierSpec (',' ModuleIdentifierSpec)*
+  static boolean UsesSpecs(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "UsesSpecs")) return false;
+    if (!nextTokenIs(b, MODULEIDENTIFIERSPEC)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeToken(b, MODULEIDENTIFIERSPEC);
+    p = r; // pin = 1
+    r = r && UsesSpecs_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // (',' ModuleIdentifierSpec)*
+  private static boolean UsesSpecs_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "UsesSpecs_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!UsesSpecs_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "UsesSpecs_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // ',' ModuleIdentifierSpec
+  private static boolean UsesSpecs_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "UsesSpecs_1_0")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeTokens(b, 1, COMMA, MODULEIDENTIFIERSPEC);
+    p = r; // pin = 1
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }

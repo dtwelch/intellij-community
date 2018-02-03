@@ -153,7 +153,7 @@ ESCAPES = [abfnrtv]
 "from"                                  { return FROM; }
 
 "if"                                    { return IF; }
-"If"                                    { return PROG_IF; }
+"If"                                    { return IF_PROG; }
 "Implicit"                              { return IMPLICIT; }
 "initialization"                        { return INITIALIZATION; }
 "Inductive"                             { return INDUCTIVE; }
@@ -180,8 +180,8 @@ ESCAPES = [abfnrtv]
 "then"                                  { return THEN; }
 "true"                                  { return TRUE; }
 "Theorem"                               { return THEOREM; }
-"Type"                                  { return FAMILY_TYPE; }
-"type"                                  { return PARAM_TYPE; }
+"Type"                                  { return TYPE_FAMILY; }
+"type"                                  { return TYPE_PARAM; }
 
 "uses"                                  { return USES; }
 "Var"                                   { return VAR; }
