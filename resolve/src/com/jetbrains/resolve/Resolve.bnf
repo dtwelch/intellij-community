@@ -106,7 +106,7 @@ ModuleDecl ::=
 
 PrecisModuleDecl ::= 'Precis' identifier ';'
 UsesList?
-//PrecisBlock
+PrecisBlock
 end identifier ';' {pin(".*")=2}
 
 FacilityModuleDecl ::= 'Facility' identifier ';'
@@ -126,3 +126,23 @@ private FromClause ::= from ModuleLibraryIdentifier {pin=1}
 
 ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}
 ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[getReferences getModuleLibraryIdentiferTextRange resolve] }
+
+// Module blocks & items
+
+PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+
+private ItemsRecover ::= !('end')
+
+private PrecisItem ::=
+          MathTheoremDecl
+        | MathStandardDefnDecl
+        /*| MathCategoricalDefnDecl
+        | MathRecognitionDecl
+        | MathInductiveDefnDecl*/ {pin=1 recoverWhile=PrecisItemRecover}
+
+private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end)
+
+
+// math constructs
+MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
+MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
