@@ -5,15 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResUsesList extends ResCompositeElement {
+public interface ResBinaryExp extends ResExp {
 
   @NotNull
-  List<ResModuleIdentifierSpec> getModuleIdentifierSpecList();
+  List<ResExp> getExpList();
+
+  @NotNull
+  ResExp getLeft();
 
   @Nullable
-  PsiElement getSemicolon();
-
-  @NotNull
-  PsiElement getUses();
+  ResExp getRight();
 
 }

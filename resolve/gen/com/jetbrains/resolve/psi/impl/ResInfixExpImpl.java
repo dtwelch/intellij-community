@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements ResFacilityModuleDecl {
+public class ResInfixExpImpl extends ResBinaryExpImpl implements ResInfixExp {
 
-  public ResFacilityModuleDeclImpl(ASTNode node) {
+  public ResInfixExpImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitFacilityModuleDecl(this);
+    visitor.visitInfixExp(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,9 +26,9 @@ public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements 
   }
 
   @Override
-  @Nullable
-  public PsiElement getEnd() {
-    return findChildByType(END);
+  @NotNull
+  public ResProgSymbolName getProgSymbolName() {
+    return findNotNullChildByClass(ResProgSymbolName.class);
   }
 
 }

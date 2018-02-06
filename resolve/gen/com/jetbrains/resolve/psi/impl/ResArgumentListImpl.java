@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements ResFacilityModuleDecl {
+public class ResArgumentListImpl extends ResCompositeElementImpl implements ResArgumentList {
 
-  public ResFacilityModuleDeclImpl(ASTNode node) {
+  public ResArgumentListImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitFacilityModuleDecl(this);
+    visitor.visitArgumentList(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,9 +26,21 @@ public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements 
   }
 
   @Override
+  @NotNull
+  public List<ResExp> getExpList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResExp.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getLparen() {
+    return findNotNullChildByType(LPAREN);
+  }
+
+  @Override
   @Nullable
-  public PsiElement getEnd() {
-    return findChildByType(END);
+  public PsiElement getRparen() {
+    return findChildByType(RPAREN);
   }
 
 }

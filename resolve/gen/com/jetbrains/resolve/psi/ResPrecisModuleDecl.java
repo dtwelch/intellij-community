@@ -7,10 +7,19 @@ import com.intellij.psi.PsiElement;
 
 public interface ResPrecisModuleDecl extends ResModuleDecl {
 
+  @Nullable
+  ResReferenceExp getReferenceExp();
+
+  @Nullable
+  ResUsesList getUsesList();
+
   @NotNull
   PsiElement getPrecis();
 
   @Nullable
   PsiElement getEnd();
+
+  @Nullable
+  PsiElement getFor();
 
 }

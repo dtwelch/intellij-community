@@ -255,7 +255,7 @@ public class ResolveModuleLibrariesInitializer implements ModuleComponent {
     public void run() {
       final Project project = myModule.getProject();
       synchronized (myLastHandledRESOLVEPathSourcesRoots) {
-        final Collection<VirtualFile> goPathSourcesRoots = ResolveSdkUtil.getResolvePathSourcesRoot(project, myModule);
+        final Collection<VirtualFile> goPathSourcesRoots = ResolveSdkUtil.getResolvePathSourcesRoot(project);
         //ResolveSdkUtil.getRESOLVEPathSources(project, myModule);
         final Set<VirtualFile> excludeRoots = ContainerUtil.newHashSet(ProjectRootManager.getInstance(project).getContentRoots());
         ProgressIndicatorProvider.checkCanceled();

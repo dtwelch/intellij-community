@@ -5,9 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResFacilityModuleDecl extends ResModuleDecl {
+public interface ResExp extends ResTypeOwner {
 
-  @Nullable
-  PsiElement getEnd();
+  //WARNING: getResType(...) is skipped
+  //matching getResType(ResExp, ...)
+  //methods are not found in ResPsiImplUtil
 
 }

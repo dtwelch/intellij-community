@@ -58,7 +58,7 @@
         // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
         // this in grammarkit's issue section. But for now this is just the way it is.
         // Keywords (capitalized)
-        CART_PROD     = 'Cart_Prod'
+        /*CART_PROD     = 'Cart_Prod'
         CATEGORICAL   = 'Categorical'
         CONCEPT       = 'Concept'
         COROLLARY     = 'Corollary'
@@ -66,14 +66,13 @@
         DEFINES       = 'Defines'
         DEFINITION    = 'Definition'
         ENHANCEMENT   = 'Enhancement'
-        EXTENSION     = 'Extension'
         FACILITY      = 'Facility'
         IF_PROG       = 'If'
         IMPLICIT      = 'Implicit'
         INDUCTIVE     = 'Inductive'
-        OPERATION     = 'Operation'
+        OPERATION     = 'Operation'*/
         PRECIS        = 'Precis'
-        PROCEDURE     = 'Procedure'
+        /*PROCEDURE     = 'Procedure'
         REALIZATION   = 'Realization'
         RECOGNITION   = 'Recognition'
         RECORD        = 'Record'
@@ -84,7 +83,7 @@
         VALUED        = 'Valued'
         VAR           = 'Var'
         NOTICE        = 'Notice'
-        WHILE         = 'While'
+        WHILE         = 'While'*/
 
         //these two are so grammarkit's live preview feature will work right,
         //disregard them otherwise
@@ -104,13 +103,15 @@ ModuleDecl ::=
       PrecisModuleDecl
     | FacilityModuleDecl
 
-PrecisModuleDecl ::= 'Precis' identifier ';'
+//TODO: Instead to 'Precis' identifier (extends identifier)? ';' that is, combine the precisModuleDecl
+//and PrecisExtensionModuleDecl.
+PrecisModuleDecl ::= 'Precis' identifier (for ReferenceExp)? ';'
 UsesList?
-PrecisBlock
+//PrecisBlock
 end identifier ';' {pin(".*")=2}
 
 FacilityModuleDecl ::= 'Facility' identifier ';'
-'end' identifier ';' {pin(".*")=3}
+end identifier ';' {pin(".*")=3}
 
 // uses, imports
 
@@ -125,20 +126,20 @@ ModuleIdentifierSpec ::= ModuleIdentifier [FromClause] {pin=1 methods=[getFromLi
 private FromClause ::= from ModuleLibraryIdentifier {pin=1}
 
 ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}
-ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[getReferences getModuleLibraryIdentiferTextRange resolve] }
+ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[getReferences getModuleLibraryIdentiferTextRange resolve]}
 
 // Module blocks & items
 
-PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+/*PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 
-private ItemsRecover ::= !('end')
+private ItemsRecover ::= !(end)
 
 private PrecisItem ::=
           MathTheoremDecl
-        | MathStandardDefnDecl
-        /*| MathCategoricalDefnDecl
-        | MathRecognitionDecl
-        | MathInductiveDefnDecl*/ {pin=1 recoverWhile=PrecisItemRecover}
+        //| MathRecognitionDecl
+       // | MathStandardDefnDecl
+        | MathCategoricalDefnDecl
+        | MathInductiveDefnDecl {pin=1 recoverWhile=PrecisItemRecover}
 
 private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end)
 
@@ -146,3 +147,25 @@ private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'C
 // math constructs
 MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
 MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
+*/
+
+// program expressions
+
+Exp ::= InfixExp | ParamExp | NestedExp | PrimeExp
+{methods=[getResType] implements="com.jetbrains.resolve.psi.ResTypeOwner"}
+fake BinaryExp ::= Exp+ { methods=[left="Exp[0]" right="Exp[1]"] extends=Exp}
+
+NestedExp ::= '(' Exp ')'   {pin=1 extends=Exp}
+SelectorExp ::= Exp '.' Exp {extends=BinaryExp}
+InfixExp ::= Exp ProgSymbolName Exp {extends=BinaryExp}
+ParamExp ::= NameExp ArgumentList {extends=Exp}
+ProgSymbolName ::= (identifier|symbol)
+
+NameExp ::= ReferenceExp QualifiedReferenceExp? {elementType=ReferenceExp}
+left QualifiedReferenceExp ::= '::' identifier {elementType=ReferenceExp}
+ReferenceExp ::= identifier { methods=[getReference getQualifier resolve shouldReferenceModule] extends=Exp}
+
+private PrimeExp ::= LiteralExp | SelectorExp | NameExp
+LiteralExp ::= (int|string|true|false)  {extends=Exp}
+ArgumentList ::= '(' ExpArgumentList? ')' {pin=1}
+private ExpArgumentList ::= Exp (',' Exp)* {pin(".*")=1}

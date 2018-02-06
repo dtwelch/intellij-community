@@ -43,18 +43,17 @@ public class ResolveLibrariesService<T extends ResolveLibrariesState>
     return (T)new ResolveLibrariesState();
   }
 
-  @NotNull
+  /*@NotNull
   public static Collection<? extends VirtualFile> getUserDefinedLibraries(@NotNull Module module) {
     Set<VirtualFile> result = ContainerUtil.newLinkedHashSet();
     ResolveModuleLibrariesService serv = ResolveModuleLibrariesService.getInstance(module);
     result.addAll(resolveLangRootsFromUrls(serv.getLibraryRootUrls()));
     result.addAll(getUserDefinedLibraries(module.getProject()));
     return result;
-  }
+  }*/
 
   @NotNull
-  public static Collection<? extends VirtualFile> getUserDefinedLibraries(
-    @NotNull Project project) {
+  public static Collection<? extends VirtualFile> getUserDefinedLibraries(@NotNull Project project) {
     Set<VirtualFile> result = ContainerUtil.newLinkedHashSet();
     result.addAll(resolveLangRootsFromUrls(ResolveProjectLibrariesService.getInstance(project).getLibraryRootUrls()));
     result.addAll(getUserDefinedLibraries());

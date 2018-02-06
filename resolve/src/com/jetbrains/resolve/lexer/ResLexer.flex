@@ -58,8 +58,8 @@ U_GREEK       = [\u0370-\u03FF]
 
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
 SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<=")
-STR     = "\""
-STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
+//STR     = "\""
+//STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 ESCAPES = [abfnrtv]
 
 %%
@@ -69,7 +69,7 @@ ESCAPES = [abfnrtv]
 {NL}+                                   { return NLS; }
 {LINE_COMMENT}                          { return LINE_COMMENT; }
 {MULTILINE_COMMENT}                     { return MULTILINE_COMMENT; }
-{STRING}                                { return STRING; }
+//{STRING}                                { return STRING; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
 "'" [^\\] "'"                           { return CHAR; }
@@ -118,88 +118,88 @@ ESCAPES = [abfnrtv]
 ":=:"                                   { return COLON_EQUALS_COLON; }
 
 // Keywords
-"by"                                    { return BY; }
+//"by"                                    { return BY; }
 
-"Cart_Prod"                             { return CART_PROD; }
-"Categorical"                           { return CATEGORICAL; }
-"changing"                              { return CHANGING; }
-"Chainable"                             { return CHAINABLE; }
-"Concept"                               { return CONCEPT; }
-"constraints"                           { return CONSTRAINTS; }
-"conventions"                           { return CONVENTIONS; }
-"Valued"                                { return VALUED; }
-"Corollary"                             { return COROLLARY; }
-"correspondence"                        { return CORRESPONDENCE; }
+//"Cart_Prod"                             { return CART_PROD; }
+//"Categorical"                           { return CATEGORICAL; }
+//"changing"                              { return CHANGING; }
+//"Chainable"                             { return CHAINABLE; }
+//"Concept"                               { return CONCEPT; }
+//"constraints"                           { return CONSTRAINTS; }
+//"conventions"                           { return CONVENTIONS; }
+//"Valued"                                { return VALUED; }
+//"Corollary"                             { return COROLLARY; }
+//"correspondence"                        { return CORRESPONDENCE; }
 
-"do"                                    { return DO; }
-"decreasing"                            { return DECREASING; }
-"Definition"                            { return DEFINITION; }
-"Def"                                   { return DEFINITION; }
-"Defines"                               { return DEFINES; }
+//"do"                                    { return DO; }
+//"decreasing"                            { return DECREASING; }
+//"Definition"                            { return DEFINITION; }
+//"Def"                                   { return DEFINITION; }
+//"Defines"                               { return DEFINES; }
 
-"else"                                  { return ELSE; }
-"Extension"                             { return EXTENSION; }
-"Enhancement"                           { return ENHANCEMENT; }
-"enhanced"                              { return ENHANCED; }
+//"else"                                  { return ELSE; }
+//"Enhancement"                           { return ENHANCEMENT; }
+//"enhanced"                              { return ENHANCED; }
 "end"                                   { return END;  }
-"ensures"                               { return ENSURES; }
-"exemplar"                              { return EXEMPLAR; }
-"externally"                            { return EXTERNALLY; }
+//"ensures"                               { return ENSURES; }
+//"exemplar"                              { return EXEMPLAR; }
+//"externally"                            { return EXTERNALLY; }
 
-"Facility"                              { return FACILITY;  }
-"false"                                 { return FALSE; }
-"family"                                { return FAMILY; }
+//"Facility"                              { return FACILITY;  }
+//"false"                                 { return FALSE; }
+//"family"                                { return FAMILY; }
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
-"if"                                    { return IF; }
-"If"                                    { return IF_PROG; }
-"Implicit"                              { return IMPLICIT; }
-"initialization"                        { return INITIALIZATION; }
-"Inductive"                             { return INDUCTIVE; }
-"is"                                    { return IS; }
+//"if"                                    { return IF; }
+//"If"                                    { return IF_PROG; }
+//"Implicit"                              { return IMPLICIT; }
+//"initialization"                        { return INITIALIZATION; }
+//"Inductive"                             { return INDUCTIVE; }
+//"is"                                    { return IS; }
 
-"realized"                              { return REALIZED; }
-"Realization"                           { return REALIZATION; }
+//"realized"                              { return REALIZED; }
+//"Realization"                           { return REALIZATION; }
 
-"maintaining"                           { return MAINTAINING; }
-"modeled"                               { return MODELED; }
+//"maintaining"                           { return MAINTAINING; }
+//"modeled"                               { return MODELED; }
 
-"Operation"                             { return OPERATION; }
-"otherwise"                             { return OTHERWISE; }
-"of"                                    { return OF; }
+//"Operation"                             { return OPERATION; }
+//"otherwise"                             { return OTHERWISE; }
+//"of"                                    { return OF; }
 
-"Procedure"                             { return PROCEDURE; }
+//"Procedure"                             { return PROCEDURE; }
 "Precis"                                { return PRECIS; }
 
-"Recursive"                             { return RECURSIVE; }
-"Recognition"                           { return RECOGNITION; }
-"Record"                                { return RECORD; }
-"requires"                              { return REQUIRES; }
+//"Recursive"                             { return RECURSIVE; }
+//"Recognition"                           { return RECOGNITION; }
+//"Record"                                { return RECORD; }
+//"requires"                              { return REQUIRES; }
 
-"then"                                  { return THEN; }
-"true"                                  { return TRUE; }
-"Theorem"                               { return THEOREM; }
-"Type"                                  { return TYPE_FAMILY; }
-"type"                                  { return TYPE_PARAM; }
+//"then"                                  { return THEN; }
+//"true"                                  { return TRUE; }
+//"Theorem"                               { return THEOREM; }
+//"Type"                                  { return TYPE_FAMILY; }
+//"type"                                  { return TYPE_PARAM; }
 
 "uses"                                  { return USES; }
-"Var"                                   { return VAR; }
-"While"                                 { return WHILE; }
-"which_entails"                         { return WHICH_ENTAILS; }
+//"Var"                                   { return VAR; }
+//"While"                                 { return WHILE; }
+//"which_entails"                         { return WHICH_ENTAILS; }
 
 // Parameter modes
 
-"alters"                                { return ALTERS; }
+/*"alters"                                { return ALTERS; }
 "updates"                               { return UPDATES; }
 "clears"                                { return CLEARS; }
 "restores"                              { return RESTORES; }
 "preserves"                             { return PRESERVES; }
 "replaces"                              { return REPLACES; }
 "evaluates"                             { return EVALUATES; }
+*/
 
-{MSYM}                                  { return MATHSYMBOL; }
-{SYM}                                   { return SYMBOL; }
+//{MSYM}                                  { return MATHSYMBOL; }
+//{SYM}                                   { return SYMBOL; }
 {IDENT}                                 { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }

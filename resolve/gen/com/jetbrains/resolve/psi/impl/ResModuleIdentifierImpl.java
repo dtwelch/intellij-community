@@ -9,15 +9,17 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiReference;
 
-public class ResUsesListImpl extends ResCompositeElementImpl implements ResUsesList {
+public class ResModuleIdentifierImpl extends ResCompositeElementImpl implements ResModuleIdentifier {
 
-  public ResUsesListImpl(ASTNode node) {
+  public ResModuleIdentifierImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitUsesList(this);
+    visitor.visitModuleIdentifier(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,20 +29,23 @@ public class ResUsesListImpl extends ResCompositeElementImpl implements ResUsesL
 
   @Override
   @NotNull
-  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResModuleIdentifierSpec.class);
+  public PsiElement getIdentifier() {
+    return findNotNullChildByType(IDENTIFIER);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getSemicolon() {
-    return findChildByType(SEMICOLON);
-  }
-
-  @Override
   @NotNull
-  public PsiElement getUses() {
-    return findNotNullChildByType(USES);
+  public PsiReference[] getReferences() {
+    return ResPsiImplUtil.getReferences(this);
+  }
+
+  @NotNull
+  public TextRange getModuleIdentiferTextRange() {
+    return ResPsiImplUtil.getModuleIdentiferTextRange(this);
+  }
+
+  @Nullable
+  public PsiElement resolve() {
+    return ResPsiImplUtil.resolve(this);
   }
 
 }

@@ -26,6 +26,18 @@ public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements Re
   }
 
   @Override
+  @Nullable
+  public ResReferenceExp getReferenceExp() {
+    return findChildByClass(ResReferenceExp.class);
+  }
+
+  @Override
+  @Nullable
+  public ResUsesList getUsesList() {
+    return findChildByClass(ResUsesList.class);
+  }
+
+  @Override
   @NotNull
   public PsiElement getPrecis() {
     return findNotNullChildByType(PRECIS);
@@ -35,6 +47,12 @@ public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements Re
   @Nullable
   public PsiElement getEnd() {
     return findChildByType(END);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getFor() {
+    return findChildByType(FOR);
   }
 
 }

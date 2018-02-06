@@ -8,8 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Some general purpose utility methods for crawling up and down {@link PsiElement}s mainly for
- * symbol resolving purposes.
+ * Some general purpose symbol resolution methods that search by crawling up and down {@link PsiElement}s.
  */
 final class ResolveUtil {
 
@@ -27,12 +26,11 @@ final class ResolveUtil {
     return true;
   }
 
-  static boolean processChildren(
-      @NotNull PsiElement element,
-      @NotNull PsiScopeProcessor processor,
-      @NotNull ResolveState substitutor,
-      @Nullable PsiElement lastParent,
-      @NotNull PsiElement place) {
+  static boolean processChildren(@NotNull PsiElement element,
+                                 @NotNull PsiScopeProcessor processor,
+                                 @NotNull ResolveState substitutor,
+                                 @Nullable PsiElement lastParent,
+                                 @NotNull PsiElement place) {
     PsiElement run = lastParent == null ? element.getLastChild() : lastParent.getPrevSibling();
     while (run != null) {
       if (run instanceof ResCompositeElement
@@ -44,12 +42,11 @@ final class ResolveUtil {
     return true;
   }
 
-  static boolean processChildrenFromTop(
-      @NotNull PsiElement element,
-      @NotNull PsiScopeProcessor processor,
-      @NotNull ResolveState substitutor,
-      @Nullable PsiElement lastParent,
-      @NotNull PsiElement place) {
+  static boolean processChildrenFromTop(@NotNull PsiElement element,
+                                        @NotNull PsiScopeProcessor processor,
+                                        @NotNull ResolveState substitutor,
+                                        @Nullable PsiElement lastParent,
+                                        @NotNull PsiElement place) {
     PsiElement run = element.getFirstChild();
     while (run != null) {
       if (run instanceof ResCompositeElement) {

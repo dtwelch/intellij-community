@@ -6,6 +6,8 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -101,8 +103,8 @@ public class ResolveSdkUtil {
    * for that case use {@link {@link this#getRESOLVEPathRoots(Project, Module)}.
    * <p>
    * Note that right now, <tt>RESOLVEPATH</tt> is a single entity as opposed to a list of 'roots'. I've just kept it
-   * in list form for simplicity for now (the original GoLang plugin did it this way because Go apparently supports multiple
-   * semicolon-delimited GOPATHs)
+   * in list form for simplicity for now (the original GoLang plugin did it this way because Go apparently supports
+   * multiple semicolon-delimited GOPATHs)
    * <p>
    * So in other words, the returned collection should always be a singleton.
    */
@@ -173,31 +175,26 @@ public class ResolveSdkUtil {
   }
 
   @NotNull
-  public static Collection<VirtualFile> getResolvePathSourcesRoot(@NotNull final Project project,
-                                                                  @Nullable final Module module) {
-    if (module != null) {
-      return CachedValuesManager.getManager(project).getCachedValue(
-        module, new CachedValueProvider<Collection<VirtualFile>>() {
-          @Override
-          public Result<Collection<VirtualFile>> compute() {
-            Collection<VirtualFile> result = newLinkedHashSet();
-            Project project = module.getProject();
-            List<VirtualFile> root = getRESOLVEPathSourcesRootInner(project, module);
-            result.addAll(getRESOLVEPathSourcesRootInner(project, module));
-            return Result.create(result, getSdkAndLibrariesCacheDependencies(project, module));
-          }
-        });
-    }
-    return CachedValuesManager.getManager(project).getCachedValue(project,
-                                                                  new CachedValueProvider<Collection<VirtualFile>>() {
-                                                                    @Nullable
-                                                                    @Override
-                                                                    public Result<Collection<VirtualFile>> compute() {
-                                                                      return Result.create(getRESOLVEPathSourcesRootInner(project, null),
-                                                                                           getSdkAndLibrariesCacheDependencies(project,
-                                                                                                                               null));
-                                                                    }
-                                                                  });
+  public static LinkedHashSet<VirtualFile> getSourcesPathsToLookup(@NotNull Project project) {
+    LinkedHashSet<VirtualFile> sdkAndPathSrcs = newLinkedHashSet();
+    ContainerUtil.addIfNotNull(sdkAndPathSrcs, getSdkSrcDir(project));
+
+    //Collection<VirtualFile> pathSrcs = getResolvePathSourcesRoot(project);
+    ContainerUtil.addAllNotNull(sdkAndPathSrcs, getResolvePathSourcesRoot(project));
+    return sdkAndPathSrcs;
+  }
+
+  @NotNull
+  public static Collection<VirtualFile> getResolvePathSourcesRoot(@NotNull final Project project) {
+    return CachedValuesManager
+      .getManager(project)
+      .getCachedValue(project, new CachedValueProvider<Collection<VirtualFile>>() {
+        @Override
+        public Result<Collection<VirtualFile>> compute() {
+          return Result.create(getRESOLVEPathSourcesRootInner(project),
+                               getSdkAndLibrariesCacheDependencies(project, null));
+        }
+      });
   }
 
   @NotNull
@@ -210,20 +207,18 @@ public class ResolveSdkUtil {
   }
 
   @NotNull
-  private static List<VirtualFile> getRESOLVEPathSourcesRootInner(@NotNull Project project, @Nullable Module module) {
-    return ContainerUtil.mapNotNull(getRESOLVEPathRoots(project, module),
+  private static List<VirtualFile> getRESOLVEPathSourcesRootInner(@NotNull Project project) {
+    return ContainerUtil.mapNotNull(getRESOLVEPathRoots(project),
                                     new RetrieveSubDirectoryOrSelfFunction("src"));
   }
 
   @NotNull
-  private static Collection<VirtualFile> getRESOLVEPathRoots(@NotNull Project project, @Nullable Module module) {
+  private static Collection<VirtualFile> getRESOLVEPathRoots(@NotNull Project project) {
     Collection<VirtualFile> roots = ContainerUtil.newArrayList();
     if (ResolveApplicationLibrariesService.getInstance().isUseResolvePathFromSystemEnvironment()) {
       roots.addAll(getResolvePathRootsFromEnvironment());
     }
-    roots.addAll(module != null ?
-                 ResolveLibrariesService.getUserDefinedLibraries(module) :
-                 ResolveLibrariesService.getUserDefinedLibraries(project));
+    roots.addAll(ResolveLibrariesService.getUserDefinedLibraries(project));
     return roots;
   }
 
@@ -239,6 +234,12 @@ public class ResolveSdkUtil {
   @NotNull
   static Collection<VirtualFile> getSdkDirectoriesToAttach(@NotNull String sdkPath) {
     return ContainerUtil.createMaybeSingletonList(getSdkSrcDir(sdkPath));
+  }
+
+  @Nullable
+  private static VirtualFile getSdkSrcDir(@NotNull Project project) {
+    Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+    return sdk != null && sdk.getHomePath() != null ?  getSdkSrcDir(sdk.getHomePath()) : null;
   }
 
   @Nullable

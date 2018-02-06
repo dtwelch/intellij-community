@@ -9,15 +9,17 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiReference;
 
-public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements ResFacilityModuleDecl {
+public class ResModuleLibraryIdentifierImpl extends ResCompositeElementImpl implements ResModuleLibraryIdentifier {
 
-  public ResFacilityModuleDeclImpl(ASTNode node) {
+  public ResModuleLibraryIdentifierImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitFacilityModuleDecl(this);
+    visitor.visitModuleLibraryIdentifier(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -25,10 +27,19 @@ public class ResFacilityModuleDeclImpl extends ResAbstractModuleImpl implements 
     else super.accept(visitor);
   }
 
-  @Override
+  @NotNull
+  public PsiReference[] getReferences() {
+    return ResPsiImplUtil.getReferences(this);
+  }
+
+  @NotNull
+  public TextRange getModuleLibraryIdentiferTextRange() {
+    return ResPsiImplUtil.getModuleLibraryIdentiferTextRange(this);
+  }
+
   @Nullable
-  public PsiElement getEnd() {
-    return findChildByType(END);
+  public PsiElement resolve() {
+    return ResPsiImplUtil.resolve(this);
   }
 
 }
