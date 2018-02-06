@@ -31,4 +31,19 @@ public class ResReferenceExpImpl extends ResExpImpl implements ResReferenceExp {
     return findNotNullChildByType(IDENTIFIER);
   }
 
+  @NotNull
+  public ResReference getReference() {
+    return ResPsiImplUtil.getReference(this);
+  }
+
+  @Nullable
+  public ResReferenceExp getQualifier() {
+    return ResPsiImplUtil.getQualifier(this);
+  }
+
+  @Nullable
+  public PsiElement resolve() {
+    return ResPsiImplUtil.resolve(this);
+  }
+
 }

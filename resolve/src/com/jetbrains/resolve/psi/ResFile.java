@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResFile extends PsiFileBase {
 
@@ -34,6 +36,12 @@ public class ResFile extends PsiFileBase {
   @Nullable
   public ResModuleDecl getEnclosedModule() {
     return PsiTreeUtil.findChildOfType(this, ResModuleDecl.class);
+  }
+
+  @NotNull
+  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return enclosedModule != null ? enclosedModule.getModuleIdentifierSpecs() : new ArrayList<>();
   }
 
   @Override

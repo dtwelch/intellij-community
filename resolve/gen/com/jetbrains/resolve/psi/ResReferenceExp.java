@@ -4,23 +4,21 @@ package com.jetbrains.resolve.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.jetbrains.resolve.psi.impl.ResReference;
 
-public interface ResReferenceExp extends ResExp {
+public interface ResReferenceExp extends ResExp, ResReferenceExpBase {
 
   @NotNull
   PsiElement getIdentifier();
 
-  //WARNING: getReference(...) is skipped
-  //matching getReference(ResReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @NotNull
+  ResReference getReference();
 
-  //WARNING: getQualifier(...) is skipped
-  //matching getQualifier(ResReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @Nullable
+  ResReferenceExp getQualifier();
 
-  //WARNING: resolve(...) is skipped
-  //matching resolve(ResReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @Nullable
+  PsiElement resolve();
 
   //WARNING: shouldReferenceModule(...) is skipped
   //matching shouldReferenceModule(ResReferenceExp, ...)

@@ -6,11 +6,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceOwner;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.Predicate;
-import com.jetbrains.resolve.psi.ResFile;
-import com.jetbrains.resolve.psi.ResModuleIdentifier;
-import com.jetbrains.resolve.psi.ResModuleIdentifierSpec;
-import com.jetbrains.resolve.psi.ResModuleLibraryIdentifier;
+import com.jetbrains.resolve.psi.*;
 import com.jetbrains.resolve.psi.impl.imports.ResModuleLibraryReference;
 import com.jetbrains.resolve.psi.impl.imports.ResModuleReference;
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +80,12 @@ public class ResPsiImplUtil {
     return null;
   }
 
+
+  @NotNull
+  public static ResReference getReference(@NotNull ResReferenceExp o) {
+    return new ResReference(o);
+  }
+
   @NotNull
   public static PsiReference[] getReferences(@NotNull ResModuleIdentifier o) {
     if (o.getTextLength() < 1) return PsiReference.EMPTY_ARRAY;
@@ -93,4 +97,15 @@ public class ResPsiImplUtil {
     if (o.getTextLength() < 1) return PsiReference.EMPTY_ARRAY;
     return new ResModuleLibraryReference.ResModuleLibraryReferenceSet(o).getAllReferences();
   }
+
+  @Nullable
+  public static ResReferenceExp getQualifier(@NotNull ResReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResReferenceExp.class);
+  }
+
+  @Nullable
+  public static PsiElement resolve(@NotNull ResReferenceExp o) {
+    return o.getReference().resolve();
+  }
+
 }

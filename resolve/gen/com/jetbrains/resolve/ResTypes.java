@@ -12,7 +12,6 @@ public interface ResTypes {
 
   IElementType ARGUMENT_LIST = new ResCompositeElementType("ARGUMENT_LIST");
   IElementType EXP = new ResCompositeElementType("EXP");
-  IElementType FACILITY_MODULE_DECL = new ResCompositeElementType("FACILITY_MODULE_DECL");
   IElementType INFIX_EXP = new ResCompositeElementType("INFIX_EXP");
   IElementType LITERAL_EXP = new ResCompositeElementType("LITERAL_EXP");
   IElementType MODULE_IDENTIFIER = new ResCompositeElementType("MODULE_IDENTIFIER");
@@ -74,9 +73,6 @@ public interface ResTypes {
       IElementType type = node.getElementType();
        if (type == ARGUMENT_LIST) {
         return new ResArgumentListImpl(node);
-      }
-      else if (type == FACILITY_MODULE_DECL) {
-        return new ResFacilityModuleDeclImpl(node);
       }
       else if (type == INFIX_EXP) {
         return new ResInfixExpImpl(node);

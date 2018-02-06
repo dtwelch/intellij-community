@@ -18,10 +18,6 @@ public class ResVisitor extends PsiElementVisitor {
     visitTypeOwner(o);
   }
 
-  public void visitFacilityModuleDecl(@NotNull ResFacilityModuleDecl o) {
-    visitModuleDecl(o);
-  }
-
   public void visitInfixExp(@NotNull ResInfixExp o) {
     visitBinaryExp(o);
   }
@@ -60,6 +56,7 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitReferenceExp(@NotNull ResReferenceExp o) {
     visitExp(o);
+    // visitReferenceExpBase(o);
   }
 
   public void visitSelectorExp(@NotNull ResSelectorExp o) {

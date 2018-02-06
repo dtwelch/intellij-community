@@ -93,25 +93,22 @@
         char                    = 'char'
         raw_string              = 'raw_string'
     ]
-
+    implements(".*ReferenceExp")="com.jetbrains.resolve.psi.ResReferenceExpBase"
     implements(".*ModuleDecl")="com.jetbrains.resolve.psi.ResModuleDecl"
+
     extends(".*ModuleDecl")="com.jetbrains.resolve.psi.impl.ResAbstractModuleImpl"
     generateTokenAccessors=true
 }
 
 ModuleDecl ::=
       PrecisModuleDecl
-    | FacilityModuleDecl
 
 //TODO: Instead to 'Precis' identifier (extends identifier)? ';' that is, combine the precisModuleDecl
 //and PrecisExtensionModuleDecl.
-PrecisModuleDecl ::= 'Precis' identifier (for ReferenceExp)? ';'
+PrecisModuleDecl ::= Precis identifier (for ReferenceExp)? ';'
 UsesList?
 //PrecisBlock
 end identifier ';' {pin(".*")=2}
-
-FacilityModuleDecl ::= 'Facility' identifier ';'
-end identifier ';' {pin(".*")=3}
 
 // uses, imports
 

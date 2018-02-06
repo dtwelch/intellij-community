@@ -48,9 +48,9 @@ public class ResolveSyntaxHighlighter extends SyntaxHighlighterBase {
         fillMap(ATTRIBUTES, SEMICOLON, ResTypes.SEMICOLON);
         /*fillMap(ATTRIBUTES, COMMA, ResTypes.COMMA);
         fillMap(ATTRIBUTES, ResolveParserDefinition.PARAMETER_MODES, PARAMETER_MODE);
-        fillMap(ATTRIBUTES, ResolveParserDefinition.OPERATORS, OPERATOR);
+        fillMap(ATTRIBUTES, ResolveParserDefinition.OPERATORS, OPERATOR);*/
         fillMap(ATTRIBUTES, ResolveParserDefinition.KEYWORDS, KEYWORD);
-        fillMap(ATTRIBUTES, ResolveParserDefinition.NUMBERS, NUMBER);
+        /*fillMap(ATTRIBUTES, ResolveParserDefinition.NUMBERS, NUMBER);
         fillMap(ATTRIBUTES, ResolveParserDefinition.STRING_LITERALS, STRING);*/
     }
 

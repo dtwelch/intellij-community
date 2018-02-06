@@ -9,7 +9,6 @@ import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.PlatformIcons;
 import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.psi.ResCompositeElement;
-import com.jetbrains.resolve.psi.ResFacilityModuleDecl;
 import com.jetbrains.resolve.psi.ResNamedElement;
 import com.jetbrains.resolve.psi.ResPrecisModuleDecl;
 import org.jetbrains.annotations.NonNls;
@@ -40,7 +39,7 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     else if (this instanceof ResConceptModuleDecl) icon = RESOLVEIcons.CONCEPT;
     else if (this instanceof ResConceptExtensionModuleDecl) icon = RESOLVEIcons.CONCEPT_EXT;
     else if (this instanceof ResImplModuleDecl) icon = RESOLVEIcons.IMPL;*/
-    else if (this instanceof ResFacilityModuleDecl) icon = ResolveIcons.FACILITY;
+    //else if (this instanceof ResFacilityModuleDecl) icon = ResolveIcons.FACILITY;
     /*else if (this instanceof ResTypeModelDecl) icon = RESOLVEIcons.TYPE_MODEL;
     else if (this instanceof ResTypeReprDecl) icon = RESOLVEIcons.TYPE_REPR;
     else if (this instanceof ResFacilityDecl) icon = RESOLVEIcons.FACILITY;

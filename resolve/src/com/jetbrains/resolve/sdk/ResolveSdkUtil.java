@@ -174,6 +174,7 @@ public class ResolveSdkUtil {
     return null;
   }
 
+  //TODO: Figure out if we really need this.
   @NotNull
   public static LinkedHashSet<VirtualFile> getSourcesPathsToLookup(@NotNull Project project) {
     LinkedHashSet<VirtualFile> sdkAndPathSrcs = newLinkedHashSet();
@@ -192,16 +193,15 @@ public class ResolveSdkUtil {
         @Override
         public Result<Collection<VirtualFile>> compute() {
           return Result.create(getRESOLVEPathSourcesRootInner(project),
-                               getSdkAndLibrariesCacheDependencies(project, null));
+                               getSdkAndLibrariesCacheDependencies(project));
         }
       });
   }
 
   @NotNull
-  private static Collection<Object> getSdkAndLibrariesCacheDependencies(@NotNull Project project,
-                                                                        @Nullable Module module) {
+  private static Collection<Object> getSdkAndLibrariesCacheDependencies(@NotNull Project project) {
     Collection<Object> dependencies = ContainerUtil.newArrayList(
-      (Object[])ResolveLibrariesService.getModificationTrackers(project, module));
+      (Object[])ResolveLibrariesService.getModificationTrackers(project));
     ContainerUtil.addAllNotNull(dependencies);
     return dependencies;
   }
@@ -239,13 +239,15 @@ public class ResolveSdkUtil {
   @Nullable
   private static VirtualFile getSdkSrcDir(@NotNull Project project) {
     Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-    return sdk != null && sdk.getHomePath() != null ?  getSdkSrcDir(sdk.getHomePath()) : null;
+    return sdk != null && sdk.getHomePath() != null ? getSdkSrcDir(sdk.getHomePath()) : null;
   }
 
   @Nullable
   private static VirtualFile getSdkSrcDir(@NotNull String sdkPath) {
     String srcPath = "src";
-    VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(VfsUtilCore.pathToUrl(FileUtil.join(sdkPath, srcPath)));
+    VirtualFile file = VirtualFileManager
+      .getInstance()
+      .findFileByUrl(VfsUtilCore.pathToUrl(FileUtil.join(sdkPath, srcPath)));
     return file != null && file.isDirectory() ? file : null;
   }
 

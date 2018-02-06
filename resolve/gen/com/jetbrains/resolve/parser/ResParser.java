@@ -29,9 +29,6 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == EXP) {
       r = Exp(b, 0, -1);
     }
-    else if (t == FACILITY_MODULE_DECL) {
-      r = FacilityModuleDecl(b, 0);
-    }
     else if (t == MODULE_IDENTIFIER) {
       r = ModuleIdentifier(b, 0);
     }
@@ -128,20 +125,6 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'Facility' identifier ';'
-  // end identifier ';'
-  public static boolean FacilityModuleDecl(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityModuleDecl")) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, FACILITY_MODULE_DECL, "<facility module decl>");
-    r = consumeToken(b, "Facility");
-    r = r && consumeTokens(b, 2, IDENTIFIER, SEMICOLON, END, IDENTIFIER, SEMICOLON);
-    p = r; // pin = 3
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  /* ********************************************************** */
   // from ModuleLibraryIdentifier
   static boolean FromClause(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FromClause")) return false;
@@ -157,15 +140,8 @@ public class ResParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // PrecisModuleDecl
-  //     | FacilityModuleDecl
   static boolean ModuleDecl(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ModuleDecl")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = PrecisModuleDecl(b, l + 1);
-    if (!r) r = FacilityModuleDecl(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
+    return PrecisModuleDecl(b, l + 1);
   }
 
   /* ********************************************************** */
@@ -239,7 +215,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'Precis' identifier (for ReferenceExp)? ';'
+  // Precis identifier (for ReferenceExp)? ';'
   // UsesList?
   // //PrecisBlock
   // end identifier ';'

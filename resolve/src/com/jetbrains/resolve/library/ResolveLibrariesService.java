@@ -66,13 +66,9 @@ public class ResolveLibrariesService<T extends ResolveLibrariesState>
   }
 
   @NotNull
-  public static ModificationTracker[] getModificationTrackers(@NotNull Project project, @Nullable Module module) {
-    return module != null ? new ModificationTracker[]{ResolveModuleLibrariesService
-      .getInstance(module), ResolveProjectLibrariesService
-      .getInstance(module.getProject()),
-      ResolveApplicationLibrariesService.getInstance()}
-                          : new ModificationTracker[]{ResolveProjectLibrariesService.getInstance(project),
-                            ResolveApplicationLibrariesService.getInstance()};
+  public static ModificationTracker[] getModificationTrackers(@NotNull Project project) {
+    return new ModificationTracker[]{ResolveProjectLibrariesService.getInstance(project),
+      ResolveApplicationLibrariesService.getInstance()};
   }
 
 
