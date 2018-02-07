@@ -37,6 +37,8 @@ public class ResolveParserDefinition implements ParserDefinition {
 
   public static final TokenSet WHITESPACES = TokenSet.create(WS, NLS);
   public static final TokenSet COMMENTS = TokenSet.create(LINE_COMMENT, MULTILINE_COMMENT);
+  public static final TokenSet STRING_LITERALS = TokenSet.create(STRING, CHAR);
+  public static final TokenSet NUMBERS = TokenSet.create(INT);
 
   @NotNull
   @Override
@@ -78,7 +80,7 @@ public class ResolveParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public TokenSet getStringLiteralElements() {
-    return TokenSet.EMPTY;
+    return STRING_LITERALS;
   }
 
   /**

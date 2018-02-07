@@ -1,7 +1,10 @@
 package com.jetbrains.resolve.psi;
 
 import com.intellij.navigation.NavigationItem;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -27,5 +30,17 @@ import org.jetbrains.annotations.Nullable;
 public interface ResNamedElement extends ResTypeOwner, ResMathMetaTypeExpOwner, ResCompositeElement,
                                          PsiNameIdentifierOwner,
                                          NavigationItem {
+  boolean isUsesClauseVisible();
 
+  @Nullable
+  PsiElement getIdentifier();
+
+  @NotNull
+  PsiFile getContainingFile();
+
+  //@Nullable
+  //ResType findSiblingType();
+
+  @Nullable
+  ResMathExp findSiblingMathMetaType();
 }

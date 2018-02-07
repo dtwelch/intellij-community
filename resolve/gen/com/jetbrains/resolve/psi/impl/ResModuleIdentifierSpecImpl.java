@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResModuleIdentifierSpecImpl extends ResCompositeElementImpl implements ResModuleIdentifierSpec {
+public class ResModuleIdentifierSpecImpl extends ResNamedElementImpl implements ResModuleIdentifierSpec {
 
   public ResModuleIdentifierSpecImpl(ASTNode node) {
     super(node);

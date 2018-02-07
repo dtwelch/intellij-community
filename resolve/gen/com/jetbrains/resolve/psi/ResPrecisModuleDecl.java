@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ResPrecisModuleDecl extends ResModuleDecl {
 
   @Nullable
+  ResPrecisBlock getPrecisBlock();
+
+  @Nullable
   ResReferenceExp getReferenceExp();
 
   @Nullable

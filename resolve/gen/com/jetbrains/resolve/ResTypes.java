@@ -14,11 +14,37 @@ public interface ResTypes {
   IElementType EXP = new ResCompositeElementType("EXP");
   IElementType INFIX_EXP = new ResCompositeElementType("INFIX_EXP");
   IElementType LITERAL_EXP = new ResCompositeElementType("LITERAL_EXP");
+  IElementType MATH_ALTERNATIVES_LIST = new ResCompositeElementType("MATH_ALTERNATIVES_LIST");
+  IElementType MATH_ALTERNATIVE_EXP = new ResCompositeElementType("MATH_ALTERNATIVE_EXP");
+  IElementType MATH_ALTERNATIVE_ITEM_EXP = new ResCompositeElementType("MATH_ALTERNATIVE_ITEM_EXP");
+  IElementType MATH_ASSERTION_EXP = new ResCompositeElementType("MATH_ASSERTION_EXP");
+  IElementType MATH_BIG_UNION_EXP = new ResCompositeElementType("MATH_BIG_UNION_EXP");
+  IElementType MATH_CART_PROD_EXP = new ResCompositeElementType("MATH_CART_PROD_EXP");
+  IElementType MATH_CLSSFTN_ASSRT_EXP = new ResCompositeElementType("MATH_CLSSFTN_ASSRT_EXP");
+  IElementType MATH_EXP = new ResCompositeElementType("MATH_EXP");
+  IElementType MATH_FUNCTION_APP_LIST = new ResCompositeElementType("MATH_FUNCTION_APP_LIST");
+  IElementType MATH_INCOMING_EXP = new ResCompositeElementType("MATH_INCOMING_EXP");
+  IElementType MATH_INFIX_APPLY_EXP = new ResCompositeElementType("MATH_INFIX_APPLY_EXP");
+  IElementType MATH_LAMBDA_EXP = new ResCompositeElementType("MATH_LAMBDA_EXP");
+  IElementType MATH_MIXFIX_APPLY_EXP = new ResCompositeElementType("MATH_MIXFIX_APPLY_EXP");
+  IElementType MATH_NESTED_EXP = new ResCompositeElementType("MATH_NESTED_EXP");
+  IElementType MATH_OUTFIX_APPLY_EXP = new ResCompositeElementType("MATH_OUTFIX_APPLY_EXP");
+  IElementType MATH_PREFIX_APPLY_EXP = new ResCompositeElementType("MATH_PREFIX_APPLY_EXP");
+  IElementType MATH_PREFIX_DEFN_SIG = new ResCompositeElementType("MATH_PREFIX_DEFN_SIG");
+  IElementType MATH_QUANTIFIED_EXP = new ResCompositeElementType("MATH_QUANTIFIED_EXP");
+  IElementType MATH_REFERENCE_EXP = new ResCompositeElementType("MATH_REFERENCE_EXP");
+  IElementType MATH_SELECTOR_EXP = new ResCompositeElementType("MATH_SELECTOR_EXP");
+  IElementType MATH_STANDARD_DEFN_DECL = new ResCompositeElementType("MATH_STANDARD_DEFN_DECL");
+  IElementType MATH_SYMBOL_NAME = new ResCompositeElementType("MATH_SYMBOL_NAME");
+  IElementType MATH_VAR_DECL = new ResCompositeElementType("MATH_VAR_DECL");
+  IElementType MATH_VAR_DECL_GROUP = new ResCompositeElementType("MATH_VAR_DECL_GROUP");
+  IElementType MATH_VAR_DEF = new ResCompositeElementType("MATH_VAR_DEF");
   IElementType MODULE_IDENTIFIER = new ResCompositeElementType("MODULE_IDENTIFIER");
   IElementType MODULE_IDENTIFIER_SPEC = new ResCompositeElementType("MODULE_IDENTIFIER_SPEC");
   IElementType MODULE_LIBRARY_IDENTIFIER = new ResCompositeElementType("MODULE_LIBRARY_IDENTIFIER");
   IElementType NESTED_EXP = new ResCompositeElementType("NESTED_EXP");
   IElementType PARAM_EXP = new ResCompositeElementType("PARAM_EXP");
+  IElementType PRECIS_BLOCK = new ResCompositeElementType("PRECIS_BLOCK");
   IElementType PRECIS_MODULE_DECL = new ResCompositeElementType("PRECIS_MODULE_DECL");
   IElementType PROG_SYMBOL_NAME = new ResCompositeElementType("PROG_SYMBOL_NAME");
   IElementType REFERENCE_EXP = new ResCompositeElementType("REFERENCE_EXP");
@@ -27,6 +53,9 @@ public interface ResTypes {
 
   IElementType BAD_CHARACTER = new ResTokenType("\"\\\\\"");
   IElementType BAR = new ResTokenType("|");
+  IElementType BIGOPERATOR = new ResTokenType("bigoperator");
+  IElementType CART_PROD = new ResTokenType("Cart_Prod");
+  IElementType CHAINABLE = new ResTokenType("Chainable");
   IElementType CHAR = new ResTokenType("char");
   IElementType COLON = new ResTokenType(":");
   IElementType COLON_COLON = new ResTokenType("::");
@@ -36,6 +65,7 @@ public interface ResTypes {
   IElementType DBL_BAR = new ResTokenType("∥");
   IElementType DBL_LBRACE = new ResTokenType("{{");
   IElementType DBL_RBRACE = new ResTokenType("}}");
+  IElementType DEFINITION = new ResTokenType("Definition");
   IElementType DOT = new ResTokenType(".");
   IElementType END = new ResTokenType("end");
   IElementType EXISTS = new ResTokenType("∃");
@@ -44,6 +74,8 @@ public interface ResTypes {
   IElementType FORALL = new ResTokenType("∀");
   IElementType FROM = new ResTokenType("from");
   IElementType IDENTIFIER = new ResTokenType("identifier");
+  IElementType IF = new ResTokenType("if");
+  IElementType IMPLICIT = new ResTokenType("Implicit");
   IElementType INT = new ResTokenType("int");
   IElementType LAMBDA = new ResTokenType("λ");
   IElementType LANGLE = new ResTokenType("⟨");
@@ -51,6 +83,9 @@ public interface ResTypes {
   IElementType LBRACK = new ResTokenType("[");
   IElementType LCEIL = new ResTokenType("⌈");
   IElementType LPAREN = new ResTokenType("(");
+  IElementType MATHSYMBOL = new ResTokenType("mathsymbol");
+  IElementType OPERATION = new ResTokenType("Operation");
+  IElementType OTHERWISE = new ResTokenType("otherwise");
   IElementType POUND = new ResTokenType("#");
   IElementType PRECIS = new ResTokenType("Precis");
   IElementType PRIME = new ResTokenType("′");
@@ -67,6 +102,7 @@ public interface ResTypes {
   IElementType TRI_EQUALS = new ResTokenType("≜");
   IElementType TRUE = new ResTokenType("true");
   IElementType USES = new ResTokenType("uses");
+  IElementType VALUED = new ResTokenType("Valued");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -79,6 +115,75 @@ public interface ResTypes {
       }
       else if (type == LITERAL_EXP) {
         return new ResLiteralExpImpl(node);
+      }
+      else if (type == MATH_ALTERNATIVES_LIST) {
+        return new ResMathAlternativesListImpl(node);
+      }
+      else if (type == MATH_ALTERNATIVE_EXP) {
+        return new ResMathAlternativeExpImpl(node);
+      }
+      else if (type == MATH_ALTERNATIVE_ITEM_EXP) {
+        return new ResMathAlternativeItemExpImpl(node);
+      }
+      else if (type == MATH_BIG_UNION_EXP) {
+        return new ResMathBigUnionExpImpl(node);
+      }
+      else if (type == MATH_CART_PROD_EXP) {
+        return new ResMathCartProdExpImpl(node);
+      }
+      else if (type == MATH_CLSSFTN_ASSRT_EXP) {
+        return new ResMathClssftnAssrtExpImpl(node);
+      }
+      else if (type == MATH_FUNCTION_APP_LIST) {
+        return new ResMathFunctionAppListImpl(node);
+      }
+      else if (type == MATH_INCOMING_EXP) {
+        return new ResMathIncomingExpImpl(node);
+      }
+      else if (type == MATH_INFIX_APPLY_EXP) {
+        return new ResMathInfixApplyExpImpl(node);
+      }
+      else if (type == MATH_LAMBDA_EXP) {
+        return new ResMathLambdaExpImpl(node);
+      }
+      else if (type == MATH_MIXFIX_APPLY_EXP) {
+        return new ResMathMixfixApplyExpImpl(node);
+      }
+      else if (type == MATH_NESTED_EXP) {
+        return new ResMathNestedExpImpl(node);
+      }
+      else if (type == MATH_OUTFIX_APPLY_EXP) {
+        return new ResMathOutfixApplyExpImpl(node);
+      }
+      else if (type == MATH_PREFIX_APPLY_EXP) {
+        return new ResMathPrefixApplyExpImpl(node);
+      }
+      else if (type == MATH_PREFIX_DEFN_SIG) {
+        return new ResMathPrefixDefnSigImpl(node);
+      }
+      else if (type == MATH_QUANTIFIED_EXP) {
+        return new ResMathQuantifiedExpImpl(node);
+      }
+      else if (type == MATH_REFERENCE_EXP) {
+        return new ResMathReferenceExpImpl(node);
+      }
+      else if (type == MATH_SELECTOR_EXP) {
+        return new ResMathSelectorExpImpl(node);
+      }
+      else if (type == MATH_STANDARD_DEFN_DECL) {
+        return new ResMathStandardDefnDeclImpl(node);
+      }
+      else if (type == MATH_SYMBOL_NAME) {
+        return new ResMathSymbolNameImpl(node);
+      }
+      else if (type == MATH_VAR_DECL) {
+        return new ResMathVarDeclImpl(node);
+      }
+      else if (type == MATH_VAR_DECL_GROUP) {
+        return new ResMathVarDeclGroupImpl(node);
+      }
+      else if (type == MATH_VAR_DEF) {
+        return new ResMathVarDefImpl(node);
       }
       else if (type == MODULE_IDENTIFIER) {
         return new ResModuleIdentifierImpl(node);
@@ -94,6 +199,9 @@ public interface ResTypes {
       }
       else if (type == PARAM_EXP) {
         return new ResParamExpImpl(node);
+      }
+      else if (type == PRECIS_BLOCK) {
+        return new ResPrecisBlockImpl(node);
       }
       else if (type == PRECIS_MODULE_DECL) {
         return new ResPrecisModuleDeclImpl(node);

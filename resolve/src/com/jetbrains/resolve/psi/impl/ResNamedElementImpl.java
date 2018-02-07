@@ -3,12 +3,18 @@ package com.jetbrains.resolve.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.ResolveState;
 import com.intellij.psi.impl.ElementBase;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.psi.util.PsiModificationTracker;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.RowIcon;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.PlatformIcons;
 import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.psi.ResCompositeElement;
+import com.jetbrains.resolve.psi.ResMathExp;
 import com.jetbrains.resolve.psi.ResNamedElement;
 import com.jetbrains.resolve.psi.ResPrecisModuleDecl;
 import org.jetbrains.annotations.NonNls;
@@ -24,11 +30,91 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     super(node);
   }
 
+  /**
+   * Returns {@code true} if {@code this} named element should be visible from a uses clause.
+   *
+   * @return whether or not this element should be visible from a uses clause.
+   */
+  public boolean isUsesClauseVisible() {
+    return /*(!(this instanceof ResOperationDecl) &&
+            !(this instanceof ResProcedureDecl) &&
+            !(this instanceof ResParamDef));*/ true;
+  }
+
+  @Nullable
+  @Override
+  public PsiElement getNameIdentifier() {
+    return getIdentifier();
+  }
+
+  @Nullable
+  @Override
+  public String getName() {
+    PsiElement identifier = getIdentifier();
+    return identifier != null ? identifier.getText() : null;
+  }
+
   @NotNull
   @Override
   public PsiElement setName(@NonNls @NotNull String newName) throws IncorrectOperationException {
+    PsiElement identifier = getIdentifier();
+    if (identifier != null) {
+      identifier.replace(ResElementFactory.createIdentifierFromText(getProject(), newName));
+    }
     return this;
   }
+
+  @Override
+  public int getTextOffset() {
+    PsiElement identifier = getIdentifier();
+    return identifier != null ? identifier.getTextOffset() : super.getTextOffset();
+  }
+
+  @Nullable
+  @Override
+  public ResMathExp getResMathMetaTypeExp(@Nullable ResolveState context) {
+    if (context != null) return getResMathMetaTypeExpInner(context);
+    return CachedValuesManager
+      .getCachedValue(this,
+                      new CachedValueProvider<ResMathExp>() {
+                        @Nullable
+                        @Override
+                        public Result<ResMathExp> compute() {
+                          return Result.create(getResMathMetaTypeExpInner(null), PsiModificationTracker.MODIFICATION_COUNT);
+                        }
+                      });
+  }
+
+  @Nullable
+  protected ResMathExp getResMathMetaTypeExpInner(@Nullable ResolveState context) {
+    ResMathExp nextExp = findSiblingMathMetaType();
+    return nextExp;
+  }
+
+  /**
+   * Ok, here's the deal: this will basically look to our right hand side siblings of {@code this} AST (Jetbrains speak: PSI) node for a math exp
+   * and return the first one it finds.
+   * <p>
+   * Here's the thing though, this is not good/flexible enough since we also want to return a ResType, think in the case of a parameter
+   * decl: there we'll want a ResType, resolve that, and get back to the math expr.</p>
+   */
+  @Nullable
+  @Override
+  public ResMathExp findSiblingMathMetaType() {
+    ResMathExp purelyMathTypeExp = PsiTreeUtil.getNextSiblingOfType(this, ResMathExp.class);
+    //if (purelyMathTypeExp != null) return purelyMathTypeExp;
+
+    //ok, maybe we're dealing with a programmatic type or something...
+   /* ResType progType = findSiblingType();
+    if (progType != null && progType.getTypeReferenceExp() != null) {
+      PsiElement resolvedProgramType = progType.getTypeReferenceExp().getReference().resolve();
+      if (resolvedProgramType instanceof ResTypeLikeNodeDecl) {
+        return ((ResTypeLikeNodeDecl)resolvedProgramType).getMathMetaTypeExp();
+      }
+    }*/
+    return null;
+  }
+
 
   @Nullable
   @Override

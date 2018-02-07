@@ -58,8 +58,8 @@ U_GREEK       = [\u0370-\u03FF]
 
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
 SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<=")
-//STR     = "\""
-//STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
+STR     = "\""
+STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 ESCAPES = [abfnrtv]
 
 %%
@@ -69,7 +69,7 @@ ESCAPES = [abfnrtv]
 {NL}+                                   { return NLS; }
 {LINE_COMMENT}                          { return LINE_COMMENT; }
 {MULTILINE_COMMENT}                     { return MULTILINE_COMMENT; }
-//{STRING}                                { return STRING; }
+{STRING}                                { return STRING; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
 "'" [^\\] "'"                           { return CHAR; }
@@ -120,14 +120,14 @@ ESCAPES = [abfnrtv]
 // Keywords
 //"by"                                    { return BY; }
 
-//"Cart_Prod"                             { return CART_PROD; }
+"Cart_Prod"                             { return CART_PROD; }
 //"Categorical"                           { return CATEGORICAL; }
 //"changing"                              { return CHANGING; }
 "Chainable"                             { return CHAINABLE; }
 //"Concept"                               { return CONCEPT; }
 //"constraints"                           { return CONSTRAINTS; }
 //"conventions"                           { return CONVENTIONS; }
-//"Valued"                                { return VALUED; }
+"Valued"                                { return VALUED; }
 //"Corollary"                             { return COROLLARY; }
 //"correspondence"                        { return CORRESPONDENCE; }
 
@@ -152,7 +152,7 @@ ESCAPES = [abfnrtv]
 //"for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
-//"if"                                    { return IF; }
+"if"                                    { return IF; }
 //"If"                                    { return IF_PROG; }
 "Implicit"                              { return IMPLICIT; }
 //"initialization"                        { return INITIALIZATION; }
@@ -166,7 +166,7 @@ ESCAPES = [abfnrtv]
 //"modeled"                               { return MODELED; }
 
 //"Operation"                             { return OPERATION; }
-//"otherwise"                             { return OTHERWISE; }
+"otherwise"                             { return OTHERWISE; }
 //"of"                                    { return OF; }
 
 //"Procedure"                             { return PROCEDURE; }
@@ -201,7 +201,7 @@ ESCAPES = [abfnrtv]
 
 {MSYM}                                  { return MATHSYMBOL; }
 {SYM}                                   { return SYMBOL; }
-{U_BIGOPERATOR}                         { return BIGOPERATOR}
+{U_BIGOPERATOR}                         { return BIGOPERATOR; }
 {IDENT}                                 { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }

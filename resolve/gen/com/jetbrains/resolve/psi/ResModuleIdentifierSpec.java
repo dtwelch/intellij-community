@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResModuleIdentifierSpec extends ResCompositeElement {
+public interface ResModuleIdentifierSpec extends ResNamedElement {
 
   @NotNull
   ResModuleIdentifier getModuleIdentifier();

@@ -22,26 +22,24 @@ public class ResCompositeElementImpl extends ASTWrapperPsiElement implements Res
   }
 
   @Override
-  public boolean processDeclarations(
-      @NotNull PsiScopeProcessor processor,
-      @NotNull ResolveState state,
-      @Nullable PsiElement lastParent,
-      @NotNull PsiElement place) {
+  public boolean processDeclarations(@NotNull PsiScopeProcessor processor,
+                                     @NotNull ResolveState state,
+                                     @Nullable PsiElement lastParent,
+                                     @NotNull PsiElement place) {
     return processDeclarationsDefault(this, processor, state, lastParent, place);
   }
 
-  public static boolean processDeclarationsDefault(
-      @NotNull ResCompositeElement o,
-      @NotNull PsiScopeProcessor processor,
-      @NotNull ResolveState state,
-      @Nullable PsiElement lastParent,
-      @NotNull PsiElement place) {
+  public static boolean processDeclarationsDefault(@NotNull ResCompositeElement o,
+                                                   @NotNull PsiScopeProcessor processor,
+                                                   @NotNull ResolveState state,
+                                                   @Nullable PsiElement lastParent,
+                                                   @NotNull PsiElement place) {
     if (!o.shouldGoDeeper()) return processor.execute(o, state);
     if (!processor.execute(o, state)) return false;
 
     return o instanceof ResBlock
-        ? ResolveUtil.processChildrenFromTop(o, processor, state, lastParent, place)
-        : ResolveUtil.processChildren(o, processor, state, lastParent, place);
+           ? ResolveUtil.processChildrenFromTop(o, processor, state, lastParent, place)
+           : ResolveUtil.processChildren(o, processor, state, lastParent, place);
   }
 
   @Override

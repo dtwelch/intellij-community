@@ -27,6 +27,12 @@ public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements Re
 
   @Override
   @Nullable
+  public ResPrecisBlock getPrecisBlock() {
+    return findChildByClass(ResPrecisBlock.class);
+  }
+
+  @Override
+  @Nullable
   public ResReferenceExp getReferenceExp() {
     return findChildByClass(ResReferenceExp.class);
   }
