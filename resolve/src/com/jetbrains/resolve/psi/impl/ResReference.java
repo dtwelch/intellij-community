@@ -139,6 +139,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
           //process the super module's uses clauses
           List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
 
+          //this shouldn't be necessary if we add implicit module specs... right?
           /*for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();
             if (eRes != null) {

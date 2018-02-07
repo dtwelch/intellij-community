@@ -123,7 +123,7 @@ ESCAPES = [abfnrtv]
 //"Cart_Prod"                             { return CART_PROD; }
 //"Categorical"                           { return CATEGORICAL; }
 //"changing"                              { return CHANGING; }
-//"Chainable"                             { return CHAINABLE; }
+"Chainable"                             { return CHAINABLE; }
 //"Concept"                               { return CONCEPT; }
 //"constraints"                           { return CONSTRAINTS; }
 //"conventions"                           { return CONVENTIONS; }
@@ -133,8 +133,8 @@ ESCAPES = [abfnrtv]
 
 //"do"                                    { return DO; }
 //"decreasing"                            { return DECREASING; }
-//"Definition"                            { return DEFINITION; }
-//"Def"                                   { return DEFINITION; }
+"Definition"                            { return DEFINITION; }
+"Def"                                   { return DEFINITION; }
 //"Defines"                               { return DEFINES; }
 
 //"else"                                  { return ELSE; }
@@ -154,7 +154,7 @@ ESCAPES = [abfnrtv]
 
 //"if"                                    { return IF; }
 //"If"                                    { return IF_PROG; }
-//"Implicit"                              { return IMPLICIT; }
+"Implicit"                              { return IMPLICIT; }
 //"initialization"                        { return INITIALIZATION; }
 //"Inductive"                             { return INDUCTIVE; }
 //"is"                                    { return IS; }
@@ -199,8 +199,9 @@ ESCAPES = [abfnrtv]
 "evaluates"                             { return EVALUATES; }
 */
 
-//{MSYM}                                  { return MATHSYMBOL; }
-//{SYM}                                   { return SYMBOL; }
+{MSYM}                                  { return MATHSYMBOL; }
+{SYM}                                   { return SYMBOL; }
+{U_BIGOPERATOR}                         { return BIGOPERATOR}
 {IDENT}                                 { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
