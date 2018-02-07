@@ -20,6 +20,6 @@ public interface ResPrecisModuleDecl extends ResModuleDecl {
   PsiElement getEnd();
 
   @Nullable
-  PsiElement getFor();
+  PsiElement getExtends();
 
 }

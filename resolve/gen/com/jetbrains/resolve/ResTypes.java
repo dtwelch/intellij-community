@@ -39,8 +39,8 @@ public interface ResTypes {
   IElementType DOT = new ResTokenType(".");
   IElementType END = new ResTokenType("end");
   IElementType EXISTS = new ResTokenType("∃");
+  IElementType EXTENDS = new ResTokenType("extends");
   IElementType FALSE = new ResTokenType("false");
-  IElementType FOR = new ResTokenType("for");
   IElementType FORALL = new ResTokenType("∀");
   IElementType FROM = new ResTokenType("from");
   IElementType IDENTIFIER = new ResTokenType("identifier");

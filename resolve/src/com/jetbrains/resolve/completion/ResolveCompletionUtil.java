@@ -1,5 +1,7 @@
 package com.jetbrains.resolve.completion;
 
+import com.intellij.codeInsight.completion.PrefixMatcher;
+import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.util.PlatformIcons;
@@ -29,6 +31,11 @@ public class ResolveCompletionUtil {
   @NotNull
   public static LookupElementBuilder createResolveFileLookupElement(@NotNull ResFile resolveFile) {
     return createResolveFileLookupElement(resolveFile, false);
+  }
+
+  @NotNull
+  static PrefixMatcher createPrefixMatcher(@NotNull PrefixMatcher original) {
+    return new CamelHumpMatcher(original.getPrefix(), true);
   }
 
   @NotNull

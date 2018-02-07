@@ -19,14 +19,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
   private static final Key<String> ACTUAL_NAME = Key.create("ACTUAL_NAME");
 
   private static final ResolveCache.PolyVariantResolver<PsiPolyVariantReferenceBase> MY_RESOLVER =
-    new ResolveCache.PolyVariantResolver<PsiPolyVariantReferenceBase>() {
-      @NotNull
-      @Override
-      public ResolveResult[] resolve(@NotNull PsiPolyVariantReferenceBase psiPolyVariantReferenceBase,
-                                     boolean incompleteCode) {
-        return ((ResReference)psiPolyVariantReferenceBase).resolveInner();
-      }
-    };
+    (t, incompleteCode) -> ((ResReference)t).resolveInner();
 
   ResReference(@NotNull ResReferenceExpBase o) {
     super(o, TextRange.from(o.getIdentifier().getStartOffsetInParent(),
@@ -93,7 +86,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     /*return qualifier != null ?
            processQualifierExpression(((ResFile) file), qualifier, processor, state) :
            processUnqualifiedResolve(((ResFile) file), processor, state, true);*/
-    return processUnqualifiedResolve(((ResFile) file), processor, state, true);
+    return processUnqualifiedResolve(((ResFile)file), processor, state, true);
   }
 
   private boolean processUnqualifiedResolve(@NotNull ResFile file,
@@ -144,7 +137,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (resolve != null && resolve instanceof ResFile) {
         for (ResReferenceExp e : headerModules) {
           //process the super module's uses clauses
-          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile) resolve).getModuleIdentifierSpecs();
+          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
 
           /*for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();

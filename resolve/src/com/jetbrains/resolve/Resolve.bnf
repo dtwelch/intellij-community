@@ -105,7 +105,7 @@ ModuleDecl ::=
 
 //TODO: Instead to 'Precis' identifier (extends identifier)? ';' that is, combine the precisModuleDecl
 //and PrecisExtensionModuleDecl.
-PrecisModuleDecl ::= Precis identifier (for ReferenceExp)? ';'
+PrecisModuleDecl ::= 'Precis' identifier (extends ReferenceExp)? ';'
 UsesList?
 //PrecisBlock
 end identifier ';' {pin(".*")=2}

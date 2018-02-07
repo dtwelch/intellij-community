@@ -215,7 +215,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // Precis identifier (for ReferenceExp)? ';'
+  // 'Precis' identifier (extends ReferenceExp)? ';'
   // UsesList?
   // //PrecisBlock
   // end identifier ';'
@@ -234,19 +234,19 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (for ReferenceExp)?
+  // (extends ReferenceExp)?
   private static boolean PrecisModuleDecl_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisModuleDecl_2")) return false;
     PrecisModuleDecl_2_0(b, l + 1);
     return true;
   }
 
-  // for ReferenceExp
+  // extends ReferenceExp
   private static boolean PrecisModuleDecl_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisModuleDecl_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, FOR);
+    r = consumeToken(b, EXTENDS);
     r = r && ReferenceExp(b, l + 1);
     exit_section_(b, m, null, r);
     return r;

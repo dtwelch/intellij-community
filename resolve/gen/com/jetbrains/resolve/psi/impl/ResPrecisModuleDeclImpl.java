@@ -51,8 +51,8 @@ public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements Re
 
   @Override
   @Nullable
-  public PsiElement getFor() {
-    return findChildByType(FOR);
+  public PsiElement getExtends() {
+    return findChildByType(EXTENDS);
   }
 
 }

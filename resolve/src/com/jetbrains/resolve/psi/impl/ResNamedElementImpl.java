@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public abstract class ResNamedElementImpl extends ResCompositeElementImpl
-    implements ResCompositeElement, ResNamedElement {
+  implements ResCompositeElement, ResNamedElement {
 
   public ResNamedElementImpl(@NotNull ASTNode node) {
     super(node);

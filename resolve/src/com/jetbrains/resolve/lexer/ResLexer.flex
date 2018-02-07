@@ -140,15 +140,16 @@ ESCAPES = [abfnrtv]
 //"else"                                  { return ELSE; }
 //"Enhancement"                           { return ENHANCEMENT; }
 //"enhanced"                              { return ENHANCED; }
-"end"                                   { return END;  }
+"end"                                     { return END;  }
 //"ensures"                               { return ENSURES; }
 //"exemplar"                              { return EXEMPLAR; }
 //"externally"                            { return EXTERNALLY; }
+"extends"                                 { return EXTENDS; }
 
 //"Facility"                              { return FACILITY;  }
 //"false"                                 { return FALSE; }
 //"family"                                { return FAMILY; }
-"for"                                   { return FOR; }
+//"for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
 //"if"                                    { return IF; }

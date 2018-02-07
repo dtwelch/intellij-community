@@ -14,6 +14,10 @@
     <moduleService serviceImplementation="com.jetbrains.resolve.library.ResolveModuleLibrariesService"/>
     <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
+
+    <!-- completions -->
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveCompletionContributor"/>
+
     <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <internalFileTemplate name="RESOLVE File"/>

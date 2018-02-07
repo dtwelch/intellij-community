@@ -30,7 +30,7 @@ public class ResolveParserDefinition implements ParserDefinition {
   public static final IElementType LINE_COMMENT = new ResTokenType("RESOLVE_LINE_COMMENT");
   public static final IElementType MULTILINE_COMMENT = new ResTokenType("RESOLVE_MULTILINE_COMMENT");
 
-  public static final TokenSet KEYWORDS = TokenSet.create(PRECIS, END, USES, FOR, FROM);
+  public static final TokenSet KEYWORDS = TokenSet.create(PRECIS, END, USES, EXTENDS, FROM);
 
   public static final IElementType WS = new ResTokenType("RESOLVE_WHITESPACE");
   public static final IElementType NLS = new ResTokenType("RESOLVE_WS_NEW_LINES");

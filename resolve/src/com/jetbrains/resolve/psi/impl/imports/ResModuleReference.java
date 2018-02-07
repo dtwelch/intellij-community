@@ -17,7 +17,6 @@ import com.jetbrains.resolve.psi.ResFile;
 import com.jetbrains.resolve.psi.ResModuleIdentifier;
 import com.jetbrains.resolve.psi.ResModuleIdentifierSpec;
 import com.jetbrains.resolve.psi.ResModuleLibraryIdentifier;
-import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,43 +83,6 @@ public class ResModuleReference extends FileReference {
     }
     return super.createLookupItem(candidate);
   }
-
-    /*@Override
-    public boolean isReferenceTo(PsiElement element) {
-        if (super.isReferenceTo(element)) {
-            return true;
-        }
-
-        if (element instanceof PsiDirectoryContainer) {
-            for (PsiDirectory directory : ((PsiDirectoryContainer) element).getDirectories()) {
-                if (super.isReferenceTo(directory)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public PsiElement bindToElement(@NotNull PsiElement element, boolean absolute) throws IncorrectOperationException {
-        if (!absolute) {
-            FileReference firstReference = ArrayUtil.getFirstElement(getFileReferenceSet().getAllReferences());
-            if (firstReference != null) {
-                Collection<PsiFileSystemItem> contexts = getFileReferenceSet().getDefaultContexts();
-                for (ResolveResult resolveResult : firstReference.multiResolve(false)) {
-                    PsiElement resolveResultElement = resolveResult.getElement();
-                    if (resolveResultElement instanceof PsiFileSystemItem) {
-                        PsiFileSystemItem parentDirectory = ((PsiFileSystemItem) resolveResultElement).getParent();
-                        if (parentDirectory != null && contexts.contains(parentDirectory)) {
-                            return getElement();
-                        }
-                    }
-                }
-            }
-        }
-        return super.bindToElement(element, absolute);
-    }*/
-
 
   /**
    * Represents a collection of file references along with some number of underlying default file searching
