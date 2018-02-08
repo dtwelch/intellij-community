@@ -1,12 +1,19 @@
 package com.jetbrains.resolve.psi.impl;
 
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.RecursionManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.ResolveState;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceOwner;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.psi.util.PsiModificationTracker;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.Predicate;
 import com.jetbrains.resolve.psi.*;
 import com.jetbrains.resolve.psi.impl.imports.ResModuleLibraryReference;
@@ -43,16 +50,6 @@ public class ResPsiImplUtil {
     return null;
   }
 
-  @Nullable
-  public static PsiElement resolve(@NotNull ResModuleIdentifier moduleIdentifier) {
-    return resolveModuleOrLibraryIdentifier(moduleIdentifier.getReferences(), e -> e instanceof ResFile);
-  }
-
-  @Nullable
-  public static PsiElement resolve(@NotNull ResModuleLibraryIdentifier libraryIdentifier) {
-    return resolveModuleOrLibraryIdentifier(libraryIdentifier.getReferences(), e -> e instanceof PsiDirectory);
-  }
-
   @NotNull
   public static TextRange getModuleIdentiferTextRange(@NotNull ResModuleIdentifier moduleIdentifier) {
     String text = moduleIdentifier.getText();
@@ -70,20 +67,13 @@ public class ResPsiImplUtil {
   }
 
   @NotNull
-  public static String getName(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
-    return moduleIdentifierSpec.getModuleIdentifier().getText();
-  }
-
-  //TODO: This will come up when aliases get introduced
-  @Nullable
-  public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
-    return null;
-  }
-
-
-  @NotNull
   public static ResReference getReference(@NotNull ResReferenceExp o) {
     return new ResReference(o);
+  }
+
+  @NotNull
+  public static ResMathVarLikeReference getReference(@NotNull ResMathReferenceExp o) {
+    return new ResMathVarLikeReference(o);
   }
 
   @NotNull
@@ -99,8 +89,13 @@ public class ResPsiImplUtil {
   }
 
   @Nullable
-  public static ResReferenceExp getQualifier(@NotNull ResReferenceExp o) {
-    return PsiTreeUtil.getChildOfType(o, ResReferenceExp.class);
+  public static PsiElement resolve(@NotNull ResModuleIdentifier moduleIdentifier) {
+    return resolveModuleOrLibraryIdentifier(moduleIdentifier.getReferences(), e -> e instanceof ResFile);
+  }
+
+  @Nullable
+  public static PsiElement resolve(@NotNull ResModuleLibraryIdentifier libraryIdentifier) {
+    return resolveModuleOrLibraryIdentifier(libraryIdentifier.getReferences(), e -> e instanceof PsiDirectory);
   }
 
   @Nullable
@@ -108,4 +103,68 @@ public class ResPsiImplUtil {
     return o.getReference().resolve();
   }
 
+  @NotNull
+  public static String getName(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
+    return moduleIdentifierSpec.getModuleIdentifier().getText();
+  }
+
+  //TODO: This will come up when aliases get introduced
+  @Nullable
+  public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
+    return null;
+  }
+
+  @NotNull
+  public static PsiElement getIdentifier(ResMathReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResMathSymbolName.class);
+  }
+
+  @Nullable
+  public static ResReferenceExp getQualifier(@NotNull ResReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResReferenceExp.class);
+  }
+
+  @Nullable
+  public static ResMathReferenceExp getQualifier(@NotNull ResMathReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResMathReferenceExp.class);
+  }
+
+  /**
+   * An expression denoting the classification of a mathematical expression {@code o} written in terms of another
+   * mathematical expression.
+   */
+  @Nullable
+  public static ResMathExp getResMathMetaTypeExp(@NotNull final ResMathExp o,
+                                                 @Nullable final ResolveState context) {
+    return RecursionManager.doPreventingRecursion(
+      o, true, new Computable<ResMathExp>() {
+        @Override
+        public ResMathExp compute() {
+          if (context != null) return getResMathTypeMetaExpInner(o, context);
+          return CachedValuesManager.getCachedValue(o, new CachedValueProvider<ResMathExp>() {
+            @Override
+            public Result<ResMathExp> compute() {
+              return Result.create(getResMathTypeMetaExpInner(o, null),
+                                   PsiModificationTracker.MODIFICATION_COUNT);
+            }
+          });
+        }
+      });
+  }
+
+  @Nullable
+  public static ResMathExp getResMathTypeMetaExpInner(@NotNull final ResMathExp o, @Nullable ResolveState context) {
+    if (o instanceof ResMathReferenceExp) {
+      PsiReference reference = o.getReference();
+      PsiElement resolve = reference != null ? reference.resolve() : null;
+      if (resolve instanceof ResMathMetaTypeExpOwner) {
+        return ((ResMathMetaTypeExpOwner) resolve).getResMathMetaTypeExp(context);
+      }
+    }
+    else if (o instanceof ResMathSelectorExp) {
+      ResMathExp item = ContainerUtil.getLastItem(((ResMathSelectorExp) o).getMathExpList());
+      return item != null ? item.getResMathMetaTypeExp(context) : null;
+    }
+    return null;
+  }
 }

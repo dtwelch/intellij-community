@@ -8,6 +8,9 @@ import java.util.List;
 public interface ResModuleDecl extends ResNamedElement {
 
   @NotNull
+  ResBlock getBlock();
+
+  @NotNull
   List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
 
   /**
@@ -23,6 +26,13 @@ public interface ResModuleDecl extends ResNamedElement {
    */
   @NotNull
   List<ResReferenceExp> getModuleHeaderReferences();
+
+  @NotNull
+  List<ResMathDefnDecl> getMathDefinitionDecls();
+
+  @NotNull
+  List<ResMathDefnSig> getMathDefnSigs();
+
   /*@NotNull
   ResBlock getBlock();
 

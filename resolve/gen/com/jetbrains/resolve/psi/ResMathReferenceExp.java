@@ -4,22 +4,20 @@ package com.jetbrains.resolve.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.jetbrains.resolve.psi.impl.ResMathVarLikeReference;
 
 public interface ResMathReferenceExp extends ResMathExp, ResReferenceExpBase {
 
   @NotNull
   ResMathSymbolName getMathSymbolName();
 
-  //WARNING: getReference(...) is skipped
-  //matching getReference(ResMathReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @NotNull
+  ResMathVarLikeReference getReference();
 
-  //WARNING: getQualifier(...) is skipped
-  //matching getQualifier(ResMathReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @Nullable
+  ResMathReferenceExp getQualifier();
 
-  //WARNING: getIdentifier(...) is skipped
-  //matching getIdentifier(ResMathReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @NotNull
+  PsiElement getIdentifier();
 
 }

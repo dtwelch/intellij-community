@@ -31,4 +31,19 @@ public class ResMathReferenceExpImpl extends ResMathExpImpl implements ResMathRe
     return findNotNullChildByClass(ResMathSymbolName.class);
   }
 
+  @NotNull
+  public ResMathVarLikeReference getReference() {
+    return ResPsiImplUtil.getReference(this);
+  }
+
+  @Nullable
+  public ResMathReferenceExp getQualifier() {
+    return ResPsiImplUtil.getQualifier(this);
+  }
+
+  @NotNull
+  public PsiElement getIdentifier() {
+    return ResPsiImplUtil.getIdentifier(this);
+  }
+
 }

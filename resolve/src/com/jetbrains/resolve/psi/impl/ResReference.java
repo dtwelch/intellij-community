@@ -4,11 +4,13 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
+import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.OrderedSet;
 import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -154,5 +156,81 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       //}
     }
     return true;
+  }
+
+  static boolean processModuleLevelEntities(@NotNull ResFile file,
+                                            @NotNull ResScopeProcessor processor,
+                                            @NotNull ResolveState state,
+                                            boolean localProcessing) {
+    return processModuleLevelEntities(file, processor, state, localProcessing, false);
+  }
+
+  static boolean processModuleLevelEntities(@NotNull ResFile file,
+                                            @NotNull ResScopeProcessor processor,
+                                            @NotNull ResolveState state,
+                                            boolean localProcessing,
+                                            boolean fromFacilities) {
+    if (file.getEnclosedModule() == null) return true;
+    return processModuleLevelEntities(file.getEnclosedModule(), processor, state, localProcessing, fromFacilities);
+  }
+
+  //TODO: Going to want to do some filtering here in the case where a uses clause initiates the processing
+  // ... in which case if the module is a concept, only return the set of math
+  //{defns}, if its facility -- then search {opproc decls} U {type reprs} U {math defns}.
+  static boolean processModuleLevelEntities(@NotNull ResModuleDecl module,
+                                            @NotNull ResScopeProcessor processor,
+                                            @NotNull ResolveState state,
+                                            boolean localProcessing,
+                                            boolean fromFacility) {
+    /*if (!processNamedElements(processor, state, module.getOperationLikeThings(), localProcessing, fromFacility)) return false;
+    if (!processNamedElements(processor, state, module.getFacilities(), localProcessing, fromFacility)) return false;
+    if (!processNamedElements(processor, state, module.getTypes(), localProcessing, fromFacility)) return false;
+
+    //module parameter-like-things
+    if (!processNamedElements(processor, state, module.getGenericTypeParams(), localProcessing, fromFacility)) return false;
+    if (!processNamedElements(processor, state, module.getConstantParamDefs(), localProcessing, fromFacility)) return false;
+    if (!processNamedElements(processor, state, module.getDefinitionParamSigs(), localProcessing, fromFacility)) return false;*/
+
+    //TODO: Math defns, opers
+    if (!processNamedElements(processor, state, module.getMathDefnSigs(), localProcessing, fromFacility)) return false;
+    return true;
+  }
+
+  static boolean processNamedElements(@NotNull PsiScopeProcessor processor,
+                                      @NotNull ResolveState state,
+                                      @NotNull Collection<? extends ResNamedElement> elements,
+                                      boolean localResolve) {
+    return processNamedElements(processor, state, elements, localResolve, false);
+  }
+
+  static boolean processNamedElements(@NotNull PsiScopeProcessor processor,
+                                      @NotNull ResolveState state,
+                                      @NotNull Collection<? extends ResNamedElement> elements,
+                                      boolean localResolve,
+                                      boolean facilityResolve) {
+    for (ResNamedElement definition : elements) {
+      if ((localResolve || definition.isUsesClauseVisible() || facilityResolve) && !processor.execute(definition, state)) return false;
+    }
+    return true;
+  }
+
+  @NotNull
+  private ResVarReference.ResVarProcessor createDelegate(@NotNull ResScopeProcessor processor) {
+    return new ResVarReference.ResVarProcessor(getIdentifier(), myElement, processor.isCompletion(), true) {
+      @Override
+      protected boolean crossOff(@NotNull PsiElement e) {
+        return /*e instanceof ResFieldDef ||*/ super.crossOff(e);
+      }
+    };
+  }
+
+  private String getName() {
+    return myElement.getIdentifier().getText();
+  }
+
+  @Nullable
+  private static PsiFile getContextFile(@NotNull ResolveState state) {
+    SmartPsiElementPointer<ResReferenceExpBase> context = state.get(CONTEXT);
+    return context != null ? context.getContainingFile() : null;
   }
 }

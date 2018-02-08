@@ -159,6 +159,14 @@ private PrecisItem ::=
 
 private PrecisItemRecover ::= !('Definition'|'Implicit'/*|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'*/|'Chainable'|'Valued'|end)
 
+// program variable decls
+
+
+// facility decls
+
+
+// statements
+
 
 // program expressions
 
