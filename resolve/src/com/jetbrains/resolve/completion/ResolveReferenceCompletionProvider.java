@@ -9,9 +9,8 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveState;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
-import com.jetbrains.resolve.psi.ResFile;
-import com.jetbrains.resolve.psi.ResNamedElement;
-import com.jetbrains.resolve.psi.ResReferenceExpBase;
+import com.jetbrains.resolve.psi.*;
+import com.jetbrains.resolve.psi.impl.ResMathVarLikeReference;
 import com.jetbrains.resolve.psi.impl.ResReference;
 import com.jetbrains.resolve.psi.impl.ResScopeProcessor;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +31,9 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
 
   private static void fillVariantsByReference(@Nullable PsiReference reference,
                                               @NotNull CompletionResultSet result) {
-    if (reference == null) return;
+    if (reference == null) {
+      return;
+    }
         /*if (reference instanceof PsiMultiReference) {
             PsiReference[] references = ((PsiMultiReference)reference).getReferences();
             ContainerUtil.sort(references, PsiMultiReference.COMPARATOR);
@@ -58,27 +59,22 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
         }
       };
       ((ResTypeReference)reference).processResolveVariants(aProcessor);
-    }
+    }*/
     else if (reference instanceof ResMathVarLikeReference) {
-
-      //Handle wildcard math queries.
-      //UPDATE: We don't need this actually. Just type control + space to provide a list of all possible
-      //completions.
-
       ResScopeProcessor aProcessor = new MyRESOLVEScopeProcessor(result, true) {
         @Override
         protected boolean accept(@NotNull PsiElement e) {
           return e instanceof ResMathDefnSig ||
                  e instanceof ResMathVarDef ||
-                 e instanceof ResFieldDef ||
+                 /*e instanceof ResFieldDef ||
                  e instanceof ResParamDef ||
                  e instanceof ResTypeParamDecl ||
-                 e instanceof ResExemplarDecl ||
+                 e instanceof ResExemplarDecl ||*/
                  e instanceof ResFile;
         }
       };
       ((ResMathVarLikeReference)reference).processResolveVariants(aProcessor);
-    }*/
+    }
   }
 
   private static void addElement(@NotNull PsiElement o,
@@ -96,35 +92,35 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
                                                    @NotNull ResolveState state,
                                                    boolean forTypes) {
     if (o instanceof ResNamedElement) {
-      /*if (o instanceof ResMathDefnSig) {
+      if (o instanceof ResMathDefnSig) {
         String name = ((ResMathDefnSig)o).getName();
         if (name != null) {
-          return RESOLVECompletionUtil.createMathDefinitionLookupElement((ResMathDefnSig)o, name,
-                                                                         RESOLVECompletionUtil.DEFINITION_PRIORITY);
+          return ResolveCompletionUtil.createMathDefinitionLookupElement((ResMathDefnSig)o, name,
+                                                                         ResolveCompletionUtil.DEFINITION_PRIORITY);
         }
       }
       else if (o instanceof ResMathVarDef) {
-        return RESOLVECompletionUtil.createMathVarLookupElement((ResMathVarDef)o);
+        return ResolveCompletionUtil.createMathVarLookupElement((ResMathVarDef)o);
       }
-      else if (o instanceof ResTypeLikeNodeDecl || o instanceof ResTypeParamDecl) {
+      /*else if (o instanceof ResTypeLikeNodeDecl || o instanceof ResTypeParamDecl) {
         return RESOLVECompletionUtil.createTypeLookupElement((ResNamedElement)o);
       }
       else if (o instanceof ResFacilityDecl) {
         return RESOLVECompletionUtil.createFacilityLookupElement(((ResFacilityDecl)o));
-      }
+      }*/
       else if (o instanceof ResModuleDecl) {
-        return RESOLVECompletionUtil.createResModuleLookupElement((ResModuleDecl)o);
+        return ResolveCompletionUtil.createResModuleLookupElement((ResModuleDecl)o);
       }
-      else if (o instanceof ResOperationLikeNode) {
+      /*else if (o instanceof ResOperationLikeNode) {
         String name = ((ResOperationLikeNode)o).getName();
         if (name != null) {
           return RESOLVECompletionUtil.createOpLikeLookupElement((ResOperationLikeNode)o, name, null,
                                                                  RESOLVECompletionUtil.FUNCTION_PRIORITY);
         }
-      }
-      else {
-        return RESOLVECompletionUtil.createVariableLikeLookupElement((ResNamedElement)o);
       }*/
+      else {
+        return ResolveCompletionUtil.createVariableLikeLookupElement((ResNamedElement)o);
+      }
     }
     //If you look in {@link ResModuleReference#createLookupItem(PsiElement)} you'll see
     //handling of whats below there as well.. this one is here for {@link ResReference}s and

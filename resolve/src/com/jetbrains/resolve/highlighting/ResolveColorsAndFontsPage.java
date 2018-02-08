@@ -67,25 +67,6 @@ public class ResolveColorsAndFontsPage implements ColorSettingsPage {
         return new ResolveSyntaxHighlighter();
     }
 
-    /*
-
-    Facility Do_Nothing_Fac;
-        uses Standard_Integers, Standard_Char_Strs;
-
-    Operation Needlessly_Complicated_Do_Nothing (restores I : Integer);
-    Procedure
-    Var X : Integer;
-    X := 1;
-    X :=: I;
-
-    //tell user what we're doing
-    Write_Line("Doing nothing to X");
-    Increment(X);
-    Decrement(X);
-    I :=: X;
-    end Do_Nothing;
-    end Do_Nothing_Fac;
-     */
     @NotNull
     @Override
     public String getDemoText() {
