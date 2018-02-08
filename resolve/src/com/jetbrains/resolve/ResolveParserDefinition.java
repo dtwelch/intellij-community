@@ -58,8 +58,8 @@ public class ResolveParserDefinition implements ParserDefinition {
   }
 
   /**
-   * What is the IFileElementType of the root parse tree node? It is called from
-   * {@link #createFile(FileViewProvider)} at least.
+   * What is the IFileElementType of the root parse tree node? It is called from {@link #createFile(FileViewProvider)}
+   * at least.
    */
   @NotNull
   @Override

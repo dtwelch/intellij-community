@@ -13,6 +13,7 @@ import com.intellij.util.PlatformIcons;
 import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -119,8 +120,20 @@ public class ResolveCompletionUtil {
     return PrioritizedLookupElement.withPriority(
       LookupElementBuilder.createWithSmartPointer(v.getMathSymbolName().getText(), v)
         .withRenderer(VARIABLE_RENDERER)
-        .withInsertHandler(new MathSymbolInsertHandler()),
-      VAR_PRIORITY);
+        .withInsertHandler(new MathSymbolInsertHandler()), VAR_PRIORITY);
+  }
+
+  @NotNull
+  static LookupElement createResModuleLookupElement(@NotNull ResModuleDecl module) {
+    return createResModuleLookupElement(module, module.getName());
+  }
+
+  @NotNull
+  private static LookupElement createResModuleLookupElement(@NotNull ResModuleDecl module, String name) {
+    return PrioritizedLookupElement.withPriority(
+      LookupElementBuilder.create(name)
+        .withInsertHandler(Lazy.FACILITY_OR_MODULE_INSERT_HANDLER)
+        .withIcon(module.getIcon(0)), FACILITY_PRIORITY);
   }
 
   @NotNull

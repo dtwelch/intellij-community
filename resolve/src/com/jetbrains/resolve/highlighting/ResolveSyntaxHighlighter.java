@@ -30,8 +30,6 @@ import java.util.Map;
  * The syntax highlighter returns the {@link TextAttributesKey} instances for each token type which needs special
  * highlighting. For highlighting lexer errors, the standard TextAttributesKey for bad characters
  * {@code HighlighterColors.BAD_CHARACTER} can be used."
- *
- * @since 0.0.1
  */
 public class ResolveSyntaxHighlighter extends SyntaxHighlighterBase {
 
