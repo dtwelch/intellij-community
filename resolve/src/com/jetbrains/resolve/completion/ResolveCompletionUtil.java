@@ -1,5 +1,6 @@
 package com.jetbrains.resolve.completion;
 
+import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
@@ -7,6 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupElementRenderer;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.PlatformIcons;
@@ -126,6 +128,24 @@ public class ResolveCompletionUtil {
   @NotNull
   static LookupElement createResModuleLookupElement(@NotNull ResModuleDecl module) {
     return createResModuleLookupElement(module, module.getName());
+  }
+
+  @Nullable
+  static LookupElement createVariableLikeLookupElement(@NotNull ResNamedElement v) {
+    String name = v.getName();
+    if (StringUtil.isEmpty(name)) return null;
+    return createVariableLikeLookupElement(v, name, null, VAR_PRIORITY);
+  }
+
+  @NotNull
+  static LookupElement createVariableLikeLookupElement(@NotNull ResNamedElement v,
+                                                       @NotNull String lookupString,
+                                                       @Nullable InsertHandler<LookupElement> insertHandler,
+                                                       double priority) {
+    return PrioritizedLookupElement.withPriority(
+      LookupElementBuilder.createWithSmartPointer(lookupString, v)
+        .withRenderer(VARIABLE_RENDERER)
+        .withInsertHandler(insertHandler), priority);
   }
 
   @NotNull
