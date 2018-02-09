@@ -149,13 +149,22 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
             }
           }*/
         }
-        /*processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
-        boolean forSuperModule = forSuperModule(moduleDecl, o.getName());
-        if (!processModuleLevelEntities((ResFile) resolve, processor, state, forSuperModule)) return false;*/
+        processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
+        //searching a super module is considered a "localSearch"
+        boolean searchingLocally = forSuperModule(moduleDecl, o.getName());
+        if (!processModuleLevelEntities((ResFile) resolve, processor, state, searchingLocally)) return false;
       }
       //}
     }
     return true;
+  }
+
+  /** Returns true if {@code currentUsesName} is named in a module's first line as a spec being implemented. */
+  private static boolean forSuperModule(@NotNull ResModuleDecl module, @NotNull String currentUsesName) {
+    for (ResReferenceExp e : module.getModuleHeaderReferences()) {
+      if (e.getIdentifier().getText().equals(currentUsesName)) return true;
+    }
+    return false;
   }
 
   static boolean processModuleLevelEntities(@NotNull ResFile file,

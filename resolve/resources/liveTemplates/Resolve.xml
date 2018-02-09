@@ -1,3 +1,9 @@
 <templateSet group="Resolve">
-
+  <template description='Précis module declaration' name='Precis' toReformat='true' toShortenFQNames='true'
+            value='Precis $NAME$;&#10;    $END$&#10;end $NAME$;'>
+    <variable alwaysStopAt='true' defaultValue='&quot;name&quot;' expression='' name='NAME'/>
+    <context>
+      <option name='RESOLVE_FILE' value='true'/>
+    </context>
+  </template>
 </templateSet>

@@ -77,7 +77,6 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     return CachedValuesManager
       .getCachedValue(this,
                       new CachedValueProvider<ResMathExp>() {
-                        @Nullable
                         @Override
                         public Result<ResMathExp> compute() {
                           return Result.create(getResMathMetaTypeExpInner(null), PsiModificationTracker.MODIFICATION_COUNT);
@@ -92,11 +91,11 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
   }
 
   /**
-   * Ok, here's the deal: this will basically look to our right hand side siblings of {@code this} AST (Jetbrains speak: PSI) node for a math exp
-   * and return the first one it finds.
+   * Ok, here's the deal: this will basically look to our right hand side siblings of {@code this} AST (or, in
+   * Jetbrains speak: PSI) node for a math exp and return the first one it finds.
    * <p>
-   * Here's the thing though, this is not good/flexible enough since we also want to return a ResType, think in the case of a parameter
-   * decl: there we'll want a ResType, resolve that, and get back to the math expr.</p>
+   * Here's the thing though, this is not good/flexible enough since we also want to return a ResType, think in the
+   * case of a parameter decl: there we'll want a ResType, resolve that, and get back to the math expr.</p>
    */
   @Nullable
   @Override

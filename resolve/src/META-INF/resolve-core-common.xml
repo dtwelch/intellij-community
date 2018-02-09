@@ -10,17 +10,34 @@
     <sdkType implementation="com.jetbrains.resolve.sdk.ResolveSdkType"/>
     <applicationService serviceImplementation="com.jetbrains.resolve.library.ResolveApplicationLibrariesService"/>
     <applicationService serviceImplementation="com.jetbrains.resolve.sdk.ResolveEnvironmentPathModificationTracker"/>
+    <applicationService serviceImplementation="com.jetbrains.resolve.configuration.ResolveCompilerSettings"/>
+
     <projectService serviceImplementation="com.jetbrains.resolve.library.ResolveProjectLibrariesService"/>
     <moduleService serviceImplementation="com.jetbrains.resolve.library.ResolveModuleLibrariesService"/>
     <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
 
-    <!-- completions -->
-    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveCompletionContributor"/>
-
     <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <internalFileTemplate name="RESOLVE File"/>
+
+    <!-- completions -->
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveCompletionContributor"/>
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveKeywordCompletionContributor"/>
+    <!--<completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveMathSymbolCompletionContributor"/>-->
+
+    <!-- live template & contexts -->
+    <defaultLiveTemplatesProvider implementation="com.jetbrains.resolve.template.ResolveLiveTemplatesProvider"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveEverywhereContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFileContextType"/>
+
+    <!--  necessary because we have live templates for var decls, ops, facility decls, etc that can only go in certain contexts.. these are those contexts:
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEFacilityModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptExtModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEImplModuleContextType"/>
+    -->
+
   </extensions>
 
   <actions>

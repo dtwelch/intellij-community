@@ -2,14 +2,22 @@ package com.jetbrains.resolve.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.parser.GeneratedParserUtilBase;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.ResTypes;
+import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import com.jetbrains.resolve.psi.*;
+import com.jetbrains.resolve.sdk.ResolveSdkType;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +28,27 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
 
   ResAbstractModuleImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  //if we're NOT dealing with a core library module and the "no-std-uses-flag" is NOT raised,
+  //then we should automatically include standard imports.
+  @Override
+  public boolean shouldAutoImportUses() {
+    return CachedValuesManager.getCachedValue(this, () -> {
+      Project project = getProject();
+      Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+      VirtualFile vFile = getContainingFile().getVirtualFile();
+      boolean result = vFile != null && sdk != null;
+      if (result) {
+        ResolveSdkUtil.getResolvePathSourcesRoot(project);
+        String homePath = sdk.getHomePath();
+        boolean isCoreLibraryModule = homePath != null && vFile.getPath().contains(homePath);
+
+        boolean isNoStdUsesFlagChecked = ResolveCompilerSettings.getInstance().isAutoImportStandardUses();
+        result = !isCoreLibraryModule && !isNoStdUsesFlagChecked;
+      }
+      return CachedValueProvider.Result.create(result, this);
+    });
   }
 
   @NotNull

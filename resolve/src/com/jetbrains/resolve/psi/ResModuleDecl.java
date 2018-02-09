@@ -7,6 +7,8 @@ import java.util.List;
 /** Represents the root of all module like declarations in RESOLVE. */
 public interface ResModuleDecl extends ResNamedElement {
 
+  boolean shouldAutoImportUses();
+
   @NotNull
   ResBlock getBlock();
 
