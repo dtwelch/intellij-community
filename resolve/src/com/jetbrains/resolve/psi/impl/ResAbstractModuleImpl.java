@@ -7,11 +7,13 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.containers.HashSet;
 import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import com.jetbrains.resolve.psi.*;
@@ -21,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implements ResModuleDecl {
 
@@ -45,6 +49,51 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     }
     return result;
   }
+
+  @NotNull
+  @Override
+  public List<ResModuleIdentifierSpec> getModuleHeaderModuleIdentifierSpecs() {
+    List<ResReferenceExp> headerReferences = getModuleHeaderReferences();
+    List<ResModuleIdentifierSpec> usesItems = getModuleIdentifierSpecs();
+    List<String> toConvert = new ArrayList<>();
+
+    //first need to check to make sure it's not already in the header refs..
+    Set<String> existingUsesItems = new HashSet<>();
+    for (ResModuleIdentifierSpec u : usesItems) {
+      existingUsesItems.add(u.getText());
+    }
+
+    //now filter the list we send to the createUsesSpecList method
+    for (ResReferenceExp ref : headerReferences) {
+      String s = ref.getText();
+      if (existingUsesItems.contains(s)) {
+        toConvert.add(ref.getText());
+      }
+    }
+    return ResElementFactory.createUsesSpecList(getProject(), toConvert);
+  }
+
+  /*
+  @NotNull
+  public List<GoConstDefinition> getConstants() {
+    return CachedValuesManager.getCachedValue(this, () -> {
+      StubElement<GoFile> stub = getStub();
+      List<GoConstDefinition> result;
+      if (stub != null) {
+        result = ContainerUtil.newArrayList();
+        List<GoConstSpec> constSpecs = getChildrenByType(stub, GoTypes.CONST_SPEC, GoConstSpecStubElementType.ARRAY_FACTORY);
+        for (GoConstSpec spec : constSpecs) {
+          GoConstSpecStub specStub = spec.getStub();
+          if (specStub == null) continue;
+          result.addAll(getChildrenByType(specStub, GoTypes.CONST_DEFINITION, GoConstDefinitionStubElementType.ARRAY_FACTORY));
+        }
+      }
+      else {
+        result = calcConsts();
+      }
+      return CachedValueProvider.Result.create(result, this);
+    });
+  }*/
 
   @NotNull
   public ResBlock getBlock() {

@@ -9,7 +9,6 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.OrderedSet;
 import com.jetbrains.resolve.psi.ResFile;
 import com.jetbrains.resolve.psi.ResMathReferenceExp;
-import com.jetbrains.resolve.psi.ResMathSelectorExp;
 import com.jetbrains.resolve.psi.ResNamedElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,7 +90,7 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
 
     if (!processBlock(processor, state, true)) return false;
     if (!ResReference.processModuleLevelEntities(file, processor, state, localResolve)) return false;
-    if (!ResReference.processUsesImports(file, processor, state)) return false;
+    if (!ResReference.processModuleHeaderAndExplicitUsesImports(file, processor, state)) return false;
     //if (!processBuiltin(processor, state, myElement)) return false;
     return true;
   }

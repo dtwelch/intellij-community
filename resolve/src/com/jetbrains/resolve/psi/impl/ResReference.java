@@ -108,25 +108,28 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (!processBlock(processor, state, true)) return false;
     if (!processModuleLevelEntities(file, processor, state, true)) return false;*/
 
-    if (!processUsesImports(file, processor, state)) return false;
+    if (!processModuleHeaderAndExplicitUsesImports(file, processor, state)) return false;
     //if (!processFacilityImports(file, processor, state)) return false;
 
     return true;
   }
 
-  public static boolean processUsesImports(@NotNull ResFile file,
-                                           @NotNull ResScopeProcessor processor,
-                                           @NotNull ResolveState state) {
+  /**
+   * Searches the modules explicitly mentioned in the uses list including those mentioned in the module's header.
+   */
+  public static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResFile file,
+                                                                  @NotNull ResScopeProcessor processor,
+                                                                  @NotNull ResolveState state) {
     if (file.getEnclosedModule() == null) return true;
-    return processUsesImports(file.getEnclosedModule(), processor, state);
+    return processModuleHeaderAndExplicitUsesImports(file.getEnclosedModule(), processor, state);
   }
 
   //OK: So it looks like this is the method that's going to have to initiate the search into the super modules...
   //Update: Ok so at least this method is doing what I *think* it needs to be doing right now. Don't get me wrong its a godawful
   //mess, but at least its working as I expect for the moment. TODO: Clean it up, improve names etc.
-  private static boolean processUsesImports(@NotNull ResModuleDecl moduleDecl,
-                                            @NotNull ResScopeProcessor processor,
-                                            @NotNull ResolveState state) {
+  private static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResModuleDecl moduleDecl,
+                                                                   @NotNull ResScopeProcessor processor,
+                                                                   @NotNull ResolveState state) {
     List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
 
     List<ResReferenceExp> headerModules = moduleDecl.getModuleHeaderReferences();
@@ -139,10 +142,10 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (resolve != null && resolve instanceof ResFile) {
         for (ResReferenceExp e : headerModules) {
           //process the super module's uses clauses
-          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
+          /*List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
 
           //this shouldn't be necessary if we add implicit module specs... right?
-          /*for (ResModuleIdentifierSpec e1 : superModuleUses) {
+          for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();
             if (eRes != null) {
               if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
@@ -156,6 +159,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       }
       //}
     }
+    moduleDecl.getModuleHeaderReferences()
     return true;
   }
 

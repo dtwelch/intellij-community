@@ -1,11 +1,16 @@
 package com.jetbrains.resolve.psi.impl;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.jetbrains.resolve.ResolveLanguage;
 import com.jetbrains.resolve.psi.ResFile;
+import com.jetbrains.resolve.psi.ResModuleIdentifierSpec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
 public class ResElementFactory {
@@ -23,6 +28,13 @@ public class ResElementFactory {
   public static PsiElement createIdentifierFromText(@NotNull Project project, String text) {
     ResFile file = createFileFromText(project, "Precis " + text + ";end " + text + ";");
     return file.getEnclosedModule().getIdentifier();
+  }
+
+  @NotNull
+  public static List<ResModuleIdentifierSpec> createUsesSpecList(@NotNull Project project, List<String> imports) {
+    String joinedList = StringUtil.join(imports, e -> e, ", ");
+    ResFile file = createFileFromText(project, "Precis T; uses "  + joinedList + "; end T;");
+    return file.getEnclosedModule().getModuleIdentifierSpecs();
   }
 
   //TODO: I don't want this to be navigatble.. Figure out how to accomplish this. (or at least make the module

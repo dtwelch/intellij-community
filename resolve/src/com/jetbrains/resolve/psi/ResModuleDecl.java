@@ -29,6 +29,12 @@ public interface ResModuleDecl extends ResNamedElement {
   @NotNull
   List<ResReferenceExp> getModuleHeaderReferences();
 
+  /**
+   *
+   * @return
+   */
+  List<ResModuleIdentifierSpec> getModuleHeaderModuleIdentifierSpecs();
+
   @NotNull
   List<ResMathDefnDecl> getMathDefinitionDecls();
 
