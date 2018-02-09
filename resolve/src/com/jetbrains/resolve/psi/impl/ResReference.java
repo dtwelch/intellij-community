@@ -201,6 +201,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (!processNamedElements(processor, state, module.getDefinitionParamSigs(), localProcessing, fromFacility)) return false;*/
 
     //TODO: Math defns, opers
+    boolean test = module.shouldAutoImportUses();
     if (!processNamedElements(processor, state, module.getMathDefnSigs(), localProcessing, fromFacility)) return false;
     return true;
   }

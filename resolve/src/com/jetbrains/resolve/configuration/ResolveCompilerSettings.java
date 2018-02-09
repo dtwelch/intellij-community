@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 )
 public class ResolveCompilerSettings implements PersistentStateComponent<ResolveCompilerSettings> {
 
-  private boolean autoImportStandardUses = true;
+  private boolean noAutoStandardUses = false;
   private boolean showCompilerEnvVarsOnRun = false;
 
   public static ResolveCompilerSettings getInstance() {
@@ -28,12 +28,12 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
     XmlSerializerUtil.copyBean(state, this);
   }
 
-  public boolean isAutoImportStandardUses() {
-    return autoImportStandardUses;
+  public boolean isNoAutoStandardUses() {
+    return noAutoStandardUses;
   }
 
-  public void setAutoImportStandardUses(boolean autoImportStandardUses) {
-    this.autoImportStandardUses = autoImportStandardUses;
+  public void setNoAutoStandardUses(boolean noAutoStandardUses) {
+    this.noAutoStandardUses = noAutoStandardUses;
   }
 
   public boolean isShowCompilerEnvVarsOnRun() {
