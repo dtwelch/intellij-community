@@ -161,13 +161,13 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
         if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
 
         //2. search its imports
-        if (file.getEnclosedModule() == null) continue;
+        /*if (file.getEnclosedModule() == null) continue;
         for (ResModuleIdentifierSpec e1 : file.getEnclosedModule().getModuleIdentifierSpecs()) {
           PsiElement eRes = e1.getModuleIdentifier().resolve();
           if (eRes != null) {
             if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
           }
-        }
+        }*/
       }
     }
     return true;

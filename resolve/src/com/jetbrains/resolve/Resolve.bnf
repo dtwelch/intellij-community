@@ -73,13 +73,13 @@
         OPERATION     = 'Operation'
         PRECIS        = 'Precis'
         //PROCEDURE     = 'Procedure'
-        //REALIZATION   = 'Realization'
+        REALIZATION   = 'Realization'
         //RECOGNITION   = 'Recognition'
         //RECORD        = 'Record'
         //RECURSIVE     = 'Recursive'
         //THEOREM       = 'Theorem'
         //TYPE_FAMILY   = 'Type'
-        //TYPE_PARAM    = 'type'
+        TYPE_PARAM    = 'type'
         VALUED        = 'Valued'
         //VAR           = 'Var'
         //NOTICE        = 'Notice'
@@ -120,14 +120,19 @@
 }
 
 ModuleDecl ::=
-      PrecisModuleDecl
+        PrecisModuleDecl
+      | RealizationModuleDecl
 
-//TODO: Instead to 'Precis' identifier (extends identifier)? ';' that is, combine the precisModuleDecl
-//and PrecisExtensionModuleDecl.
 PrecisModuleDecl ::= 'Precis' identifier (extends ReferenceExp)? ';'
 UsesList?
 PrecisBlock
 end identifier ';' {pin(".*")=2}
+
+RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ReferenceExp (of ReferenceExp)? ';'
+UsesList?
+RequiresClause?
+RealizBlock
+end identifier ';' {pin(".*")=1}
 
 // uses, imports
 
@@ -147,8 +152,18 @@ ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[g
 // Module blocks & items
 
 PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
-
+RealizBlock ::= RealizItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 private ItemsRecover ::= !(end)
+
+private RealizItem ::=
+   /*   TypeReprDecl
+    | OperationProcedureDecl
+    | FacilityDecl
+    | ProcedureDecl
+    |*/ MathStandardDefnDecl {pin=1 recoverWhile=ImplItemRecover}
+
+private ImplItemRecover ::= !(/*'Type'|'Operation'|'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
+
 
 private PrecisItem ::=
           MathStandardDefnDecl
@@ -215,6 +230,19 @@ MathVarDeclGroup ::= MathVarDeclList (':'|'ː') MathExp {pin=1}
 MathVarDecl ::= MathVarDef (':'|'ː') MathExp {pin=2 extends=MathVarDeclGroup}
 private MathVarDeclList ::= MathVarDef &(!(')')) (',' MathVarDef)* {pin=1}
 MathVarDef ::= MathSymbolName //TODO: Make this a MathSymbolName
+
+// mathematical clauses
+
+//IntializationClause ::= initialization (EnsuresClause) ;
+RequiresClause ::= requires MathAssertionExp (EntailsClause)? ';' {pin=1}
+/*EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
+ConstraintsClause ::= constraints MathAssertionExp ';' {pin=1}
+ConventionsClause ::= conventions MathAssertionExp (EntailsClause)? ';' {pin=1}
+CorrespondenceClause ::= correspondence MathAssertionExp ';' {pin=1}
+ChangingClause ::= changing ExpArgumentList ';' {pin=1}
+MaintainingClause ::= maintaining MathAssertionExp ';' {pin=1}
+DecreasingClause ::= decreasing MathAssertionExp ';' {pin=1}*/
+EntailsClause ::= which_entails MathExp {pin=1}
 
 // mathematical expressions
 

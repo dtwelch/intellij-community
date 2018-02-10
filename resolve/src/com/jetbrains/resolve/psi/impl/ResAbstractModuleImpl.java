@@ -67,7 +67,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
       //now filter the list we send to the createUsesSpecList method
       for (ResReferenceExp ref : headerReferences) {
         String s = ref.getText();
-        if (existingUsesItems.contains(s)) {
+        if (!existingUsesItems.contains(s)) {
           toConvert.add(ref.getText());
         }
       }

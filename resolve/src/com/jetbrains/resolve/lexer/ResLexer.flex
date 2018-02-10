@@ -149,7 +149,7 @@ ESCAPES = [abfnrtv]
 //"Facility"                              { return FACILITY;  }
 //"false"                                 { return FALSE; }
 //"family"                                { return FAMILY; }
-//"for"                                   { return FOR; }
+"for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
 "if"                                    { return IF; }
@@ -160,14 +160,14 @@ ESCAPES = [abfnrtv]
 //"is"                                    { return IS; }
 
 //"realized"                              { return REALIZED; }
-//"Realization"                           { return REALIZATION; }
+"Realization"                           { return REALIZATION; }
 
 //"maintaining"                           { return MAINTAINING; }
 //"modeled"                               { return MODELED; }
 
 //"Operation"                             { return OPERATION; }
 "otherwise"                             { return OTHERWISE; }
-//"of"                                    { return OF; }
+"of"                                    { return OF; }
 
 //"Procedure"                             { return PROCEDURE; }
 "Precis"                                { return PRECIS; }
@@ -175,29 +175,28 @@ ESCAPES = [abfnrtv]
 //"Recursive"                             { return RECURSIVE; }
 //"Recognition"                           { return RECOGNITION; }
 //"Record"                                { return RECORD; }
-//"requires"                              { return REQUIRES; }
+"requires"                              { return REQUIRES; }
 
 //"then"                                  { return THEN; }
 //"true"                                  { return TRUE; }
 //"Theorem"                               { return THEOREM; }
 //"Type"                                  { return TYPE_FAMILY; }
-//"type"                                  { return TYPE_PARAM; }
+"type"                                  { return TYPE_PARAM; }
 
 "uses"                                  { return USES; }
 //"Var"                                   { return VAR; }
 //"While"                                 { return WHILE; }
-//"which_entails"                         { return WHICH_ENTAILS; }
+"which_entails"                         { return WHICH_ENTAILS; }
 
 // Parameter modes
 
-/*"alters"                                { return ALTERS; }
+"alters"                                { return ALTERS; }
 "updates"                               { return UPDATES; }
 "clears"                                { return CLEARS; }
 "restores"                              { return RESTORES; }
 "preserves"                             { return PRESERVES; }
 "replaces"                              { return REPLACES; }
 "evaluates"                             { return EVALUATES; }
-*/
 
 {MSYM}                                  { return MATHSYMBOL; }
 {SYM}                                   { return SYMBOL; }

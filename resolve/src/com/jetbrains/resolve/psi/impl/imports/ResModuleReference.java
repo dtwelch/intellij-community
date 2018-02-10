@@ -29,7 +29,7 @@ import static com.intellij.util.containers.ContainerUtil.newLinkedHashSet;
 
 /**
  * Represents a reference to some directory (or specific {@link PsiFile} file) introduced via a uses clause or
- * super module (Impl X for Y).
+ * super module (i.e., for example in "Realization X for Y", Y is the super module).
  * <p>
  * This is distinguished from an {@link ResReferenceExp} that reference modules in either:
  * <ul><li>a facility decl</li>
