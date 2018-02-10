@@ -52,25 +52,28 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
 
   @NotNull
   @Override
-  public List<ResModuleIdentifierSpec> getModuleHeaderModuleIdentifierSpecs() {
-    List<ResReferenceExp> headerReferences = getModuleHeaderReferences();
-    List<ResModuleIdentifierSpec> usesItems = getModuleIdentifierSpecs();
-    List<String> toConvert = new ArrayList<>();
+  public List<ResModuleIdentifierSpec> getModuleHeaderRefsAsModuleIdentifierSpecs() {
+    return CachedValuesManager.getCachedValue(this, () -> {
+      List<ResReferenceExp> headerReferences = getModuleHeaderReferences();
+      List<ResModuleIdentifierSpec> usesItems = getModuleIdentifierSpecs();
+      List<String> toConvert = new ArrayList<>();
 
-    //first need to check to make sure it's not already in the header refs..
-    Set<String> existingUsesItems = new HashSet<>();
-    for (ResModuleIdentifierSpec u : usesItems) {
-      existingUsesItems.add(u.getText());
-    }
-
-    //now filter the list we send to the createUsesSpecList method
-    for (ResReferenceExp ref : headerReferences) {
-      String s = ref.getText();
-      if (existingUsesItems.contains(s)) {
-        toConvert.add(ref.getText());
+      //first need to check to make sure it's not already in the header refs..
+      Set<String> existingUsesItems = new HashSet<>();
+      for (ResModuleIdentifierSpec u : usesItems) {
+        existingUsesItems.add(u.getText());
       }
-    }
-    return ResElementFactory.createUsesSpecList(getProject(), toConvert);
+
+      //now filter the list we send to the createUsesSpecList method
+      for (ResReferenceExp ref : headerReferences) {
+        String s = ref.getText();
+        if (existingUsesItems.contains(s)) {
+          toConvert.add(ref.getText());
+        }
+      }
+      return CachedValueProvider.Result.create(
+        ResElementFactory.createUsesSpecList(getProject(), toConvert), this);
+    });
   }
 
   /*

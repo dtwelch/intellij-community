@@ -33,7 +33,7 @@ public interface ResModuleDecl extends ResNamedElement {
    *
    * @return
    */
-  List<ResModuleIdentifierSpec> getModuleHeaderModuleIdentifierSpecs();
+  List<ResModuleIdentifierSpec> getModuleHeaderRefsAsModuleIdentifierSpecs();
 
   @NotNull
   List<ResMathDefnDecl> getMathDefinitionDecls();

@@ -144,7 +144,8 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
           //process the super module's uses clauses
           /*List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
 
-          //this shouldn't be necessary if we add implicit module specs... right?
+          //When in the context of an implementation, how does the old compiler handle searching usesItems... do they
+          //search those from the concept? Look into this...
           for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();
             if (eRes != null) {
@@ -159,7 +160,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       }
       //}
     }
-    moduleDecl.getModuleHeaderReferences()
+    List<ResReferenceExp> headerImports = moduleDecl.getModuleHeaderReferences();
     return true;
   }
 
