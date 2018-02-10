@@ -127,12 +127,13 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
   //OK: So it looks like this is the method that's going to have to initiate the search into the super modules...
   //Update: Ok so at least this method is doing what I *think* it needs to be doing right now. Don't get me wrong its a godawful
   //mess, but at least its working as I expect for the moment. TODO: Clean it up, improve names etc.
+
+  //
   private static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResModuleDecl moduleDecl,
                                                                    @NotNull ResScopeProcessor processor,
                                                                    @NotNull ResolveState state) {
+    //first search any explicitly mentioned uses specs
     List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
-
-    List<ResReferenceExp> headerModules = moduleDecl.getModuleHeaderReferences();
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
       //    if (!processor.execute(o, state.put(ACTUAL_NAME, o.getAlias().getText()))) return false;
@@ -140,27 +141,35 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       //else {
       PsiElement resolve = o.getModuleIdentifier().resolve();
       if (resolve != null && resolve instanceof ResFile) {
-        for (ResReferenceExp e : headerModules) {
-          //process the super module's uses clauses
-          /*List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
-
-          //When in the context of an implementation, how does the old compiler handle searching usesItems... do they
-          //search those from the concept? Look into this...
-          for (ResModuleIdentifierSpec e1 : superModuleUses) {
-            PsiElement eRes = e1.getModuleIdentifier().resolve();
-            if (eRes != null) {
-              if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
-            }
-          }*/
-        }
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
-        //searching a super module is considered a "localSearch"
+        //searching a super module (even it is mentioned explicitly in the uses list) is considered a "localSearch"
         boolean searchingLocally = forSuperModule(moduleDecl, o.getName());
-        if (!processModuleLevelEntities((ResFile) resolve, processor, state, searchingLocally)) return false;
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, searchingLocally)) return false;
       }
-      //}
     }
-    List<ResReferenceExp> headerImports = moduleDecl.getModuleHeaderReferences();
+
+    //now search implicitly imported 'super modules' (i.e., ones mentioned in the module's header)
+    List<ResModuleIdentifierSpec> headerImportSpecs = moduleDecl.getModuleHeaderRefsAsModuleIdentifierSpecs();
+    for (ResModuleIdentifierSpec o : headerImportSpecs) {
+      PsiElement resolve = o.getModuleIdentifier().resolve();
+
+      if (resolve != null && resolve instanceof ResFile) {
+        ResFile file = (ResFile)resolve;
+        processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
+        //1. search it (note that here we search the super module with localProcessing set to true, since we
+        //want to be able to reference things like concept params in a realization)
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+
+        //2. search its imports
+        if (file.getEnclosedModule() == null) continue;
+        for (ResModuleIdentifierSpec e1 : file.getEnclosedModule().getModuleIdentifierSpecs()) {
+          PsiElement eRes = e1.getModuleIdentifier().resolve();
+          if (eRes != null) {
+            if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
+          }
+        }
+      }
+    }
     return true;
   }
 
