@@ -19,13 +19,14 @@ public class ResolveCompletionContributor extends CompletionContributor {
     extend(CompletionType.BASIC, referenceExp(), new ResolveReferenceCompletionProvider());
     //test this out with the other 4 modules to make sure this works correctly: q: how to references for qualifiers work then?
     //a: in the qualifier method that is called from the processResolveVariants method in the referenceExp classes
-    extend(CompletionType.BASIC, moduleHeaderReferenceExp(), new ResolveModuleHeaderReferenceProvider());
+    //extend(CompletionType.BASIC, moduleHeaderReferenceExp(), new ResolveModuleHeaderReferenceProvider());
     extend(CompletionType.BASIC, mathReferenceExp(), new ResolveReferenceCompletionProvider());
   }
 
   private static PsiElementPattern.Capture<PsiElement> moduleHeaderReferenceExp() {
-    return psiElement().withParent(psiElement(ResReferenceExpBase.class).andNot(psiElement().afterSibling(psiElement(
-      PsiErrorElement.class)).withParent(ResModuleDecl.class)));
+    return psiElement().withParent(psiElement(ResReferenceExpBase.class)
+                                     .andNot(psiElement().afterSibling(psiElement(PsiErrorElement.class))
+                                               .withParent(ResModuleDecl.class)));
   }
 
   private static PsiElementPattern.Capture<PsiElement> referenceExp() {

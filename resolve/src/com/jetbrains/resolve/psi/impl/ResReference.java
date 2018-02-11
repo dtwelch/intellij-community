@@ -107,7 +107,6 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (ResPsiImplUtil.prevDot(parent)) return false;
     if (!processBlock(processor, state, true)) return false;
     if (!processModuleLevelEntities(file, processor, state, true)) return false;*/
-
     if (!processModuleHeaderAndExplicitUsesImports(file, processor, state)) return false;
     //if (!processFacilityImports(file, processor, state)) return false;
 
@@ -130,6 +129,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
                                                                    @NotNull ResolveState state) {
     //first search any explicitly mentioned uses specs
     List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
+
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
       //    if (!processor.execute(o, state.put(ACTUAL_NAME, o.getAlias().getText()))) return false;
