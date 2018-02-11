@@ -124,10 +124,6 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     return processModuleHeaderAndExplicitUsesImports(file.getEnclosedModule(), processor, state);
   }
 
-  //OK: So it looks like this is the method that's going to have to initiate the search into the super modules...
-  //Update: Ok so at least this method is doing what I *think* it needs to be doing right now. Don't get me wrong its a godawful
-  //mess, but at least its working as I expect for the moment. TODO: Clean it up, improve names etc.
-
   //
   private static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResModuleDecl moduleDecl,
                                                                    @NotNull ResScopeProcessor processor,

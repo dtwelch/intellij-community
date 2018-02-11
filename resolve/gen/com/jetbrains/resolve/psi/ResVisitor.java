@@ -14,6 +14,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitExp(o);
   }
 
+  public void visitEntailsClause(@NotNull ResEntailsClause o) {
+    visitCompositeElement(o);
+  }
+
   public void visitExp(@NotNull ResExp o) {
     visitTypeOwner(o);
   }
@@ -91,7 +95,7 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitMathPrefixDefnSig(@NotNull ResMathPrefixDefnSig o) {
-    visitCompositeElement(o);
+    visitMathDefnSig(o);
   }
 
   public void visitMathQuantifiedExp(@NotNull ResMathQuantifiedExp o) {
@@ -100,7 +104,6 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathReferenceExp(@NotNull ResMathReferenceExp o) {
     visitMathExp(o);
-    // visitReferenceExpBase(o);
     // visitReferenceExpBase(o);
   }
 
@@ -144,8 +147,20 @@ public class ResVisitor extends PsiElementVisitor {
     visitExp(o);
   }
 
+  public void visitParamDecl(@NotNull ResParamDecl o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitParamDef(@NotNull ResParamDef o) {
+    visitNamedElement(o);
+  }
+
   public void visitParamExp(@NotNull ResParamExp o) {
     visitExp(o);
+  }
+
+  public void visitParameterMode(@NotNull ResParameterMode o) {
+    visitCompositeElement(o);
   }
 
   public void visitPrecisBlock(@NotNull ResPrecisBlock o) {
@@ -160,14 +175,33 @@ public class ResVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitRealizBlock(@NotNull ResRealizBlock o) {
+    visitBlock(o);
+  }
+
+  public void visitRealizModuleParameters(@NotNull ResRealizModuleParameters o) {
+    visitModuleParameters(o);
+  }
+
+  public void visitRealizationModuleDecl(@NotNull ResRealizationModuleDecl o) {
+    visitModuleDecl(o);
+  }
+
   public void visitReferenceExp(@NotNull ResReferenceExp o) {
     visitExp(o);
     // visitReferenceExpBase(o);
-    // visitReferenceExpBase(o);
+  }
+
+  public void visitRequiresClause(@NotNull ResRequiresClause o) {
+    visitCompositeElement(o);
   }
 
   public void visitSelectorExp(@NotNull ResSelectorExp o) {
     visitBinaryExp(o);
+  }
+
+  public void visitTypeParamDecl(@NotNull ResTypeParamDecl o) {
+    visitNamedElement(o);
   }
 
   public void visitUsesList(@NotNull ResUsesList o) {
@@ -182,7 +216,15 @@ public class ResVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitMathDefnSig(@NotNull ResMathDefnSig o) {
+    visitCompositeElement(o);
+  }
+
   public void visitModuleDecl(@NotNull ResModuleDecl o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitModuleParameters(@NotNull ResModuleParameters o) {
     visitCompositeElement(o);
   }
 

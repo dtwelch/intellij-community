@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiErrorElement;
 import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.psi.ResMathSymbolName;
 import com.jetbrains.resolve.psi.ResModuleDecl;
@@ -23,7 +24,8 @@ public class ResolveCompletionContributor extends CompletionContributor {
   }
 
   private static PsiElementPattern.Capture<PsiElement> moduleHeaderReferenceExp() {
-    return psiElement().withParent(psiElement(ResReferenceExpBase.class).withParent(ResModuleDecl.class));
+    return psiElement().withParent(psiElement(ResReferenceExpBase.class).andNot(psiElement().afterSibling(psiElement(
+      PsiErrorElement.class)).withParent(ResModuleDecl.class)));
   }
 
   private static PsiElementPattern.Capture<PsiElement> referenceExp() {

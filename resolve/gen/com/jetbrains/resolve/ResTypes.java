@@ -11,6 +11,7 @@ import com.jetbrains.resolve.psi.impl.*;
 public interface ResTypes {
 
   IElementType ARGUMENT_LIST = new ResCompositeElementType("ARGUMENT_LIST");
+  IElementType ENTAILS_CLAUSE = new ResCompositeElementType("ENTAILS_CLAUSE");
   IElementType EXP = new ResCompositeElementType("EXP");
   IElementType INFIX_EXP = new ResCompositeElementType("INFIX_EXP");
   IElementType LITERAL_EXP = new ResCompositeElementType("LITERAL_EXP");
@@ -43,20 +44,30 @@ public interface ResTypes {
   IElementType MODULE_IDENTIFIER_SPEC = new ResCompositeElementType("MODULE_IDENTIFIER_SPEC");
   IElementType MODULE_LIBRARY_IDENTIFIER = new ResCompositeElementType("MODULE_LIBRARY_IDENTIFIER");
   IElementType NESTED_EXP = new ResCompositeElementType("NESTED_EXP");
+  IElementType PARAMETER_MODE = new ResCompositeElementType("PARAMETER_MODE");
+  IElementType PARAM_DECL = new ResCompositeElementType("PARAM_DECL");
+  IElementType PARAM_DEF = new ResCompositeElementType("PARAM_DEF");
   IElementType PARAM_EXP = new ResCompositeElementType("PARAM_EXP");
   IElementType PRECIS_BLOCK = new ResCompositeElementType("PRECIS_BLOCK");
   IElementType PRECIS_MODULE_DECL = new ResCompositeElementType("PRECIS_MODULE_DECL");
   IElementType PROG_SYMBOL_NAME = new ResCompositeElementType("PROG_SYMBOL_NAME");
+  IElementType REALIZATION_MODULE_DECL = new ResCompositeElementType("REALIZATION_MODULE_DECL");
+  IElementType REALIZ_BLOCK = new ResCompositeElementType("REALIZ_BLOCK");
+  IElementType REALIZ_MODULE_PARAMETERS = new ResCompositeElementType("REALIZ_MODULE_PARAMETERS");
   IElementType REFERENCE_EXP = new ResCompositeElementType("REFERENCE_EXP");
+  IElementType REQUIRES_CLAUSE = new ResCompositeElementType("REQUIRES_CLAUSE");
   IElementType SELECTOR_EXP = new ResCompositeElementType("SELECTOR_EXP");
+  IElementType TYPE_PARAM_DECL = new ResCompositeElementType("TYPE_PARAM_DECL");
   IElementType USES_LIST = new ResCompositeElementType("USES_LIST");
 
+  IElementType ALTERS = new ResTokenType("alters");
   IElementType BAD_CHARACTER = new ResTokenType("\"\\\\\"");
   IElementType BAR = new ResTokenType("|");
   IElementType BIGOPERATOR = new ResTokenType("bigoperator");
   IElementType CART_PROD = new ResTokenType("Cart_Prod");
   IElementType CHAINABLE = new ResTokenType("Chainable");
   IElementType CHAR = new ResTokenType("char");
+  IElementType CLEARS = new ResTokenType("clears");
   IElementType COLON = new ResTokenType(":");
   IElementType COLON_COLON = new ResTokenType("::");
   IElementType COLON_EQUALS = new ResTokenType(":=");
@@ -68,9 +79,11 @@ public interface ResTypes {
   IElementType DEFINITION = new ResTokenType("Definition");
   IElementType DOT = new ResTokenType(".");
   IElementType END = new ResTokenType("end");
+  IElementType EVALUATES = new ResTokenType("evaluates");
   IElementType EXISTS = new ResTokenType("∃");
   IElementType EXTENDS = new ResTokenType("extends");
   IElementType FALSE = new ResTokenType("false");
+  IElementType FOR = new ResTokenType("for");
   IElementType FORALL = new ResTokenType("∀");
   IElementType FROM = new ResTokenType("from");
   IElementType IDENTIFIER = new ResTokenType("identifier");
@@ -84,16 +97,22 @@ public interface ResTypes {
   IElementType LCEIL = new ResTokenType("⌈");
   IElementType LPAREN = new ResTokenType("(");
   IElementType MATHSYMBOL = new ResTokenType("mathsymbol");
+  IElementType OF = new ResTokenType("of");
   IElementType OPERATION = new ResTokenType("Operation");
   IElementType OTHERWISE = new ResTokenType("otherwise");
   IElementType POUND = new ResTokenType("#");
   IElementType PRECIS = new ResTokenType("Precis");
+  IElementType PRESERVES = new ResTokenType("preserves");
   IElementType PRIME = new ResTokenType("′");
   IElementType RANGLE = new ResTokenType("⟩");
   IElementType RAW_STRING = new ResTokenType("raw_string");
   IElementType RBRACE = new ResTokenType("}");
   IElementType RBRACK = new ResTokenType("]");
   IElementType RCEIL = new ResTokenType("⌉");
+  IElementType REALIZATION = new ResTokenType("Realization");
+  IElementType REPLACES = new ResTokenType("replaces");
+  IElementType REQUIRES = new ResTokenType("requires");
+  IElementType RESTORES = new ResTokenType("restores");
   IElementType RPAREN = new ResTokenType(")");
   IElementType SEMICOLON = new ResTokenType(";");
   IElementType STRING = new ResTokenType("string");
@@ -101,14 +120,20 @@ public interface ResTypes {
   IElementType TRICOLON = new ResTokenType("ː");
   IElementType TRI_EQUALS = new ResTokenType("≜");
   IElementType TRUE = new ResTokenType("true");
+  IElementType TYPE_PARAM = new ResTokenType("type");
+  IElementType UPDATES = new ResTokenType("updates");
   IElementType USES = new ResTokenType("uses");
   IElementType VALUED = new ResTokenType("Valued");
+  IElementType WHICH_ENTAILS = new ResTokenType("which_entails");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
        if (type == ARGUMENT_LIST) {
         return new ResArgumentListImpl(node);
+      }
+      else if (type == ENTAILS_CLAUSE) {
+        return new ResEntailsClauseImpl(node);
       }
       else if (type == INFIX_EXP) {
         return new ResInfixExpImpl(node);
@@ -197,6 +222,15 @@ public interface ResTypes {
       else if (type == NESTED_EXP) {
         return new ResNestedExpImpl(node);
       }
+      else if (type == PARAMETER_MODE) {
+        return new ResParameterModeImpl(node);
+      }
+      else if (type == PARAM_DECL) {
+        return new ResParamDeclImpl(node);
+      }
+      else if (type == PARAM_DEF) {
+        return new ResParamDefImpl(node);
+      }
       else if (type == PARAM_EXP) {
         return new ResParamExpImpl(node);
       }
@@ -209,11 +243,26 @@ public interface ResTypes {
       else if (type == PROG_SYMBOL_NAME) {
         return new ResProgSymbolNameImpl(node);
       }
+      else if (type == REALIZATION_MODULE_DECL) {
+        return new ResRealizationModuleDeclImpl(node);
+      }
+      else if (type == REALIZ_BLOCK) {
+        return new ResRealizBlockImpl(node);
+      }
+      else if (type == REALIZ_MODULE_PARAMETERS) {
+        return new ResRealizModuleParametersImpl(node);
+      }
       else if (type == REFERENCE_EXP) {
         return new ResReferenceExpImpl(node);
       }
+      else if (type == REQUIRES_CLAUSE) {
+        return new ResRequiresClauseImpl(node);
+      }
       else if (type == SELECTOR_EXP) {
         return new ResSelectorExpImpl(node);
+      }
+      else if (type == TYPE_PARAM_DECL) {
+        return new ResTypeParamDeclImpl(node);
       }
       else if (type == USES_LIST) {
         return new ResUsesListImpl(node);

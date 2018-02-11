@@ -39,7 +39,7 @@ public class ResolveParserDefinition implements ParserDefinition {
   public static final TokenSet NUMBERS = TokenSet.create(INT);
 
   public static final TokenSet KEYWORDS = TokenSet.create(PRECIS, END, USES, EXTENDS, FROM, DEFINITION,
-                                                          CART_PROD, OTHERWISE, IMPLICIT, IF, CHAINABLE);
+                                                          CART_PROD, OTHERWISE, IMPLICIT, IF, CHAINABLE, REALIZATION, FOR, OF);
 
   public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, PRIME, COLON_EQUALS,
                                                            LBRACK, RBRACK, LANGLE, RANGLE, LCEIL, RCEIL, DBL_BAR,

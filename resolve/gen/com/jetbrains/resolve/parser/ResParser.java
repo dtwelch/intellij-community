@@ -26,6 +26,9 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (t == ARGUMENT_LIST) {
       r = ArgumentList(b, 0);
     }
+    else if (t == ENTAILS_CLAUSE) {
+      r = EntailsClause(b, 0);
+    }
     else if (t == EXP) {
       r = Exp(b, 0, -1);
     }
@@ -77,6 +80,15 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == MODULE_LIBRARY_IDENTIFIER) {
       r = ModuleLibraryIdentifier(b, 0);
     }
+    else if (t == PARAM_DECL) {
+      r = ParamDecl(b, 0);
+    }
+    else if (t == PARAM_DEF) {
+      r = ParamDef(b, 0);
+    }
+    else if (t == PARAMETER_MODE) {
+      r = ParameterMode(b, 0);
+    }
     else if (t == PRECIS_BLOCK) {
       r = PrecisBlock(b, 0);
     }
@@ -86,8 +98,23 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == PROG_SYMBOL_NAME) {
       r = ProgSymbolName(b, 0);
     }
+    else if (t == REALIZ_BLOCK) {
+      r = RealizBlock(b, 0);
+    }
+    else if (t == REALIZ_MODULE_PARAMETERS) {
+      r = RealizModuleParameters(b, 0);
+    }
+    else if (t == REALIZATION_MODULE_DECL) {
+      r = RealizationModuleDecl(b, 0);
+    }
     else if (t == REFERENCE_EXP) {
       r = ReferenceExp(b, 0);
+    }
+    else if (t == REQUIRES_CLAUSE) {
+      r = RequiresClause(b, 0);
+    }
+    else if (t == TYPE_PARAM_DECL) {
+      r = TypeParamDecl(b, 0);
     }
     else if (t == USES_LIST) {
       r = UsesList(b, 0);
@@ -133,6 +160,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "ArgumentList_1")) return false;
     ExpArgumentList(b, l + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // which_entails MathExp
+  public static boolean EntailsClause(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EntailsClause")) return false;
+    if (!nextTokenIs(b, WHICH_ENTAILS)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ENTAILS_CLAUSE, null);
+    r = consumeToken(b, WHICH_ENTAILS);
+    p = r; // pin = 1
+    r = r && MathExp(b, l + 1, -1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -184,6 +225,71 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = r && ModuleLibraryIdentifier(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // !(/*'Type'|'Operation'|'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
+  static boolean ImplItemRecover(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ImplItemRecover")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !ImplItemRecover_0(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // 'Definition'|/*'Procedure'|*/end
+  private static boolean ImplItemRecover_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ImplItemRecover_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DEFINITION);
+    if (!r) r = consumeToken(b, END);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ImplParamDecl  (';' ImplParamDecl)*
+  static boolean ImplModuleParamList(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ImplModuleParamList")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = ImplParamDecl(b, l + 1);
+    p = r; // pin = 1
+    r = r && ImplModuleParamList_1(b, l + 1);
+    exit_section_(b, l, m, r, p, ParamListRec_parser_);
+    return r || p;
+  }
+
+  // (';' ImplParamDecl)*
+  private static boolean ImplModuleParamList_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ImplModuleParamList_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!ImplModuleParamList_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "ImplModuleParamList_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // ';' ImplParamDecl
+  private static boolean ImplModuleParamList_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ImplModuleParamList_1_0")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeToken(b, SEMICOLON);
+    p = r; // pin = 1
+    r = r && ImplParamDecl(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // ParamDecl
+  static boolean ImplParamDecl(PsiBuilder b, int l) {
+    return ParamDecl(b, l + 1);
   }
 
   /* ********************************************************** */
@@ -782,8 +888,16 @@ public class ResParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // PrecisModuleDecl
+  //       | RealizationModuleDecl
   static boolean ModuleDecl(PsiBuilder b, int l) {
-    return PrecisModuleDecl(b, l + 1);
+    if (!recursion_guard_(b, l, "ModuleDecl")) return false;
+    if (!nextTokenIs(b, "", PRECIS, REALIZATION)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = PrecisModuleDecl(b, l + 1);
+    if (!r) r = RealizationModuleDecl(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -857,6 +971,100 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ParameterMode ParamDefinitionListNoPin
+  public static boolean ParamDecl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDecl")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PARAM_DECL, "<param decl>");
+    r = ParameterMode(b, l + 1);
+    p = r; // pin = 1
+    r = r && ParamDefinitionListNoPin(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // identifier
+  public static boolean ParamDef(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDef")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, IDENTIFIER);
+    exit_section_(b, m, PARAM_DEF, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ParamDef &(!(';'|')')) (',' ParamDef)*
+  static boolean ParamDefinitionListNoPin(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = ParamDef(b, l + 1);
+    p = r; // pin = 1
+    r = r && ParamDefinitionListNoPin_1(b, l + 1);
+    r = r && ParamDefinitionListNoPin_2(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // &(!(';'|')'))
+  private static boolean ParamDefinitionListNoPin_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _AND_);
+    r = ParamDefinitionListNoPin_1_0(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // !(';'|')')
+  private static boolean ParamDefinitionListNoPin_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !ParamDefinitionListNoPin_1_0_0(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // ';'|')'
+  private static boolean ParamDefinitionListNoPin_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin_1_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, SEMICOLON);
+    if (!r) r = consumeToken(b, RPAREN);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (',' ParamDef)*
+  private static boolean ParamDefinitionListNoPin_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!ParamDefinitionListNoPin_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "ParamDefinitionListNoPin_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // ',' ParamDef
+  private static boolean ParamDefinitionListNoPin_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParamDefinitionListNoPin_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && ParamDef(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // !(')'|';')
   static boolean ParamListRec(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ParamListRec")) return false;
@@ -875,6 +1083,24 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, RPAREN);
     if (!r) r = consumeToken(b, SEMICOLON);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // alters|updates|clears|restores|preserves|replaces|evaluates|identifier
+  public static boolean ParameterMode(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ParameterMode")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, PARAMETER_MODE, "<parameter mode>");
+    r = consumeToken(b, ALTERS);
+    if (!r) r = consumeToken(b, UPDATES);
+    if (!r) r = consumeToken(b, CLEARS);
+    if (!r) r = consumeToken(b, RESTORES);
+    if (!r) r = consumeToken(b, PRESERVES);
+    if (!r) r = consumeToken(b, REPLACES);
+    if (!r) r = consumeToken(b, EVALUATES);
+    if (!r) r = consumeToken(b, IDENTIFIER);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -1001,6 +1227,112 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // RealizItem*
+  public static boolean RealizBlock(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizBlock")) return false;
+    Marker m = enter_section_(b, l, _NONE_, REALIZ_BLOCK, "<realiz block>");
+    int c = current_position_(b);
+    while (true) {
+      if (!RealizItem(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "RealizBlock", c)) break;
+      c = current_position_(b);
+    }
+    exit_section_(b, l, m, true, false, ItemsRecover_parser_);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // MathStandardDefnDecl
+  static boolean RealizItem(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizItem")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = MathStandardDefnDecl(b, l + 1);
+    exit_section_(b, l, m, r, false, ImplItemRecover_parser_);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // '(' ImplModuleParamList ')'
+  public static boolean RealizModuleParameters(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizModuleParameters")) return false;
+    if (!nextTokenIs(b, LPAREN)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, REALIZ_MODULE_PARAMETERS, null);
+    r = consumeToken(b, LPAREN);
+    p = r; // pin = 1
+    r = r && report_error_(b, ImplModuleParamList(b, l + 1));
+    r = p && consumeToken(b, RPAREN) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // 'Realization' identifier RealizModuleParameters? for ReferenceExp (of ReferenceExp)? ';'
+  // UsesList?
+  // RequiresClause?
+  // RealizBlock
+  // end identifier ';'
+  public static boolean RealizationModuleDecl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl")) return false;
+    if (!nextTokenIs(b, REALIZATION)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, REALIZATION_MODULE_DECL, null);
+    r = consumeTokens(b, 2, REALIZATION, IDENTIFIER);
+    p = r; // pin = 2
+    r = r && report_error_(b, RealizationModuleDecl_2(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, FOR)) && r;
+    r = p && report_error_(b, ReferenceExp(b, l + 1)) && r;
+    r = p && report_error_(b, RealizationModuleDecl_5(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, SEMICOLON)) && r;
+    r = p && report_error_(b, RealizationModuleDecl_7(b, l + 1)) && r;
+    r = p && report_error_(b, RealizationModuleDecl_8(b, l + 1)) && r;
+    r = p && report_error_(b, RealizBlock(b, l + 1)) && r;
+    r = p && report_error_(b, consumeTokens(b, -1, END, IDENTIFIER, SEMICOLON)) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // RealizModuleParameters?
+  private static boolean RealizationModuleDecl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl_2")) return false;
+    RealizModuleParameters(b, l + 1);
+    return true;
+  }
+
+  // (of ReferenceExp)?
+  private static boolean RealizationModuleDecl_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl_5")) return false;
+    RealizationModuleDecl_5_0(b, l + 1);
+    return true;
+  }
+
+  // of ReferenceExp
+  private static boolean RealizationModuleDecl_5_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl_5_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OF);
+    r = r && ReferenceExp(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // UsesList?
+  private static boolean RealizationModuleDecl_7(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl_7")) return false;
+    UsesList(b, l + 1);
+    return true;
+  }
+
+  // RequiresClause?
+  private static boolean RealizationModuleDecl_8(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RealizationModuleDecl_8")) return false;
+    RequiresClause(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
   // identifier
   public static boolean ReferenceExp(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ReferenceExp")) return false;
@@ -1009,6 +1341,39 @@ public class ResParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, IDENTIFIER);
     exit_section_(b, m, REFERENCE_EXP, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // requires MathAssertionExp (EntailsClause)? ';'
+  public static boolean RequiresClause(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RequiresClause")) return false;
+    if (!nextTokenIs(b, REQUIRES)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, REQUIRES_CLAUSE, null);
+    r = consumeToken(b, REQUIRES);
+    p = r; // pin = 1
+    r = r && report_error_(b, MathAssertionExp(b, l + 1));
+    r = p && report_error_(b, RequiresClause_2(b, l + 1)) && r;
+    r = p && consumeToken(b, SEMICOLON) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // (EntailsClause)?
+  private static boolean RequiresClause_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RequiresClause_2")) return false;
+    RequiresClause_2_0(b, l + 1);
+    return true;
+  }
+
+  // (EntailsClause)
+  private static boolean RequiresClause_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "RequiresClause_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = EntailsClause(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -1023,6 +1388,18 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = r && consumeToken(b, SEMICOLON);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // 'type' identifier
+  public static boolean TypeParamDecl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TypeParamDecl")) return false;
+    if (!nextTokenIs(b, TYPE_PARAM)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 2, TYPE_PARAM, IDENTIFIER);
+    exit_section_(b, m, TYPE_PARAM_DECL, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -1393,6 +1770,11 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  final static Parser ImplItemRecover_parser_ = new Parser() {
+    public boolean parse(PsiBuilder b, int l) {
+      return ImplItemRecover(b, l + 1);
+    }
+  };
   final static Parser ItemsRecover_parser_ = new Parser() {
     public boolean parse(PsiBuilder b, int l) {
       return ItemsRecover(b, l + 1);
