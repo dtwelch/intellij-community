@@ -17,6 +17,7 @@ import com.jetbrains.resolve.psi.ResFile;
 import com.jetbrains.resolve.psi.ResModuleIdentifier;
 import com.jetbrains.resolve.psi.ResModuleIdentifierSpec;
 import com.jetbrains.resolve.psi.ResModuleLibraryIdentifier;
+import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -151,8 +152,8 @@ public class ResModuleReference extends FileReference {
         }
       }
       else {
-        //VirtualFile rootSdkDir = ResolveSdkUtil.getSdkSrcDir(project);
-       // if (rootSdkDir != null) addContexts(sourceRoots, rootSdkDir);
+        VirtualFile rootSdkDir = ResolveSdkUtil.getSdkSrcDir(project);
+        if (rootSdkDir != null) addContexts(sourceRoots, rootSdkDir);
         //now do the curr proj.
         addContexts(sourceRoots, project.getBaseDir());
       }

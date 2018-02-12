@@ -237,7 +237,7 @@ public class ResolveSdkUtil {
   }
 
   @Nullable
-  private static VirtualFile getSdkSrcDir(@NotNull Project project) {
+  public static VirtualFile getSdkSrcDir(@NotNull Project project) {
     Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
     return sdk != null && sdk.getHomePath() != null ? getSdkSrcDir(sdk.getHomePath()) : null;
   }
