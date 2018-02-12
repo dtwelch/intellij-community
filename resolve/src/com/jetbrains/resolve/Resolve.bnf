@@ -124,12 +124,12 @@ ModuleDecl ::=
         PrecisModuleDecl
       | RealizationModuleDecl
 
-PrecisModuleDecl ::= 'Precis' identifier (extends ReferenceExp)? ';'
+PrecisModuleDecl ::= 'Precis' identifier (extends ModuleIdentifierSpec)? ';'
 UsesList?
 PrecisBlock
 end identifier ';' {pin(".*")=2}
 
-RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ReferenceExp (of ReferenceExp)? ';'
+RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ModuleIdentifierSpec (of ModuleIdentifierSpec)? ';'
 UsesList?
 RequiresClause?
 RealizBlock

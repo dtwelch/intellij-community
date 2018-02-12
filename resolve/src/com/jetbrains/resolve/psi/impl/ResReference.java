@@ -124,11 +124,11 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
   }
 
   //
-  private static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResModuleDecl moduleDecl,
+  private static boolean processModuleHeaderAndExplicitUsesImports(@NotNull ResModuleDecl module,
                                                                    @NotNull ResScopeProcessor processor,
                                                                    @NotNull ResolveState state) {
     //first search any explicitly mentioned uses specs
-    List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> usesItems = module.getModuleIdentifierSpecs();
 
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
@@ -139,33 +139,18 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (resolve != null && resolve instanceof ResFile) {
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
         //searching a super module (even it is mentioned explicitly in the uses list) is considered a "localSearch"
-        boolean searchingLocally = forSuperModule(moduleDecl, o.getName());
+        boolean searchingLocally = forSuperModule(module, o.getName());
         if (!processModuleLevelEntities((ResFile)resolve, processor, state, searchingLocally)) return false;
       }
     }
 
-    //now search implicitly imported 'super modules' (i.e., ones mentioned in the module's header)
-    List<ResModuleIdentifierSpec> headerImportSpecs = moduleDecl.getModuleHeaderRefsAsModuleIdentifierSpecs();
-    for (ResModuleIdentifierSpec o : headerImportSpecs) {
-      PsiElement resolve = o.getModuleIdentifier().resolve();
+    //now search through module-identifier-specs in the current module's header
+    //  todo
 
-      if (resolve != null && resolve instanceof ResFile) {
-        ResFile file = (ResFile)resolve;
-        processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
-        //1. search it (note that here we search the super module with localProcessing set to true, since we
-        //want to be able to reference things like concept params in a realization)
-        if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+    boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
+    //finally, search any invisibly imported modules (i.e. Standard Integers,
+    //  todo
 
-        //2. search its imports
-        /*if (file.getEnclosedModule() == null) continue;
-        for (ResModuleIdentifierSpec e1 : file.getEnclosedModule().getModuleIdentifierSpecs()) {
-          PsiElement eRes = e1.getModuleIdentifier().resolve();
-          if (eRes != null) {
-            if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
-          }
-        }*/
-      }
-    }
     return true;
   }
 
@@ -211,7 +196,6 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (!processNamedElements(processor, state, module.getDefinitionParamSigs(), localProcessing, fromFacility)) return false;*/
 
     //TODO: Math defns, opers
-    boolean test = module.shouldAutoImportUses();
     if (!processNamedElements(processor, state, module.getMathDefnSigs(), localProcessing, fromFacility)) return false;
     return true;
   }

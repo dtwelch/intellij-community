@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements ResPrecisModuleDecl {
+public class ResRequiresClauseImpl extends ResCompositeElementImpl implements ResRequiresClause {
 
-  public ResPrecisModuleDeclImpl(ASTNode node) {
+  public ResRequiresClauseImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitPrecisModuleDecl(this);
+    visitor.visitRequiresClause(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,38 +27,26 @@ public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements Re
 
   @Override
   @Nullable
-  public ResModuleIdentifierSpec getModuleIdentifierSpec() {
-    return findChildByClass(ResModuleIdentifierSpec.class);
+  public ResEntailsClause getEntailsClause() {
+    return findChildByClass(ResEntailsClause.class);
   }
 
   @Override
   @Nullable
-  public ResPrecisBlock getPrecisBlock() {
-    return findChildByClass(ResPrecisBlock.class);
+  public ResMathExp getMathExp() {
+    return findChildByClass(ResMathExp.class);
   }
 
   @Override
   @Nullable
-  public ResUsesList getUsesList() {
-    return findChildByClass(ResUsesList.class);
+  public PsiElement getSemicolon() {
+    return findChildByType(SEMICOLON);
   }
 
   @Override
   @NotNull
-  public PsiElement getPrecis() {
-    return findNotNullChildByType(PRECIS);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getEnd() {
-    return findChildByType(END);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getExtends() {
-    return findChildByType(EXTENDS);
+  public PsiElement getRequires() {
+    return findNotNullChildByType(REQUIRES);
   }
 
 }

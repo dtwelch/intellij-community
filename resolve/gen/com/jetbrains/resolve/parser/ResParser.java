@@ -1156,7 +1156,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'Precis' identifier (extends ReferenceExp)? ';'
+  // 'Precis' identifier (extends ModuleIdentifierSpec)? ';'
   // UsesList?
   // PrecisBlock
   // end identifier ';'
@@ -1176,20 +1176,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (extends ReferenceExp)?
+  // (extends ModuleIdentifierSpec)?
   private static boolean PrecisModuleDecl_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisModuleDecl_2")) return false;
     PrecisModuleDecl_2_0(b, l + 1);
     return true;
   }
 
-  // extends ReferenceExp
+  // extends ModuleIdentifierSpec
   private static boolean PrecisModuleDecl_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisModuleDecl_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EXTENDS);
-    r = r && ReferenceExp(b, l + 1);
+    r = r && ModuleIdentifierSpec(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1268,7 +1268,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'Realization' identifier RealizModuleParameters? for ReferenceExp (of ReferenceExp)? ';'
+  // 'Realization' identifier RealizModuleParameters? for ModuleIdentifierSpec (of ModuleIdentifierSpec)? ';'
   // UsesList?
   // RequiresClause?
   // RealizBlock
@@ -1282,7 +1282,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     p = r; // pin = 2
     r = r && report_error_(b, RealizationModuleDecl_2(b, l + 1));
     r = p && report_error_(b, consumeToken(b, FOR)) && r;
-    r = p && report_error_(b, ReferenceExp(b, l + 1)) && r;
+    r = p && report_error_(b, ModuleIdentifierSpec(b, l + 1)) && r;
     r = p && report_error_(b, RealizationModuleDecl_5(b, l + 1)) && r;
     r = p && report_error_(b, consumeToken(b, SEMICOLON)) && r;
     r = p && report_error_(b, RealizationModuleDecl_7(b, l + 1)) && r;
@@ -1300,20 +1300,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (of ReferenceExp)?
+  // (of ModuleIdentifierSpec)?
   private static boolean RealizationModuleDecl_5(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "RealizationModuleDecl_5")) return false;
     RealizationModuleDecl_5_0(b, l + 1);
     return true;
   }
 
-  // of ReferenceExp
+  // of ModuleIdentifierSpec
   private static boolean RealizationModuleDecl_5_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "RealizationModuleDecl_5_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, OF);
-    r = r && ReferenceExp(b, l + 1);
+    r = r && ModuleIdentifierSpec(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

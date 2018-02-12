@@ -8,10 +8,10 @@ import com.intellij.psi.PsiElement;
 public interface ResPrecisModuleDecl extends ResModuleDecl {
 
   @Nullable
-  ResPrecisBlock getPrecisBlock();
+  ResModuleIdentifierSpec getModuleIdentifierSpec();
 
   @Nullable
-  ResReferenceExp getReferenceExp();
+  ResPrecisBlock getPrecisBlock();
 
   @Nullable
   ResUsesList getUsesList();

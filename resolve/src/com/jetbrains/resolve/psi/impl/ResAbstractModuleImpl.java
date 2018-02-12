@@ -33,7 +33,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   }
 
   @Override
-  public boolean shouldAutoImportUses() {
+  public boolean shouldAutoSearchUses() {
     Project project = getProject();
     Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
     VirtualFile vFile = getContainingFile().getVirtualFile();
@@ -52,7 +52,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
 
   @NotNull
   @Override
-  public List<ResModuleIdentifierSpec> getModuleHeaderRefsAsModuleIdentifierSpecs() {
+  public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
     return CachedValuesManager.getCachedValue(this, () -> {
       List<ResReferenceExp> headerReferences = getModuleHeaderReferences();
       List<ResModuleIdentifierSpec> usesItems = getModuleIdentifierSpecs();
