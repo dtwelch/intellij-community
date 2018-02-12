@@ -103,7 +103,7 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     ResolveUtil.treeWalkUp(myElement, delegate);
     //process local parameters if we're in a local definition or an operation like thing (doesn't include module
     //params; that's in processModuleLevelEntities)
-    //ResReference.processBlockParameters(myElement, delegate);
+    ResReference.processBlockParameters(myElement, delegate);
     return processNamedElements(processor, state, delegate.getVariants(), localResolve);
   }
 

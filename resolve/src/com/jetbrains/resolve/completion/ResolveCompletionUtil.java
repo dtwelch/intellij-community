@@ -98,10 +98,9 @@ public class ResolveCompletionUtil {
         p.setTypeGrayed(true);
         // p.setTailText(calcTailText(f), true);
         String name =
-          /*signature instanceof ResMathOutfixDefnSig
-          || signature instanceof ResMathPostfixDefnSig
+          signature instanceof ResMathOutfixDefnSig || signature instanceof ResMathPostfixDefnSig
           ? signature.getCanonicalName()
-          :*/ element.getLookupString();
+          : element.getLookupString();
         p.setItemText(name + " : " + typeText);
       }
     };
@@ -113,8 +112,7 @@ public class ResolveCompletionUtil {
     return PrioritizedLookupElement.withPriority(
       LookupElementBuilder.createWithSmartPointer(lookupString, signature)
         .withRenderer(DEFINITION_RENDERER)
-        .withInsertHandler(new MathSymbolInsertHandler()),
-      priority);
+        .withInsertHandler(new MathSymbolInsertHandler()), priority);
   }
 
   @NotNull

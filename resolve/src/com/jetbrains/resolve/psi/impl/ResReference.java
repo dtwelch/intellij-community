@@ -5,6 +5,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.OrderedSet;
@@ -113,6 +114,17 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     return true;
   }
 
+  //Go plugin rolls this step into the "treeWalkUp" phase -- see processParameters in GoCompositeElementImpl.x
+  //I just do it here for simplicity
+  static boolean processBlockParameters(@NotNull ResCompositeElement e,
+                                        @NotNull ResScopeProcessorBase processor) {
+    ResMathDefnDecl def = PsiTreeUtil.getParentOfType(e, ResMathDefnDecl.class);
+    //ResOperationLikeNode operation = PsiTreeUtil.getParentOfType(e, ResOperationLikeNode.class);
+    if (def != null) processDefinitionParams(processor, def);
+    //if (operation != null) processProgParamDecls(processor, operation.getParamDeclList());
+    return true;
+  }
+
   /**
    * Searches the modules explicitly mentioned in the uses list including those mentioned in the module's header.
    */
@@ -214,6 +226,25 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
                                       boolean facilityResolve) {
     for (ResNamedElement definition : elements) {
       if ((localResolve || definition.isUsesClauseVisible() || facilityResolve) && !processor.execute(definition, state)) return false;
+    }
+    return true;
+  }
+
+  /** processing parameters of the definition we happen to be within */
+  private static boolean processDefinitionParams(@NotNull ResScopeProcessorBase processor,
+                                                 @NotNull ResMathDefnDecl o) {
+    List<ResMathDefnSig> sigs = o.getSignatures();
+    if (sigs.size() == 1) {
+      ResMathDefnSig sig = o.getSignatures().get(0);
+      if (!processDefinitionParams(processor, sig.getParameters())) return false;
+    } //size > 1 ? then we're categorical; size == 0, we're null
+    return true;
+  }
+
+  private static boolean processDefinitionParams(@NotNull ResScopeProcessorBase processor,
+                                                 @NotNull List<ResMathVarDeclGroup> parameters) {
+    for (ResMathVarDeclGroup declaration : parameters) {
+      if (!processNamedElements(processor, ResolveState.initial(), declaration.getMathVarDefList(), true)) return false;
     }
     return true;
   }

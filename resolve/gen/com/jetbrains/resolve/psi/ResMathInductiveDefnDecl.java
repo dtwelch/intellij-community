@@ -5,10 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
+public interface ResMathInductiveDefnDecl extends ResMathDefnDecl {
 
-  @Nullable
-  ResMathExp getMathExp();
+  @NotNull
+  List<ResMathExp> getMathExpList();
 
   @Nullable
   ResMathInfixDefnSig getMathInfixDefnSig();
@@ -22,22 +22,19 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   @Nullable
   ResMathPrefixDefnSig getMathPrefixDefnSig();
 
-  @Nullable
-  PsiElement getChainable();
-
   @NotNull
   PsiElement getDefinition();
 
-  @Nullable
-  PsiElement getImplicit();
+  @NotNull
+  PsiElement getInductive();
 
   @Nullable
-  PsiElement getSemicolon();
+  PsiElement getIndBase();
 
   @Nullable
-  PsiElement getTriEquals();
+  PsiElement getIndHypo();
 
   @Nullable
-  PsiElement getValued();
+  PsiElement getIs();
 
 }

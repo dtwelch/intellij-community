@@ -27,6 +27,8 @@
         COLON_COLON = '::'
         SEMICOLON   = ';'
         COMMA       = ','
+        IND_BASE    = '(i.)'
+        IND_HYPO    = '(ii.)'
 
         // Brackets
         DBL_BAR   = '∥'
@@ -59,9 +61,9 @@
         // this in grammarkit's issue section. But for now this is just the way it is.
         // Keywords (capitalized)
         CART_PROD     = 'Cart_Prod'
-        //CATEGORICAL   = 'Categorical'
+        CATEGORICAL   = 'Categorical'
         //CONCEPT       = 'Concept'
-        //COROLLARY     = 'Corollary'
+        COROLLARY     = 'Corollary'
         CHAINABLE     = 'Chainable'
         //DEFINES       = 'Defines'
         DEFINITION    = 'Definition'
@@ -69,15 +71,15 @@
         //FACILITY      = 'Facility'
         //IF_PROG       = 'If'
         IMPLICIT      = 'Implicit'
-        //INDUCTIVE     = 'Inductive'
+        INDUCTIVE     = 'Inductive'
         OPERATION     = 'Operation'
         PRECIS        = 'Precis'
         //PROCEDURE     = 'Procedure'
         REALIZATION   = 'Realization'
-        //RECOGNITION   = 'Recognition'
+        RECOGNITION   = 'Recognition'
         //RECORD        = 'Record'
         //RECURSIVE     = 'Recursive'
-        //THEOREM       = 'Theorem'
+        THEOREM       = 'Theorem'
         //TYPE_FAMILY   = 'Type'
         TYPE_PARAM    = 'type'
         VALUED        = 'Valued'
@@ -165,15 +167,14 @@ private RealizItem ::=
 
 private ImplItemRecover ::= !(/*'Type'|'Operation'|'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
 
-
 private PrecisItem ::=
-          MathStandardDefnDecl
-          //|MathTheoremDecl
-        //| MathRecognitionDecl
-        //| MathCategoricalDefnDecl
-        /*| MathInductiveDefnDecl*/ {pin=1 recoverWhile=PrecisItemRecover}
+            MathStandardDefnDecl
+          | MathTheoremDecl
+          | MathRecognitionDecl
+          | MathCategoricalDefnDecl
+          | MathInductiveDefnDecl {pin=1 recoverWhile=PrecisItemRecover}
 
-private PrecisItemRecover ::= !('Definition'|'Implicit'/*|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'*/|'Chainable'|'Valued'|end)
+private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end)
 
 // parameter and parameter-list related rules
 
@@ -228,18 +229,29 @@ private ExpArgumentList ::= Exp (',' Exp)* {pin(".*")=1}
 
 // math constructs
 
-/*MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
+MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
 MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
-*/
+
+MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
+MathPrefixDefnSigs is MathExp ';' {pin=2}
+
 MathStandardDefnDecl ::= ('Chainable')? ('Valued')? ('Implicit'?) 'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';' {pin=4}
 
-private MathDefnSig ::= MathPrefixDefnSig
+MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
+'(i.)' MathAssertionExp ';'
+'(ii.)' MathAssertionExp ';' {pin=2}
+
+private MathDefnSig ::= MathPrefixDefnSig | MathPostfixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
 MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? (':'|'ː') MathExp {pin=1}
 
 private MathPrefixNameList ::= MathSymbolName (',' MathSymbolName)* {recoverWhile=MathPrefixListRec}
 private MathPrefixListRec ::= !(':'|'ː'|';'|'(')
-//private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
-//private CategoricalSigListRec ::= !(is)
+private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
+private CategoricalSigListRec ::= !(is)
+
+MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' (':'|'ː') MathExp {pin=4}
+MathOutfixDefnSig ::= MathBracketName '(' MathDefnParamList ')' MathBracketName (':'|'ː') MathExp {pin=1}
+MathPostfixDefnSig ::= '(' MathVarDecl ')' MathBracketName '(' MathVarDecl ')' MathBracketName (':'|'ː') MathExp
 
 private MathDefinitionParams ::= '(' MathDefnParamList ')' { pin=1}
 private ParamListRec ::= !(')'|';')
@@ -251,7 +263,7 @@ MathVarDeclGroup ::= MathVarDeclList (':'|'ː') MathExp {pin=1}
 
 MathVarDecl ::= MathVarDef (':'|'ː') MathExp {pin=2 extends=MathVarDeclGroup}
 private MathVarDeclList ::= MathVarDef &(!(')')) (',' MathVarDef)* {pin=1}
-MathVarDef ::= MathSymbolName //TODO: Make this a MathSymbolName
+MathVarDef ::= MathSymbolName
 
 // mathematical clauses
 

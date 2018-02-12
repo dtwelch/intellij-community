@@ -38,13 +38,23 @@ public class ResolveParserDefinition implements ParserDefinition {
   public static final TokenSet STRING_LITERALS = TokenSet.create(STRING, CHAR);
   public static final TokenSet NUMBERS = TokenSet.create(INT);
 
-  public static final TokenSet KEYWORDS = TokenSet.create(PRECIS, END, USES, EXTENDS, FROM, DEFINITION,
-                                                          CART_PROD, OTHERWISE, IMPLICIT, IF, CHAINABLE, REALIZATION, FOR, OF);
+  public static final TokenSet KEYWORDS =
+    TokenSet.create(/*CONCEPT, FACILITY,*/ PRECIS, /*ENHANCEMENT,*/ REALIZATION,
+                    END, EXTENDS, USES,
+
+                    THEOREM, COROLLARY, RECOGNITION, IMPLICIT, DEFINITION,
+                    CATEGORICAL, INDUCTIVE/*, DEFINES*/, CHAINABLE, VALUED,
+
+                    REQUIRES/*, ENSURES*/, WHICH_ENTAILS, /*CHANGING, MAINTAINING,
+                    DECREASING, NOTICE, CONFIRM, REMEMBER, CORRESPONDENCE,
+                    EXEMPLAR, CONSTRAINTS, CONVENTIONS, INITIALIZATION,
+                    VAR,*/ TYPE_PARAM, /*FAMILY, DO,*/ IF, /*ELSE, ENHANCED, BY,*/ CART_PROD,
+                    /*EXTERNALLY,*/ FOR, FROM, IS, /*REALIZED, MODELED,*/
+                    OPERATION, /*PROCEDURE,*/ OTHERWISE/*, RECORD, THEN, WHILE*/);
 
   public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, PRIME, COLON_EQUALS,
-                                                           LBRACK, RBRACK, LANGLE, RANGLE, LCEIL, RCEIL, DBL_BAR,
-                                                           BAR, COLON_EQUALS_COLON,
-                                                           TRUE, FALSE);
+                                                           LBRACK, RBRACK, LANGLE, RANGLE, /*LCUP, RCUP,*/ LCEIL, RCEIL,
+                                                           DBL_BAR, BAR, COLON_EQUALS_COLON);
 
   @NotNull
   @Override

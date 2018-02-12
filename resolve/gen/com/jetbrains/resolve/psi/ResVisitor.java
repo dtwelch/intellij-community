@@ -54,6 +54,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathExp(o);
   }
 
+  public void visitMathCategoricalDefnDecl(@NotNull ResMathCategoricalDefnDecl o) {
+    visitMathDefnDecl(o);
+  }
+
   public void visitMathClssftnAssrtExp(@NotNull ResMathClssftnAssrtExp o) {
     visitMathExp(o);
   }
@@ -70,8 +74,16 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathExp(o);
   }
 
+  public void visitMathInductiveDefnDecl(@NotNull ResMathInductiveDefnDecl o) {
+    visitMathDefnDecl(o);
+  }
+
   public void visitMathInfixApplyExp(@NotNull ResMathInfixApplyExp o) {
     visitMathExp(o);
+  }
+
+  public void visitMathInfixDefnSig(@NotNull ResMathInfixDefnSig o) {
+    visitMathDefnSig(o);
   }
 
   public void visitMathLambdaExp(@NotNull ResMathLambdaExp o) {
@@ -90,6 +102,14 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathExp(o);
   }
 
+  public void visitMathOutfixDefnSig(@NotNull ResMathOutfixDefnSig o) {
+    visitMathDefnSig(o);
+  }
+
+  public void visitMathPostfixDefnSig(@NotNull ResMathPostfixDefnSig o) {
+    visitMathDefnSig(o);
+  }
+
   public void visitMathPrefixApplyExp(@NotNull ResMathPrefixApplyExp o) {
     visitMathExp(o);
   }
@@ -100,6 +120,10 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathQuantifiedExp(@NotNull ResMathQuantifiedExp o) {
     visitMathExp(o);
+  }
+
+  public void visitMathRecognitionDecl(@NotNull ResMathRecognitionDecl o) {
+    visitCompositeElement(o);
   }
 
   public void visitMathReferenceExp(@NotNull ResMathReferenceExp o) {
@@ -117,6 +141,10 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathSymbolName(@NotNull ResMathSymbolName o) {
     visitCompositeElement(o);
+  }
+
+  public void visitMathTheoremDecl(@NotNull ResMathTheoremDecl o) {
+    visitNamedElement(o);
   }
 
   public void visitMathVarDecl(@NotNull ResMathVarDecl o) {

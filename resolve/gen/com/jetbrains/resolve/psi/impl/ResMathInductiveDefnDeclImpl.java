@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl implements ResMathStandardDefnDecl {
+public class ResMathInductiveDefnDeclImpl extends ResAbstractMathDefnImpl implements ResMathInductiveDefnDecl {
 
-  public ResMathStandardDefnDeclImpl(ASTNode node) {
+  public ResMathInductiveDefnDeclImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitMathStandardDefnDecl(this);
+    visitor.visitMathInductiveDefnDecl(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,9 +26,9 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
   }
 
   @Override
-  @Nullable
-  public ResMathExp getMathExp() {
-    return findChildByClass(ResMathExp.class);
+  @NotNull
+  public List<ResMathExp> getMathExpList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathExp.class);
   }
 
   @Override
@@ -56,39 +56,33 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
   }
 
   @Override
-  @Nullable
-  public PsiElement getChainable() {
-    return findChildByType(CHAINABLE);
-  }
-
-  @Override
   @NotNull
   public PsiElement getDefinition() {
     return findNotNullChildByType(DEFINITION);
   }
 
   @Override
-  @Nullable
-  public PsiElement getImplicit() {
-    return findChildByType(IMPLICIT);
+  @NotNull
+  public PsiElement getInductive() {
+    return findNotNullChildByType(INDUCTIVE);
   }
 
   @Override
   @Nullable
-  public PsiElement getSemicolon() {
-    return findChildByType(SEMICOLON);
+  public PsiElement getIndBase() {
+    return findChildByType(IND_BASE);
   }
 
   @Override
   @Nullable
-  public PsiElement getTriEquals() {
-    return findChildByType(TRI_EQUALS);
+  public PsiElement getIndHypo() {
+    return findChildByType(IND_HYPO);
   }
 
   @Override
   @Nullable
-  public PsiElement getValued() {
-    return findChildByType(VALUED);
+  public PsiElement getIs() {
+    return findChildByType(IS);
   }
 
 }

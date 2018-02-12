@@ -88,6 +88,8 @@ ESCAPES = [abfnrtv]
 "::"                                    { return COLON_COLON; }
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }
+"(i.)"                                  { return IND_BASE; }
+"(ii.)"                                 { return IND_HYPO; }
 
 // Brackets
 "∥"                                     { return DBL_BAR; }
@@ -121,14 +123,13 @@ ESCAPES = [abfnrtv]
 //"by"                                    { return BY; }
 
 "Cart_Prod"                             { return CART_PROD; }
-//"Categorical"                           { return CATEGORICAL; }
+"Categorical"                           { return CATEGORICAL; }
 //"changing"                              { return CHANGING; }
 "Chainable"                             { return CHAINABLE; }
 //"Concept"                               { return CONCEPT; }
 //"constraints"                           { return CONSTRAINTS; }
 //"conventions"                           { return CONVENTIONS; }
-"Valued"                                { return VALUED; }
-//"Corollary"                             { return COROLLARY; }
+"Corollary"                             { return COROLLARY; }
 //"correspondence"                        { return CORRESPONDENCE; }
 
 //"do"                                    { return DO; }
@@ -156,8 +157,8 @@ ESCAPES = [abfnrtv]
 //"If"                                    { return IF_PROG; }
 "Implicit"                              { return IMPLICIT; }
 //"initialization"                        { return INITIALIZATION; }
-//"Inductive"                             { return INDUCTIVE; }
-//"is"                                    { return IS; }
+"Inductive"                             { return INDUCTIVE; }
+"is"                                    { return IS; }
 
 //"realized"                              { return REALIZED; }
 "Realization"                           { return REALIZATION; }
@@ -173,17 +174,18 @@ ESCAPES = [abfnrtv]
 "Precis"                                { return PRECIS; }
 
 //"Recursive"                             { return RECURSIVE; }
-//"Recognition"                           { return RECOGNITION; }
+"Recognition"                           { return RECOGNITION; }
 //"Record"                                { return RECORD; }
 "requires"                              { return REQUIRES; }
 
 //"then"                                  { return THEN; }
 //"true"                                  { return TRUE; }
-//"Theorem"                               { return THEOREM; }
+"Theorem"                               { return THEOREM; }
 //"Type"                                  { return TYPE_FAMILY; }
 "type"                                  { return TYPE_PARAM; }
 
 "uses"                                  { return USES; }
+"Valued"                                { return VALUED; }
 //"Var"                                   { return VAR; }
 //"While"                                 { return WHILE; }
 "which_entails"                         { return WHICH_ENTAILS; }
