@@ -23,11 +23,11 @@ public class ResolveCompletionContributor extends CompletionContributor {
     extend(CompletionType.BASIC, mathReferenceExp(), new ResolveReferenceCompletionProvider());
   }
 
-  private static PsiElementPattern.Capture<PsiElement> moduleHeaderReferenceExp() {
+  /*private static PsiElementPattern.Capture<PsiElement> moduleHeaderReferenceExp() {
     return psiElement().withParent(psiElement(ResReferenceExpBase.class)
                                      .andNot(psiElement().afterSibling(psiElement(PsiErrorElement.class))
                                                .withParent(ResModuleDecl.class)));
-  }
+  }*/
 
   private static PsiElementPattern.Capture<PsiElement> referenceExp() {
     return psiElement().withParent(ResReferenceExpBase.class);

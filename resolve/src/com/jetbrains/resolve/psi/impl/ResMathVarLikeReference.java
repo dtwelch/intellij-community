@@ -107,6 +107,13 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     return processNamedElements(processor, state, delegate.getVariants(), localResolve);
   }
 
+
+  @NotNull
+  private ResolveState createContext() {
+    return ResolveState.initial().put(CONTEXT, SmartPointerManager.getInstance(myElement.getProject())
+      .createSmartPsiElementPointer(myElement));
+  }
+
   private boolean processNamedElements(@NotNull PsiScopeProcessor processor,
                                        @NotNull ResolveState state,
                                        @NotNull Collection<? extends ResNamedElement> elements,
