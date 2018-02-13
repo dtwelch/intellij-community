@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.patterns.PatternCondition;
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.patterns.PsiElementPattern.Capture;
 import com.intellij.psi.PsiElement;
@@ -29,6 +30,9 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
 
     extend(CompletionType.BASIC, precisHeaderExtendsPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "extends"));
+
+    extend(CompletionType.BASIC, categoricalForPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "for"));
   }
 
   private static Capture<PsiElement> usesPattern() {
@@ -38,22 +42,16 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
                                              psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));
   }
 
-  //psiElement().afterLeaf("extends")
+
+  private static Capture<PsiElement> categoricalForPattern() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(ResTypes.MATH_SYMBOL_NAME)
+                    .withParent(psiElement(ResTypes.MATH_PREFIX_DEFN_SIG)
+                                  .withParent(psiElement(ResTypes.MATH_CATEGORICAL_DEFN_DECL))
+                                  .afterSiblingSkipping(psiElement().whitespace(), psiElement(PsiErrorElement.class))));
+  }
+
   private static Capture<? extends PsiElement> precisHeaderExtendsPattern() {
-    /*return psiElement().with(new PatternCondition<PsiElement>("extendsKeyword") {
-      @Override
-      public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-        PsiElement e = element.getParent().getParent();
-        if (e instanceof ResPrecisBlock) {
-          ResBlock block = (ResBlock)e;
-          int i;
-          i=0;
-        }
-       // element.getParent().getParent() instanceof ResPrecisBlock && psiElement(
-        return element.getNode().getElementType() ==
-               ResTypes.IDENTIFIER;// && element.getNextSibling() instanceof PsiWhiteSpace;
-      }
-    });*/
     return onKeywordStartWithParent(psiElement(ResBlock.class).with(
       new PatternCondition<PsiElement>("extendsKeyword") {
         @Override
