@@ -3,6 +3,7 @@ package com.jetbrains.resolve.completion;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.openapi.options.ex.Settings;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,5 +18,6 @@ public class ResolveModuleHeaderReferenceProvider extends CompletionProvider<Com
                                 @NotNull CompletionResultSet result) {
     int i;
     i=0;
+
   }
 }
