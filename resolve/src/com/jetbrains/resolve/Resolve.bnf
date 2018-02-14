@@ -310,7 +310,6 @@ private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | Mat
         | MathOutfixApplyExp
         | MathCartProdExp
         | MathBigUnionExp
-     //   | MathSetExp
      //   | MathSetRestrictionExp
 
 private MathOpSymbolName ::= MathSymbolExp

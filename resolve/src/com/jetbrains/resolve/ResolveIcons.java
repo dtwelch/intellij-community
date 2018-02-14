@@ -19,4 +19,6 @@ public class ResolveIcons {
   public static final Icon DEF = load("/icons/com/jetbrains/resolve/def.png");
   public static final Icon VARIABLE = load("/icons/com/jetbrains/resolve/variable.png");
 
+  public static final Icon SYMBOLS = load("/icons/com/jetbrains/resolve/symbols.png");
+
 }

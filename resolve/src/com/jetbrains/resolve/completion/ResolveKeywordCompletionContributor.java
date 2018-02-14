@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
-//For nice examples of these PSI pattern methods being used, look at: PyKeywordCompletionContributor
+//For nice (fairly comprehensible) examples of PSI pattern methods being used, look at: PyKeywordCompletionContributor
 public class ResolveKeywordCompletionContributor extends CompletionContributor implements DumbAware {
   public ResolveKeywordCompletionContributor() {
     extend(CompletionType.BASIC, usesPattern(),
@@ -25,8 +25,8 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
 
     extend(CompletionType.BASIC, modulePattern(ResPrecisModuleDecl.class, ResPrecisBlock.class),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
-                                                "Implicit", "Definition", "Def", "Theorem", "Corollary", "Inductive",
-                                                "Recognition", "Categorical"));
+                                                "Implicit", "Definition", "Def", "Theorem", "Corollary",
+                                                "Inductive", "Recognition", "Categorical"));
 
     extend(CompletionType.BASIC, precisHeaderExtendsPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "extends"));
@@ -35,13 +35,13 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "for"));
   }
 
+  //TODO: Redo this eventually, it doesn't work quite right yet.
   private static Capture<PsiElement> usesPattern() {
     return onKeywordStartWithParent(psiElement(ResBlock.class)
                                       .withParent(ResModuleDecl.class)
                                       .andOr(psiElement().withFirstNonWhitespaceChild(psiElement()),
                                              psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));
   }
-
 
   private static Capture<PsiElement> categoricalForPattern() {
     return psiElement(ResTypes.IDENTIFIER)

@@ -39,7 +39,6 @@
     <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptExtModuleContextType"/>
     <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEImplModuleContextType"/>
     -->
-
   </extensions>
 
   <actions>
@@ -53,5 +52,11 @@
       <implementation-class>com.jetbrains.resolve.library.ResolveModuleLibrariesInitializer</implementation-class>
     </component>
   </module-components>
+
+  <project-components>
+    <component>
+      <implementation-class>com.jetbrains.resolve.ResolveStudioController</implementation-class>
+    </component>
+  </project-components>
 
 </idea-plugin>
