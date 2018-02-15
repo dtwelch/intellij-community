@@ -26,7 +26,7 @@
     <!-- completions -->
     <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveCompletionContributor"/>
     <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveKeywordCompletionContributor"/>
-    <!--<completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveMathSymbolCompletionContributor"/>-->
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.MathSymbolCompletionContributor"/>
 
     <!-- live template & contexts -->
     <defaultLiveTemplatesProvider implementation="com.jetbrains.resolve.template.ResolveLiveTemplatesProvider"/>
