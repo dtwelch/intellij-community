@@ -19,8 +19,10 @@ public class CreateResolveFileAction extends CreateFileFromTemplateAction implem
   }
 
   @Override
-  protected void buildDialog(Project project, PsiDirectory directory, @NotNull CreateFileFromTemplateDialog.Builder builder) {
-    builder.setTitle(NEW_RESOLVE_FILE).addKind("Empty file", ResolveIcons.RESOLVE_FILE, FILE_TEMPLATE).addKind("Foo file", ResolveIcons.RESOLVE_FILE, FILE_TEMPLATE);
+  protected void buildDialog(Project project,
+                             PsiDirectory directory,
+                             @NotNull CreateFileFromTemplateDialog.Builder builder) {
+    builder.setTitle(NEW_RESOLVE_FILE).addKind("Empty file", ResolveIcons.RESOLVE_FILE, FILE_TEMPLATE);
   }
 
   @NotNull
