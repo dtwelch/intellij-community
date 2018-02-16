@@ -130,6 +130,7 @@ ESCAPES = [abfnrtv]
 //"constraints"                           { return CONSTRAINTS; }
 //"conventions"                           { return CONVENTIONS; }
 "Corollary"                             { return COROLLARY; }
+"Coercer"                               { return COERCER; }
 //"correspondence"                        { return CORRESPONDENCE; }
 
 //"do"                                    { return DO; }

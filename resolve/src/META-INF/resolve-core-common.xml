@@ -45,6 +45,14 @@
     <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
+    <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
+            text="RESOLVE Validate">
+      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
+      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
   </actions>
 
   <module-components>

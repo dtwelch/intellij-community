@@ -62,6 +62,12 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
   }
 
   @Override
+  @Nullable
+  public PsiElement getCoercer() {
+    return findChildByType(COERCER);
+  }
+
+  @Override
   @NotNull
   public PsiElement getDefinition() {
     return findNotNullChildByType(DEFINITION);

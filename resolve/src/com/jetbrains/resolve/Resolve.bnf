@@ -64,6 +64,7 @@
         CATEGORICAL   = 'Categorical'
         //CONCEPT       = 'Concept'
         COROLLARY     = 'Corollary'
+        COERCER       = 'Coercer'
         CHAINABLE     = 'Chainable'
         //DEFINES       = 'Defines'
         DEFINITION    = 'Definition'
@@ -174,7 +175,7 @@ private PrecisItem ::=
           | MathCategoricalDefnDecl
           | MathInductiveDefnDecl {pin=1 recoverWhile=PrecisItemRecover}
 
-private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end)
+private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end)
 
 // parameter and parameter-list related rules
 
@@ -235,7 +236,8 @@ MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
 MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathPrefixDefnSigs is MathExp ';' {pin=2}
 
-MathStandardDefnDecl ::= ('Chainable')? ('Valued')? ('Implicit'?) 'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';' {pin=4}
+MathStandardDefnDecl ::= ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
+'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';' {pin=5}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'

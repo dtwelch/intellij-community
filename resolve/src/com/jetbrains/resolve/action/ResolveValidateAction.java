@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
+import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.ResolveStudioController;
 import edu.clemson.resolve.Resolve;
 import edu.clemson.resolve.ResolveMessage;
@@ -63,6 +64,11 @@ public class ResolveValidateAction extends ResolveAction {
     annotateIssues(editor, resolveFile, compiler, issueListener);
   }
 
+  @Override
+  public void update(AnActionEvent e) {
+    e.getPresentation().setIcon(ResolveIcons.VALIDATE);
+  }
+
   @Nullable
   public static Resolve setupAndRunCompiler(@NotNull Project project,
                                             @NotNull Editor editor,
@@ -73,10 +79,10 @@ public class ResolveValidateAction extends ResolveAction {
 
   @NotNull
   public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                                    @NotNull Editor editor,
-                                                    @NotNull VirtualFile targetFile,
-                                                    @NotNull Map<String, String> args,
-                                                    @Nullable Resolve.ResolveListener customListener) {
+                                            @NotNull Editor editor,
+                                            @NotNull VirtualFile targetFile,
+                                            @NotNull Map<String, String> args,
+                                            @Nullable Resolve.ResolveListener customListener) {
     Resolve compiler = getDefaultCompiler(args);
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
@@ -142,6 +148,7 @@ public class ResolveValidateAction extends ResolveAction {
         String combinedErrorMsg = Utils.join(msgs, "\n");
         showErrorToolTip(editor, offset, HintManager.getInstance(), combinedErrorMsg, e);
       }
+
       @Override
       public void mouseDragged(EditorMouseEvent e) {
       }
@@ -171,7 +178,6 @@ public class ResolveValidateAction extends ResolveAction {
         }
       }
     });
-
   }
 
   public static String getIssueDisplayString(Resolve compiler, Issue e) {
@@ -227,6 +233,9 @@ public class ResolveValidateAction extends ResolveAction {
   public static class Issue {
     String annotation;
     ResolveMessage msg;
-    public Issue(ResolveMessage msg) { this.msg = msg; }
+
+    public Issue(ResolveMessage msg) {
+      this.msg = msg;
+    }
   }
 }

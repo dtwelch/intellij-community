@@ -25,6 +25,9 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   @Nullable
   PsiElement getChainable();
 
+  @Nullable
+  PsiElement getCoercer();
+
   @NotNull
   PsiElement getDefinition();
 

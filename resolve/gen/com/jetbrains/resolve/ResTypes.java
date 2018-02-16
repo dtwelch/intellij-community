@@ -76,6 +76,7 @@ public interface ResTypes {
   IElementType CHAINABLE = new ResTokenType("Chainable");
   IElementType CHAR = new ResTokenType("char");
   IElementType CLEARS = new ResTokenType("clears");
+  IElementType COERCER = new ResTokenType("Coercer");
   IElementType COLON = new ResTokenType(":");
   IElementType COLON_COLON = new ResTokenType("::");
   IElementType COLON_EQUALS = new ResTokenType(":=");

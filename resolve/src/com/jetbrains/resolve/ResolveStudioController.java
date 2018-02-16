@@ -87,7 +87,9 @@ public class ResolveStudioController implements ProjectComponent {
     verifierWindow.setIcon(RESOLVEIcons.TOOL_ICON);*/
 
     //init math symbol browser window
-    mathSymbolWindow = toolWindowManager.registerToolWindow(SYMBOL_WINDOW_ID, true, ToolWindowAnchor.RIGHT);
+    //TODO: Left for now (at least until the verifier window is up
+    mathSymbolWindow = toolWindowManager.registerToolWindow(SYMBOL_WINDOW_ID, true, ToolWindowAnchor.LEFT);
+    mathSymbolWindow.setSplitMode(true, null);
     mathSymbolWindow.getContentManager().addContent(contentFactory.createContent(mathSymbolPanel, "", false));
     mathSymbolWindow.setIcon(ResolveIcons.SYMBOLS);
 

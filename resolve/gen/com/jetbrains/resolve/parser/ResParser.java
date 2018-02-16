@@ -918,7 +918,8 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ('Chainable')? ('Valued')? ('Implicit'?) 'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';'
+  // ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
+  // 'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';'
   public static boolean MathStandardDefnDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl")) return false;
     boolean r, p;
@@ -926,10 +927,11 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = MathStandardDefnDecl_0(b, l + 1);
     r = r && MathStandardDefnDecl_1(b, l + 1);
     r = r && MathStandardDefnDecl_2(b, l + 1);
+    r = r && MathStandardDefnDecl_3(b, l + 1);
     r = r && consumeToken(b, DEFINITION);
-    p = r; // pin = 4
+    p = r; // pin = 5
     r = r && report_error_(b, MathDefnSig(b, l + 1));
-    r = p && report_error_(b, MathStandardDefnDecl_5(b, l + 1)) && r;
+    r = p && report_error_(b, MathStandardDefnDecl_6(b, l + 1)) && r;
     r = p && consumeToken(b, SEMICOLON) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
@@ -949,23 +951,30 @@ public class ResParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // 'Implicit'?
+  // ('Implicit')?
   private static boolean MathStandardDefnDecl_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_2")) return false;
     consumeToken(b, IMPLICIT);
     return true;
   }
 
+  // ('Coercer')?
+  private static boolean MathStandardDefnDecl_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_3")) return false;
+    consumeToken(b, COERCER);
+    return true;
+  }
+
   // ('≜' MathAssertionExp)?
-  private static boolean MathStandardDefnDecl_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_5")) return false;
-    MathStandardDefnDecl_5_0(b, l + 1);
+  private static boolean MathStandardDefnDecl_6(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6")) return false;
+    MathStandardDefnDecl_6_0(b, l + 1);
     return true;
   }
 
   // '≜' MathAssertionExp
-  private static boolean MathStandardDefnDecl_5_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_5_0")) return false;
+  private static boolean MathStandardDefnDecl_6_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, TRI_EQUALS);
