@@ -162,6 +162,7 @@ public class MathSymbolPanel extends JBPanel {
     addGreekSection(e);
     addLettersSection(e);
     addArrowsSection(e);
+    addBuiltinSection(e);
     addBigOperatorsSection(e);
     addOperatorsSection(e);
     addRelationSection(e);

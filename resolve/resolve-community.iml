@@ -17,5 +17,7 @@
     <orderEntry type="module" module-name="resolve-open-api" />
     <orderEntry type="module" module-name="testRunner" />
     <orderEntry type="module" module-name="smRunner" />
+    <orderEntry type="module" module-name="rest" />
+    <orderEntry type="library" name="resolve" level="project" />
   </component>
 </module>
