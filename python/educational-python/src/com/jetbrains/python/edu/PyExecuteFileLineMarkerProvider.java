@@ -51,6 +51,7 @@ public class PyExecuteFileLineMarkerProvider implements LineMarkerProvider {
     if (PlatformUtils.isPyCharmEducational()) {
       group.add(runAction);
     }
+
     for (PyExecuteFileExtensionPoint extension : extensions) {
       AnAction action = extension.getRunAction();
       if (action != null && extension.accept(file.getProject())) {

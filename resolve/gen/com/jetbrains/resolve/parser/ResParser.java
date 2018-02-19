@@ -1397,7 +1397,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end)
+  // !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end)
   static boolean PrecisItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisItemRecover")) return false;
     boolean r;
@@ -1407,7 +1407,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Valued'|end
+  // 'Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end
   private static boolean PrecisItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisItemRecover_0")) return false;
     boolean r;
@@ -1420,6 +1420,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, INDUCTIVE);
     if (!r) r = consumeToken(b, RECOGNITION);
     if (!r) r = consumeToken(b, CHAINABLE);
+    if (!r) r = consumeToken(b, COERCER);
     if (!r) r = consumeToken(b, VALUED);
     if (!r) r = consumeToken(b, END);
     exit_section_(b, m, null, r);

@@ -22,8 +22,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
+import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.ResolveStudioController;
+import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import edu.clemson.resolve.Resolve;
 import edu.clemson.resolve.ResolveMessage;
 import edu.clemson.resolve.Utils;
@@ -36,9 +38,7 @@ import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ResolveValidateAction extends ResolveAction {
   public static final Key<Issue> ISSUE_ANNOTATION = Key.create("ISSUE_ANNOTATION");
@@ -53,12 +53,16 @@ public class ResolveValidateAction extends ResolveAction {
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) return;
 
-    Map<String, String> argMap = new LinkedHashMap<>();
-    argMap.put("", resolveFile.getCanonicalPath());
+    List<String> cmdArgs = ContainerUtil.newArrayList();
+    cmdArgs.add(resolveFile.getCanonicalPath());
+    if (ResolveCompilerSettings.getInstance().isNoAutoStandardUses()) {
+      cmdArgs.add("-no-std-uses");
+    }
+
     //argMap.put("-lib", getContentRoot(project, resolveFile).getPath());
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Resolve compiler = setupAndRunCompiler(project, editor, resolveFile, argMap, issueListener);
+    Resolve compiler = setupAndRunCompiler(project, editor, resolveFile, cmdArgs, issueListener);
     if (compiler.targetModule.hasParseErrors) return;
 
     annotateIssues(editor, resolveFile, compiler, issueListener);
@@ -73,7 +77,7 @@ public class ResolveValidateAction extends ResolveAction {
   public static Resolve setupAndRunCompiler(@NotNull Project project,
                                             @NotNull Editor editor,
                                             @NotNull VirtualFile targetFile,
-                                            @NotNull Map<String, String> args) {
+                                            @NotNull List<String> args) {
     return setupAndRunCompiler(project, editor, targetFile, args, null);
   }
 
@@ -81,13 +85,13 @@ public class ResolveValidateAction extends ResolveAction {
   public static Resolve setupAndRunCompiler(@NotNull Project project,
                                             @NotNull Editor editor,
                                             @NotNull VirtualFile targetFile,
-                                            @NotNull Map<String, String> args,
+                                            @NotNull List<String> args,
                                             @Nullable Resolve.ResolveListener customListener) {
     Resolve compiler = getDefaultCompiler(args);
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
     String timeStamp = getTimeStamp();
-    console.print(timeStamp + ": resolve " + Utils.join(getArgMapAsList(args), " ") + "\n",
+    console.print(timeStamp + ": resolve " + Utils.join(args, " ") + "\n",
                   ConsoleViewContentType.SYSTEM_OUTPUT);
 
     RunResolveListener defaultListener = new RunResolveListener(compiler, console);
@@ -191,9 +195,17 @@ public class ResolveValidateAction extends ResolveAction {
                                       EditorMouseEvent event) {
     int flags = HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE | HintManager.HIDE_BY_SCROLLING;
     int timeout = 0; // default?
+   // UIManager.getFont("Label.font")
     hintMgr.showErrorHint(editor, msg, offset, offset + 1, HintManager.ABOVE, flags, timeout);
   }
+//for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
+  //nope, it's not antlr, single (normal) chars have the same start and stop too..
+  //I just loaded up IDEA 2016.2 and it uses two spaces for things like 𝒩.. what the hell..
 
+  //Its an antlr thing with the tokens... (It looks like anyways)
+
+  //OK, it seems like the antlr token stream treats two char unicode symbols as one so the startIndex and endIndex
+  //is the same (that screws up the underlining here...)
   public static void annotateIssueInEditor(@NotNull VirtualFile file,
                                            @NotNull List<RangeHighlighter> highlighters,
                                            @NotNull Editor editor,
@@ -231,7 +243,6 @@ public class ResolveValidateAction extends ResolveAction {
   }
 
   public static class Issue {
-    String annotation;
     ResolveMessage msg;
 
     public Issue(ResolveMessage msg) {
