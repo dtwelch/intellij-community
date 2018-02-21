@@ -49,7 +49,19 @@ class ResolveStudioProperties extends ProductProperties {
 
   @Override
   LinuxDistributionCustomizer createLinuxCustomizer(String projectHome) {
-    return null
+    return new LinuxDistributionCustomizer() {
+      {
+        iconPngPath = "$projectHome/resolve/resources/ResolveStudioCore128.png"
+        snapName = "resolvestudio"
+        snapDescription =
+          "An IDE for writing formally specified, veriable software in RESOLVE."
+      }
+
+      @Override
+      String getRootDirectoryName(ApplicationInfoProperties applicationInfo, String buildNumber) {
+        "resolve-community-${applicationInfo.isEAP ? buildNumber : applicationInfo.fullVersion}"
+      }
+    }
   }
 
   @Override

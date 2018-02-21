@@ -101,8 +101,7 @@ public class ResolveSdkType extends SdkType {
   }
 
   @Override
-  public void saveAdditionalData(
-    @NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
+  public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
   }
 
   @Override
