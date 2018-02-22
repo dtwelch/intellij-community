@@ -50,11 +50,8 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     return result;
   }
 
-  /**
-   * Todo: Eventually we'll place a file at the root of the RESOLVEROOT workspace which indicates what is a
-   * 'standard' module and what isn't.
-   * @return
-   */
+  //TODO: Store a list of the standard modules somewhere in RESOLVEROOT so we can avoid hardcoding them
+  // (and their names here)
   @NotNull
   @Override
   public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
