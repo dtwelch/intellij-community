@@ -50,27 +50,18 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     return result;
   }
 
+  /**
+   * Todo: Eventually we'll place a file at the root of the RESOLVEROOT workspace which indicates what is a
+   * 'standard' module and what isn't.
+   * @return
+   */
   @NotNull
   @Override
   public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
     return CachedValuesManager.getCachedValue(this, () -> {
-      List<ResReferenceExp> headerReferences = getModuleHeaderReferences();
-      List<ResModuleIdentifierSpec> usesItems = getModuleIdentifierSpecs();
-      List<String> toConvert = new ArrayList<>();
-
-      //first need to check to make sure it's not already in the header refs..
-      Set<String> existingUsesItems = new HashSet<>();
-      for (ResModuleIdentifierSpec u : usesItems) {
-        existingUsesItems.add(u.getText());
-      }
-
-      //now filter the list we send to the createUsesSpecList method
-      for (ResReferenceExp ref : headerReferences) {
-        String s = ref.getText();
-        if (!existingUsesItems.contains(s)) {
-          toConvert.add(ref.getText());
-        }
-      }
+      List<String> toConvert = ContainerUtil.newArrayList();
+      toConvert.add("Class_Theory");
+      toConvert.add("Boolean_Theory");
       return CachedValueProvider.Result.create(
         ResElementFactory.createUsesSpecList(getProject(), toConvert), this);
     });

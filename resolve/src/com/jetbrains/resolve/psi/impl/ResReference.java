@@ -159,10 +159,17 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     //now search through module-identifier-specs in the current module's header
     //  todo
 
-    boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
     //finally, search any invisibly imported modules (i.e. Standard Integers,
     //  todo
-
+    boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
+    List<ResModuleIdentifierSpec> standardModules = module.getStandardModulesToSearch();
+    if (shouldAutoSearchUses) {
+      for (ResModuleIdentifierSpec e : standardModules) {
+        PsiElement resolve = e.getModuleIdentifier().resolve();
+        if (!(resolve instanceof ResFile)) continue;
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, false)) return false;
+      }
+    }
     return true;
   }
 

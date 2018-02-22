@@ -28,7 +28,7 @@ public class ResolveEnvUtil {
   public static String getDefaultResolvePath() {
     String result = null;
     String userHome = SystemProperties.getUserHome();
-    if (SystemInfo.isMac) {
+    if (SystemInfo.isMac || SystemInfo.isUnix) {
       result = userHome.replace('/', File.separatorChar) + File.separator + "Documents"
                + File.separator + "resolvework";
     }

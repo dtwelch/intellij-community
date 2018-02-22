@@ -43,6 +43,11 @@ class ResolveStudioProperties extends ProductProperties {
   }
 
   @Override
+  String getSystemSelector(ApplicationInfoProperties applicationInfo) {
+    "ResolveStudioCE${applicationInfo.majorVersion}.${applicationInfo.minorVersionMainPart}"
+  }
+
+  @Override
   String getBaseArtifactName(ApplicationInfoProperties applicationInfo, String buildNumber) {
     "resolvestudioRS-$buildNumber"
   }
@@ -53,20 +58,21 @@ class ResolveStudioProperties extends ProductProperties {
       {
         iconPngPath = "$projectHome/resolve/resources/ResolveStudioCore128.png"
         snapName = "resolvestudio"
-        snapDescription =
-          "An IDE for writing formally specified, veriable software in RESOLVE."
+        snapDescription = "An IDE for writing formally specified, veriable software in RESOLVE."
       }
 
       @Override
       String getRootDirectoryName(ApplicationInfoProperties applicationInfo, String buildNumber) {
-        "resolve-community-${applicationInfo.isEAP ? buildNumber : applicationInfo.fullVersion}"
+        //"resolve-community-${applicationInfo.isEAP ? buildNumber : applicationInfo.fullVersion}"
+        "resolvestudio"
       }
     }
   }
 
   @Override
   WindowsDistributionCustomizer createWindowsCustomizer(String projectHome) {
-    return new ResolveStudioWindowsDistributionCustomizer() {
+    return null;
+    /*return new ResolveStudioWindowsDistributionCustomizer() {
       {
         //TODO: handle these for RS.. (I haven't yet figured out how to produce an MSI installer or anything)
         installerImagesPath = "$projectHome/python/build/resources"
@@ -81,7 +87,7 @@ class ResolveStudioProperties extends ProductProperties {
 
       @Override
       String getBaseDownloadUrlForJre() { "https://download.jetbrains.com/python" }
-    }
+    }*/
   }
 
   @Override

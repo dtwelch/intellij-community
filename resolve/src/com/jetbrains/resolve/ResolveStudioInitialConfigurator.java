@@ -130,7 +130,7 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMainToolbar(false);
-      uiSettings.setShowNavigationBar(true);
+      uiSettings.setShowNavigationBar(false);
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
