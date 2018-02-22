@@ -1,0 +1,19 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <application-components>
+    <component>
+      <implementation-class>com.jetbrains.resolve.ResolveStudioInitialConfigurator$First</implementation-class>
+      <headless-implementation-class/>
+    </component>
+  </application-components>
+
+  <xi:include href="/META-INF/resolvestudio-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/resolve-core-ide.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <application-components>
+    <component>
+      <implementation-class>com.jetbrains.resolve.ResolveStudioInitialConfigurator</implementation-class>
+      <headless-implementation-class/>
+    </component>
+  </application-components>
+</idea-plugin>

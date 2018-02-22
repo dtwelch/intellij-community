@@ -174,6 +174,8 @@ public class AppUIUtil {
       registerFont("/fonts/FiraCode-Light.ttf");
       registerFont("/fonts/FiraCode-Medium.ttf");
       registerFont("/fonts/FiraCode-Retina.ttf");
+      registerFont("/fonts/IsabelleText.ttf");
+      registerFont("/fonts/IsabelleTextBold.ttf");
     }
   }
 

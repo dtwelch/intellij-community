@@ -25,6 +25,7 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ComboboxSpeedSearch;
 import com.intellij.ui.ComboboxWithBrowseButton;
+import com.intellij.util.NullableConsumer;
 import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.python.configuration.PyConfigurableInterpreterList;
 import com.jetbrains.python.sdk.PySdkListCellRenderer;
@@ -83,23 +84,27 @@ public class PythonSdkChooserCombo extends ComboboxWithBrowseButton {
     //noinspection unchecked
     final JComboBox<Sdk> comboBox = getComboBox();
     final Sdk oldSelectedSdk = (Sdk)comboBox.getSelectedItem();
-    PythonSdkDetailsStep.show(project, sdks, null, this, getButton().getLocationOnScreen(), myNewProjectPath, sdk -> {
-      if (sdk == null) return;
-      final ProjectSdksModel projectSdksModel = interpreterList.getModel();
-      if (projectSdksModel.findSdk(sdk) == null) {
-        projectSdksModel.addSdk(sdk);
-        try {
-          projectSdksModel.apply();
+    PythonSdkDetailsStep.show(project, sdks, null, this, getButton().getLocationOnScreen(), myNewProjectPath,
+                              new NullableConsumer<Sdk>() {
+      @Override
+      public void consume(@Nullable Sdk sdk) {
+        if (sdk == null) return;
+        final ProjectSdksModel projectSdksModel = interpreterList.getModel();
+        if (projectSdksModel.findSdk(sdk) == null) {
+          projectSdksModel.addSdk(sdk);
+          try {
+            projectSdksModel.apply();
+          }
+          catch (ConfigurationException e) {
+            LOG.error("Error adding new python interpreter " + e.getMessage());
+          }
         }
-        catch (ConfigurationException e) {
-          LOG.error("Error adding new python interpreter " + e.getMessage());
-        }
+        final List<Sdk> committedSdks = interpreterList.getAllPythonSdks();
+        final Sdk copiedSdk = interpreterList.getModel().findSdk(sdk.getName());
+        comboBox.setModel(new CollectionComboBoxModel<>(committedSdks, oldSelectedSdk));
+        comboBox.setSelectedItem(copiedSdk);
+        PythonSdkChooserCombo.this.notifyChanged(null);
       }
-      final List<Sdk> committedSdks = interpreterList.getAllPythonSdks();
-      final Sdk copiedSdk = interpreterList.getModel().findSdk(sdk.getName());
-      comboBox.setModel(new CollectionComboBoxModel<>(committedSdks, oldSelectedSdk));
-      comboBox.setSelectedItem(copiedSdk);
-      notifyChanged(null);
     });
   }
 

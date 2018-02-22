@@ -1,0 +1,70 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+  <!-- Components and extensions declared in this file work both in PyCharm and Python plugin.
+       Both Community and Professional editions. -->
+
+  <resource-bundle>com.jetbrains.resolve.ResolveBundle</resource-bundle>
+
+  <module value="com.intellij.modules.resolve"/>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <sdkType implementation="com.jetbrains.resolve.sdk.ResolveSdkType"/>
+    <applicationService serviceImplementation="com.jetbrains.resolve.library.ResolveApplicationLibrariesService"/>
+    <applicationService serviceImplementation="com.jetbrains.resolve.sdk.ResolveEnvironmentPathModificationTracker"/>
+    <applicationService serviceImplementation="com.jetbrains.resolve.configuration.ResolveCompilerSettings"/>
+    <!--<projectConfigurable id="resolve" provider="com.jetbrains.resolve.configuration.ResolveSdkSetttingsConfigurableProvider"
+                         dynamic="true" bundle="com.jetbrains.resolve.ResolveBundle"/>-->
+
+    <projectService serviceImplementation="com.jetbrains.resolve.library.ResolveProjectLibrariesService"/>
+    <moduleService serviceImplementation="com.jetbrains.resolve.library.ResolveModuleLibrariesService"/>
+    <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
+    <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
+
+    <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
+    <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
+    <internalFileTemplate name="RESOLVE File"/>
+
+    <!-- completions -->
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveCompletionContributor"/>
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.ResolveKeywordCompletionContributor"/>
+    <completion.contributor language="Resolve" implementationClass="com.jetbrains.resolve.completion.MathSymbolCompletionContributor"/>
+
+    <!-- live template & contexts -->
+    <defaultLiveTemplatesProvider implementation="com.jetbrains.resolve.template.ResolveLiveTemplatesProvider"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveEverywhereContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFileContextType"/>
+
+    <!--  necessary because we have live templates for var decls, ops, facility decls, etc that can only go in certain contexts.. these are those contexts:
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEFacilityModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptExtModuleContextType"/>
+    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEImplModuleContextType"/>
+    -->
+  </extensions>
+
+  <actions>
+    <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
+      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
+    </action>
+    <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
+            text="RESOLVE Validate">
+      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
+      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+
+  <module-components>
+    <component>
+      <implementation-class>com.jetbrains.resolve.library.ResolveModuleLibrariesInitializer</implementation-class>
+    </component>
+  </module-components>
+
+  <project-components>
+    <component>
+      <implementation-class>com.jetbrains.resolve.ResolveStudioController</implementation-class>
+    </component>
+  </project-components>
+
+</idea-plugin>

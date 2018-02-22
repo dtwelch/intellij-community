@@ -1,0 +1,17 @@
+<component xmlns="http://jetbrains.org/intellij/schema/application-info"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
+  <version major="1" minor="0" />
+  <company name="Clemson University" url="https://www.cs.clemson.edu/resolve/"/>
+  <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
+  <logo url="/resolvestudio_core_logo.png" textcolor="ffffff" progressColor="fffd9a" progressX="114" progressY="278" progressHeight="3"/>
+  <about url="/resolvestudio_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="646464"
+         copyrightForeground="cccccc" linkColor="ffffff"/>
+  <icon size32="/ResolveStudioCore32.png" size16="/ResolveStudioCore16.png" ico="ResolveStudioCore.ico"/>
+  <package code="__PACKAGE_CODE__"/>
+  <names product="RESOLVE" fullname="RESOLVE Studio" script="rstudio"/>
+
+  <welcome-screen logo-url="/ResolveStudioCoreWelcomeScreen.png"/>
+  <documentation url="https://www.jetbrains.com/pycharm/documentation"/>
+  <support url="https://intellij-support.jetbrains.com/hc/en-us#"/>
+</component>

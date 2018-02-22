@@ -153,7 +153,7 @@ public class PythonSdkDetailsDialog extends DialogWrapper {
 
     decorator.setPreferredSize(new Dimension(600, 500));
     myMainPanel = decorator.createPanel();
-    refreshSdkList();
+    //refreshSdkList();
     addListeners();
     return myMainPanel;
   }

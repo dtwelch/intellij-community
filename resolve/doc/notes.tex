@@ -1,0 +1,66 @@
+\documentclass{article}[10pt]
+\usepackage[margin=1.85cm, paperwidth=6.1in, paperheight=9in, bottom=2.5cm]{geometry}
+
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{amssymb,amsmath,tipa}
+\usepackage{parskip}
+\usepackage{graphicx,color}
+\usepackage[mathscr]{euscript}
+\usepackage{csquotes}
+\renewcommand{\mkbegdispquote}[2]{\itshape}
+\definecolor{keywordcolor}{rgb}{0.6, 0.1, 0.3}	% a dark violet
+
+\usepackage{color}
+\usepackage{lipsum}
+\usepackage{beton}
+\usepackage{euler}
+\usepackage[T1]{fontenc}
+\definecolor{keywordcolor}{rgb}{0.6, 0.1, 0.3}	% a dark violet
+
+%\usepackage{mathptmx}
+\usepackage{\string~/Documents/dissertation/languages/resolve}
+\lstset{
+mathescape=true,
+language=resolve,
+columns=fullflexible,
+basicstyle=\ttfamily,
+}
+
+\begin{document}
+\null\hfill\begin{tabular}[t]{l@{}}
+  11/29/2017
+\end{tabular}
+
+\section{Jetbrains Standalone IDE CookBook}
+
+This is just a collection of notes and tips for myself and any other interested parties who are trying to create a standalone IDE from their language's existing plugin. This is in no way endorsed by Jetbrains though I have consulted them occasionally for advice on small pieces. 
+
+Most of the information out there is scattered around various forum posts and the issue tracker, I'll summarize the gist of what these various sources say in the next section.
+
+\section{Some Pre-Requisites}
+
+\begin{itemize}
+\item Before considering building a standalone Jetbrains IDE, you should have a fairly well-developed plugin already built. By `well-developed' they mean support for code inspections, reference completions, keyword completions, the ability to generate and run code (i.e. integration with an existing compiler), SDK support, and some modest support for run-configurations.
+
+\item Download the latest version of Java SE (I'm using \verb|1.8.0_151|). Also, if your on mac OS, you'll need JDK 1.6 which you can get here: \url{https://support.apple.com/kb/DL1572?locale=en_US&viewlocale=en_US}.
+\end{itemize}
+
+\section{Building notes}
+
+The IntelliJ community edition source code is huge. So to help isolate myself from ongoing (daily) changes, I've forked a branch for 2017.3 and will continue development here. Here are some discoveries I recently made.
+
+\begin{itemize}
+\item It looks like the python/build folder is where the (gant) scripts are located for building the standalone IDE for python. These can by run by right clicking on them and pressing the play button.
+\item Be careful however when you do this. The script won't work if your local clone of the source happened to generate a (\texttt{.idea}) folder in the \texttt{python} directory... The gant script that runs expects the first \texttt{.idea} folder it finds to be at the top level (right under the root). Took me awhile to figure this one out...
+\end{itemize}
+
+\section{Ongoing Tasks}
+
+\begin{enumerate}
+\item Continue tweaking sdk selection and create an options screen configurable for it.
+\end{enumerate}
+
+\end{document}
+
+
+

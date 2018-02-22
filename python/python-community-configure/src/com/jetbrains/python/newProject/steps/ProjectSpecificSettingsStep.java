@@ -20,8 +20,12 @@ import com.intellij.facet.ui.ValidationResult;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ModifiableModelsProvider;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -131,9 +135,12 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected void registerValidators() {
     super.registerValidators();
     if (myProjectGenerator instanceof PythonProjectGenerator) {
-      addLocationChangeListener(event -> {
-        final String fileName = PathUtil.getFileName(getNewProjectPath());
-        ((PythonProjectGenerator)myProjectGenerator).locationChanged(fileName);
+      addLocationChangeListener(new Consumer<DocumentEvent>() {
+        @Override
+        public void consume(DocumentEvent event) {
+          final String fileName = PathUtil.getFileName(ProjectSpecificSettingsStep.this.getNewProjectPath());
+          ((PythonProjectGenerator)myProjectGenerator).locationChanged(fileName);
+        }
       });
       final PyAddSdkGroupPanel interpreterPanel = myInterpreterPanel;
       if (interpreterPanel != null) {
@@ -259,6 +266,9 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
   protected JPanel createBasePanel() {
     if (myProjectGenerator instanceof PythonProjectGenerator) {
       final BorderLayout layout = new BorderLayout();
+      //Use GroupLayout to get the boxes aligned correctly, i.e.:
+      // Location: |________________________________|
+      // SDK:      |________________________________|
 
       final JPanel locationPanel = new JPanel(layout);
 
@@ -305,6 +315,7 @@ public class ProjectSpecificSettingsStep<T> extends ProjectSettingsStepBase<T> i
       checkValid();
     });
 
+    //danw: this isn't needed for my purposes (adding an already existing sdk
     addLocationChangeListener(event -> myInterpreterPanel.setNewProjectPath(getNewProjectPath()));
 
     container.add(myInterpreterPanel, BorderLayout.NORTH);

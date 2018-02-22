@@ -63,7 +63,8 @@ public class AppEditorFontConfigurable implements SearchableConfigurable, NoScro
   @Override
   public void apply() throws ConfigurationException {
     FontPreferences fontPreferences = getUIFontPreferences();
-    fontPreferences.copyTo(getStoredPreferences());
+    fontPreferences.
+      copyTo(getStoredPreferences());
     EditorFontCache.getInstance().reset();
     ((EditorColorsManagerImpl)EditorColorsManager.getInstance()).schemeChangedOrSwitched(null);
     EditorOptionsPanel.reinitAllEditors();

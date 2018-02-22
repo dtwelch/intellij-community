@@ -1,0 +1,10 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" url="https://confluence.jetbrains.com/display/PYH/">
+  <!-- Components and extensions declared in this file work ONLY in PyCharm, not in Python plugin.
+       Both Community and Professional editions. -->
+
+  <xi:include href="/META-INF/resolve-community-configure-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <extensions defaultExtensionNs="com.intellij">
+    <projectConfigurable groupId="root" groupWeight="177" dynamic="true" key="sdk.settings.configurable.name" bundle="com.jetbrains.resolve.ResolveBundle"
+                         provider="com.jetbrains.resolve.configuration.ResolveSdkSetttingsConfigurableProvider" id="project.resolve.settings"/>
+  </extensions>
+</idea-plugin>

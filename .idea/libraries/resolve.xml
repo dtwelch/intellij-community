@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="resolve">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../resolve-lite-private/compiler/resolve.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

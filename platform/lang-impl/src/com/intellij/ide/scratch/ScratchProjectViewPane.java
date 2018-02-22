@@ -63,6 +63,8 @@ public class ScratchProjectViewPane extends ProjectViewPane {
   public static final String ID = "Scratches";
 
   public static boolean isScratchesMergedIntoProjectTab() {
+    boolean reg = Registry.is("ide.scratch.in.project.view");
+
     return (Registry.is("ide.scratch.in.project.view") || PlatformUtils.isDatabaseIDE()) &&
            !ApplicationManager.getApplication().isUnitTestMode();
   }

@@ -30,7 +30,7 @@ import org.jetbrains.jps.model.java.JavaSourceRootType;
  */
 public class PythonContentEntriesConfigurable extends ModuleAwareProjectConfigurable implements NonDefaultProjectConfigurable {
   public PythonContentEntriesConfigurable(final Project project) {
-    super(project, "Project Structure", "reference.settingsdialog.project.structure");
+    super(project, "Project Structsssure", "reference.settingsdialog.project.structure");
   }
 
   @NotNull
