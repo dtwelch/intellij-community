@@ -16,23 +16,17 @@ public interface ResModuleDecl extends ResNamedElement {
   List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
 
   /**
-   * For implementations primary, returns a list of {@link ResReferenceExp}s corresponding to the one or more modules
-   * we're extending, implementing, or enhancing.
+   * Returns a list of module (header) identifiers.
    * <p>
-   * For example, say we're implementing Stack_Template using an array based implementation:
-   * {@code Implementation Array_Impl for Stack_Template; ... } here Stack_Template is a named reference to super
-   * module and as such (for now at least) must be explicitly named in the {@code uses} list (as it could theoretically
-   * be found in a different project via a from clause).
-   * </p>
-   * @return a list of all super module referenc exps in this module's header.
+   * For example, in the case of {@code T extends U}, this method would return a list containing an
+   * {@link ResModuleIdentifierSpec} for {@code U}.
+   *
+   * @return a list of all super module references in the module's header.
    */
   @NotNull
-  List<ResReferenceExp> getModuleHeaderReferences();
+  List<ResModuleIdentifierSpec> getModuleHeaderIdentifierSpecs();
 
-  /**
-   *
-   * @return
-   */
+  @NotNull
   List<ResModuleIdentifierSpec> getStandardModulesToSearch();
 
   @NotNull
@@ -51,7 +45,7 @@ public interface ResModuleDecl extends ResNamedElement {
       public Map<String, ResModuleIdentifierSpec> getModuleIdentifierSpecMap();
 
       @NotNull
-      public List<ResReferenceExp> getModuleHeaderReferences();
+      public List<ResReferenceExp> getModuleHeaderIdentifierSpecs();
 
       @NotNull
       public List<ResMathDefnDecl> getMathDefinitionDecls();

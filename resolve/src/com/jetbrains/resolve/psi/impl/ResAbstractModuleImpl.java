@@ -104,8 +104,8 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   }
 
   @NotNull
-  public List<ResReferenceExp> getModuleHeaderReferences() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResReferenceExp.class);
+  public List<ResModuleIdentifierSpec> getModuleHeaderIdentifierSpecs() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResModuleIdentifierSpec.class);
   }
 
   @Nullable

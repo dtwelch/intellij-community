@@ -108,10 +108,9 @@ public class ResPsiImplUtil {
     return moduleIdentifierSpec.getModuleIdentifier().getText();
   }
 
-  //TODO: This will come up when aliases get introduced
-  @Nullable
+  @NotNull
   public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
-    return null;
+    return o.getModuleIdentifier();
   }
 
   @NotNull

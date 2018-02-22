@@ -53,7 +53,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
         }
         //TODO: Added 3/23/17 to keep program contexts from ref'ing math defns.
         if (o instanceof ResReferenceExp && element instanceof ResMathDefnSig) {
-            return true;
+          return true;
         }
         String name = ObjectUtils.chooseNotNull(state.get(ACTUAL_NAME), element instanceof PsiNamedElement ?
                                                                         ((PsiNamedElement)element).getName() : null);
@@ -157,13 +157,18 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     }
 
     //now search through module-identifier-specs in the current module's header
-    //  todo
+    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleIdentifierSpecs();
+    for (ResModuleIdentifierSpec e : superModuleSpecs) {
+      PsiElement resolve = e.getModuleIdentifier().resolve();
+      if (!(resolve instanceof ResFile)) continue;
+      if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+    }
 
     //finally, search any invisibly imported modules (i.e. Class_Theory, Boolean_Theory, etc)
     boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
-    List<ResModuleIdentifierSpec> standardModules = module.getStandardModulesToSearch();
+    List<ResModuleIdentifierSpec> standardModuleSpecs = module.getStandardModulesToSearch();
     if (shouldAutoSearchUses) {
-      for (ResModuleIdentifierSpec e : standardModules) {
+      for (ResModuleIdentifierSpec e : standardModuleSpecs) {
         PsiElement resolve = e.getModuleIdentifier().resolve();
         if (!(resolve instanceof ResFile)) continue;
         if (!processModuleLevelEntities((ResFile)resolve, processor, state, false)) return false;
@@ -172,9 +177,12 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     return true;
   }
 
-  /** Returns true if {@code currentUsesName} is named in a module's first line as a spec being implemented. */
+  /**
+   * Returns true if {@code currentUsesName} is named in a module's first line as a spec being implemented.
+   */
   private static boolean forSuperModule(@NotNull ResModuleDecl module, @NotNull String currentUsesName) {
-    for (ResReferenceExp e : module.getModuleHeaderReferences()) {
+    for (ResModuleIdentifierSpec e : module.getModuleHeaderIdentifierSpecs()) {
+      if (e.getIdentifier() == null) continue;
       if (e.getIdentifier().getText().equals(currentUsesName)) return true;
     }
     return false;
@@ -231,12 +239,17 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
                                       boolean localResolve,
                                       boolean facilityResolve) {
     for (ResNamedElement definition : elements) {
-      if ((localResolve || definition.isUsesClauseVisible() || facilityResolve) && !processor.execute(definition, state)) return false;
+      if ((localResolve || definition.isUsesClauseVisible() || facilityResolve) &&
+          !processor.execute(definition, state)) {
+        return false;
+      }
     }
     return true;
   }
 
-  /** processing parameters of the definition we happen to be within */
+  /**
+   * processing parameters of the definition we happen to be within
+   */
   private static boolean processDefinitionParams(@NotNull ResScopeProcessorBase processor,
                                                  @NotNull ResMathDefnDecl o) {
     List<ResMathDefnSig> sigs = o.getSignatures();
