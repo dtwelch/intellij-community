@@ -53,7 +53,7 @@ public class ResModuleIdentifierSpecImpl extends ResNamedElementImpl implements 
     return ResPsiImplUtil.getName(this);
   }
 
-  @Nullable
+  @NotNull
   public PsiElement getIdentifier() {
     return ResPsiImplUtil.getIdentifier(this);
   }

@@ -22,7 +22,7 @@ public interface ResModuleIdentifierSpec extends ResNamedElement {
   @NotNull
   String getName();
 
-  @Nullable
+  @NotNull
   PsiElement getIdentifier();
 
   boolean shouldGoDeeper();
