@@ -50,8 +50,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
 
     //if we don't represent a core library module, and the "no-std-uses-flag" setting isn't checked,
     //then we should automatically include standard imports.
-    boolean result = !isCoreLibraryModule && !noAutoStandardUseChecked;
-    return result;
+    return !isCoreLibraryModule && !noAutoStandardUseChecked;
   }
 
   //TODO: Store a list of the standard modules somewhere in RESOLVEROOT so we can avoid hardcoding them

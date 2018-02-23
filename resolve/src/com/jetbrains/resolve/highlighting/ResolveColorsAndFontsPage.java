@@ -40,8 +40,7 @@ public class ResolveColorsAndFontsPage implements ColorSettingsPage {
             new AttributesDescriptor("Parameter mode", PARAMETER_MODE),
     };
 
-    private static final Map<String, TextAttributesKey> ATTRIBUTES_KEY_MAP =
-            ContainerUtil.newTroveMap();
+    private static final Map<String, TextAttributesKey> ATTRIBUTES_KEY_MAP = ContainerUtil.newTroveMap();
 
     @NotNull
     public String getDisplayName() {
@@ -86,7 +85,6 @@ public class ResolveColorsAndFontsPage implements ColorSettingsPage {
                     "             I :=: X;\n" +
                     "     end Do_Nothing;\n" +
                     "end Do_Nothing_Fac;\n";
-
     }
 
     @NotNull
