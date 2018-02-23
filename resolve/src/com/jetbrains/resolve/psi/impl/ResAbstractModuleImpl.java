@@ -6,7 +6,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
@@ -31,22 +33,24 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   ResAbstractModuleImpl(@NotNull ASTNode node) {
     super(node);
   }
-
+  //really this should just lookup a map from the std directory
   @Override
   public boolean shouldAutoSearchUses() {
     Project project = getProject();
     Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-    VirtualFile vFile = getContainingFile().getVirtualFile();
-    boolean result = vFile != null && sdk != null;
-    if (result) {
-      String homePath = sdk.getHomePath();
-      boolean isCoreLibraryModule = homePath != null && vFile.getPath().contains(homePath);
-      boolean noAutoStandardUseChecked = ResolveCompilerSettings.getInstance().isNoAutoStandardUses();
+    PsiFile psiFile = getContainingFile();
+    if (sdk == null || psiFile == null) return false;
 
-      //if we don't represent a core library module, and the "no-std-uses-flag" setting isn't checked,
-      //then we should automatically include standard imports.
-      result = !isCoreLibraryModule && !noAutoStandardUseChecked;
-    }
+    PsiDirectory dir = psiFile.getOriginalFile().getContainingDirectory();
+    if (dir == null) return false;
+    String homePath = sdk.getHomePath();
+    String dirPath = dir.getVirtualFile().getPath();
+    boolean isCoreLibraryModule = homePath != null && dir.getVirtualFile().getPath().contains(homePath);
+    boolean noAutoStandardUseChecked = ResolveCompilerSettings.getInstance().isNoAutoStandardUses();
+
+    //if we don't represent a core library module, and the "no-std-uses-flag" setting isn't checked,
+    //then we should automatically include standard imports.
+    boolean result = !isCoreLibraryModule && !noAutoStandardUseChecked;
     return result;
   }
 

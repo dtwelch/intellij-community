@@ -157,11 +157,13 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     }
 
     //now search through module-identifier-specs in the current module's header
-    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleHeaderIdentifierSpecs();
     for (ResModuleIdentifierSpec e : superModuleSpecs) {
       PsiElement resolve = e.getModuleIdentifier().resolve();
       if (!(resolve instanceof ResFile)) continue;
-      if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+      processor.execute(resolve, state.put(ACTUAL_NAME, e.getModuleIdentifier().getText()));
+      processModuleLevelEntities((ResFile)resolve, processor, state, true);
+      //if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
     }
 
     //finally, search any invisibly imported modules (i.e. Class_Theory, Boolean_Theory, etc)
@@ -171,7 +173,9 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       for (ResModuleIdentifierSpec e : standardModuleSpecs) {
         PsiElement resolve = e.getModuleIdentifier().resolve();
         if (!(resolve instanceof ResFile)) continue;
-        if (!processModuleLevelEntities((ResFile)resolve, processor, state, false)) return false;
+        processor.execute(resolve, state.put(ACTUAL_NAME, e.getModuleIdentifier().getText()));
+        processModuleLevelEntities((ResFile)resolve, processor, state, false);
+        //if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
       }
     }
     return true;
