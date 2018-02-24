@@ -217,7 +217,6 @@
       <module fileurl="file://$PROJECT_DIR$/resolve/resolve-community-configure/resolve-community-configure.iml" filepath="$PROJECT_DIR$/resolve/resolve-community-configure/resolve-community-configure.iml" group="resolve" />
       <module fileurl="file://$PROJECT_DIR$/resolve/ide/resolve-community-ide.iml" filepath="$PROJECT_DIR$/resolve/ide/resolve-community-ide.iml" group="resolve" />
       <module fileurl="file://$PROJECT_DIR$/resolve/resolve-community-ide-resources/resolve-community-ide-resources.iml" filepath="$PROJECT_DIR$/resolve/resolve-community-ide-resources/resolve-community-ide-resources.iml" group="resolve" />
-      <module fileurl="file://$PROJECT_DIR$/resolve/open-api/resolve-open-api.iml" filepath="$PROJECT_DIR$/resolve/open-api/resolve-open-api.iml" group="resolve" />
       <module fileurl="file://$PROJECT_DIR$/resources/resources.iml" filepath="$PROJECT_DIR$/resources/resources.iml" />
       <module fileurl="file://$PROJECT_DIR$/resources-en/resources-en.iml" filepath="$PROJECT_DIR$/resources-en/resources-en.iml" />
       <module fileurl="file://$PROJECT_DIR$/python/rest/rest.iml" filepath="$PROJECT_DIR$/python/rest/rest.iml" group="python" />
