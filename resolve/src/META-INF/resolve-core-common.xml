@@ -19,6 +19,7 @@
     <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
 
+    <lang.braceMatcher language="Resolve" implementationClass="com.jetbrains.resolve.editor.ResolveBraceMatcher"/>
     <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <internalFileTemplate name="RESOLVE File"/>

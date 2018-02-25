@@ -27,7 +27,7 @@ class ResolveStudioProperties extends ProductProperties {
     productLayout.platformApiModules = CommunityRepositoryModules.PLATFORM_API_MODULES + ["dom-openapi"]
     productLayout.platformImplementationModules = CommunityRepositoryModules.PLATFORM_IMPLEMENTATION_MODULES + [
       "dom-impl", "resolve-community", "resolve-community-ide-resources",
-      "resolve-community-ide", "resolve-community-configure", "resolve-open-api", "platform-main"
+      "resolve-community-ide", "resolve-community-configure", "platform-main"
     ]
     productLayout.bundledPluginModules = new File("$communityHome/resolve/build/plugin-list.txt").readLines()
     productLayout.mainModules = ["main_ResolveStudio"]
