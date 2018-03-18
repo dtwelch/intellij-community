@@ -28,30 +28,9 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
 
   public static final Map<String, String> SYMBOL_MAP = new LinkedHashMap<>();
 
-  /*public static PsiElementPattern.Capture<PsiElement> psiElement2() {
-    return psiElement().with(new PatternCondition<PsiElement>("extendsKeyword") {
-      @Override
-      public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-        boolean result = false;
-        if (element.getPrevSibling() instanceof PsiErrorElement) {
-          PsiErrorElement x = (PsiErrorElement)element.getPrevSibling();
-          result = x.getErrorDescription().contains("got '\\'");
-        }
-        else if (element.getPrevSibling() instanceof LeafPsiElement) {
-          LeafPsiElement leaf = (LeafPsiElement)element.getPrevSibling();
-          result = leaf.getElementType() == ResTypes.BACKSLASH;
-        }
-        else if (element instanceof LeafPsiElement) {
-          result = ((LeafPsiElement)element).getElementType() == ResTypes.BACKSLASH;
-        }
-        return result;
-      }
-    });
-  }*/
-
   public MathSymbolCompletionContributor() {
     populateMap();
-    extend(CompletionType.BASIC, psiElement/*2*/(), new CompletionProvider<CompletionParameters>() {
+    extend(CompletionType.BASIC, psiElement(), new CompletionProvider<CompletionParameters>() {
       @Override
       protected void addCompletions(@NotNull final CompletionParameters parameters,
                                     ProcessingContext context,
@@ -65,8 +44,20 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
         //I THINK THIS IS THE PROBLEM!!:
         // WHEN I TRY TO COMPLETE \forall and I start typing \f the prefix matcher is trying to match \f!!!
         // (not just f as it needs to right now! :) :)
+
+        //Note to self: Since I added the backslash identifier | ... to MathSymbolName in Resolve.bnf, prefix matching
+        //is a little more complicated (see not above that I wrote when I figured out what was going on)
+        //right now the prefix matcher will (sometimes) include the \ in front, if it is there I just strip it away
+        //and proceed normally...
         if (parameters.getOffset() > 1 && cs == '\\') {
+         // result = result.withPrefixMatcher()
           //so I think we want to pretty much add all elements in our symbol map
+          String prefix =result.getPrefixMatcher().getPrefix();
+          if (prefix.startsWith("\\")) {
+            prefix = prefix.length() > 1 ?  prefix.substring(1, prefix.length()) : "";
+          }
+          result = result.withPrefixMatcher(prefix);
+
           Map<String, String> x = SYMBOL_MAP;
           for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
             result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
@@ -90,10 +81,10 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
       @Override
       public void handleInsert(@NotNull InsertionContext context, LookupElement item) {
         Editor editor = context.getEditor();
-        //if (context.getStartOffset() - 1 > 0) {
-          editor.getDocument().deleteString(context.getStartOffset(), context.getTailOffset());
+        if (context.getStartOffset() - 1 > 0) {
+          editor.getDocument().deleteString(context.getStartOffset() - 1, context.getTailOffset());
           EditorModificationUtil.insertStringAtCaret(editor, symbol);
-        //}
+        }
       }
     };
   }
@@ -124,18 +115,18 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
   private static void populateMap() {
     if (!SYMBOL_MAP.isEmpty()) return;
     //Arrows
-    SYMBOL_MAP.put("\\longleftarrow", "⟵");
-    SYMBOL_MAP.put("\\Longleftarrow", "⟸");
-    SYMBOL_MAP.put("\\longrightarrow", "⟶");
-    SYMBOL_MAP.put("\\Longrightarrow", "⟹");
-    SYMBOL_MAP.put("\\longleftrightarrow", "⟷");
-    SYMBOL_MAP.put("\\Longleftrightarrow", "⟺");
-    SYMBOL_MAP.put("\\hookleftarrow", "↩");
-    SYMBOL_MAP.put("\\hookrightarrow", "↪");
-    SYMBOL_MAP.put("\\leftharpoondown", "↽");
-    SYMBOL_MAP.put("\\rightharpoondown", "⇁");
-    SYMBOL_MAP.put("\\leftharpoonup", "↼");
-    SYMBOL_MAP.put("\\rightharpoonup", "⇀");
+    SYMBOL_MAP.put("longleftarrow", "⟵");
+    SYMBOL_MAP.put("Longleftarrow", "⟸");
+    SYMBOL_MAP.put("longrightarrow", "⟶");
+    SYMBOL_MAP.put("Longrightarrow", "⟹");
+    SYMBOL_MAP.put("longleftrightarrow", "⟷");
+    SYMBOL_MAP.put("Longleftrightarrow", "⟺");
+    SYMBOL_MAP.put("hookleftarrow", "↩");
+    SYMBOL_MAP.put("hookrightarrow", "↪");
+    SYMBOL_MAP.put("leftharpoondown", "↽");
+    SYMBOL_MAP.put("rightharpoondown", "⇁");
+    SYMBOL_MAP.put("leftharpoonup", "↼");
+    SYMBOL_MAP.put("rightharpoonup", "⇀");
     SYMBOL_MAP.put("downharpoonleft", "⇃");
     SYMBOL_MAP.put("downharpoonright", "⇂");
     SYMBOL_MAP.put("upharpoonleft", "↿");
@@ -246,20 +237,20 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("Omega", "Ω");
 
     //Letters
-    SYMBOL_MAP.put("\\Nat", "ℕ");
-    SYMBOL_MAP.put("\\Int", "ℤ");
-    SYMBOL_MAP.put("\\Complex", "ℂ");
-    SYMBOL_MAP.put("\\Bool", "\uD835\uDD39");
-    SYMBOL_MAP.put("\\Rat", "ℚ");
-    SYMBOL_MAP.put("\\Real", "ℝ");
-    SYMBOL_MAP.put("\\Powerset", "℘");
+    SYMBOL_MAP.put("Nat", "ℕ");
+    SYMBOL_MAP.put("Int", "ℤ");
+    SYMBOL_MAP.put("Complex", "ℂ");
+    SYMBOL_MAP.put("Bool", "\uD835\uDD39");
+    SYMBOL_MAP.put("Rat", "ℚ");
+    SYMBOL_MAP.put("Real", "ℝ");
+    SYMBOL_MAP.put("Powerset", "℘");
 
     //Builtin
-    SYMBOL_MAP.put("\\forall", "∀");
-    SYMBOL_MAP.put("\\exists", "∃");
-    SYMBOL_MAP.put("\\lambda", "λ");
-    SYMBOL_MAP.put("\\triangleq", "≜");
-    SYMBOL_MAP.put("\\tricolon", "ː");
+    SYMBOL_MAP.put("forall", "∀");
+    SYMBOL_MAP.put("exists", "∃");
+    SYMBOL_MAP.put("lambda", "λ");
+    SYMBOL_MAP.put("triangleq", "≜");
+    SYMBOL_MAP.put("tricolon", "ː");
   }
 
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
