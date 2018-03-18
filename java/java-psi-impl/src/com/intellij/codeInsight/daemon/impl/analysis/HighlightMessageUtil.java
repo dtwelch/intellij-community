@@ -23,7 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class HighlightMessageUtil {
-  private HighlightMessageUtil() { }
+  private HighlightMessageUtil() {
+  }
 
   @Nullable
   public static String getSymbolName(@NotNull PsiElement symbol) {
@@ -32,7 +33,9 @@ public class HighlightMessageUtil {
 
   @Nullable
   public static String getSymbolName(@NotNull PsiElement symbol, PsiSubstitutor substitutor) {
-    int options = PsiFormatUtilBase.SHOW_TYPE | PsiFormatUtilBase.SHOW_FQ_CLASS_NAMES | PsiFormatUtilBase.USE_INTERNAL_CANONICAL_TEXT;
+    int options = PsiFormatUtilBase.SHOW_TYPE |
+                  PsiFormatUtilBase.SHOW_FQ_CLASS_NAMES |
+                  PsiFormatUtilBase.USE_INTERNAL_CANONICAL_TEXT;
     return getSymbolName(symbol, substitutor, options);
   }
 

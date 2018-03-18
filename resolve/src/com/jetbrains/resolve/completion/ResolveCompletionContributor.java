@@ -16,11 +16,11 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 public class ResolveCompletionContributor extends CompletionContributor {
 
   public ResolveCompletionContributor() {
-    extend(CompletionType.BASIC, referenceExp(), new ResolveReferenceCompletionProvider());
+    //extend(CompletionType.BASIC, referenceExp(), new ResolveReferenceCompletionProvider());
     //test this out with the other 4 modules to make sure this works correctly: q: how to references for qualifiers work then?
     //a: in the qualifier method that is called from the processResolveVariants method in the referenceExp classes
     //extend(CompletionType.BASIC, moduleHeaderReferenceExp(), new ResolveModuleHeaderReferenceProvider());
-    extend(CompletionType.BASIC, mathReferenceExp(), new ResolveReferenceCompletionProvider());
+   // extend(CompletionType.BASIC, mathReferenceExp(), new ResolveReferenceCompletionProvider());
   }
 
   /*private static PsiElementPattern.Capture<PsiElement> moduleHeaderReferenceExp() {

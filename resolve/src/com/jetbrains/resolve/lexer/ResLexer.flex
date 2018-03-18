@@ -40,6 +40,7 @@ NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
 
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 MSYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR}  | {U_RELATION} | {U_GREEK})
+//MCOM    = {BACKSLASH} {IDENT}
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
                  "⇁"|"↼"|"⇀"|"⇃"|"⇂"|"↿"|"↾"|"↑"|"⇑"|"↓"|"⇓"|"↕"|"⇕")
@@ -59,7 +60,8 @@ U_GREEK       = [\u0370-\u03FF]
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
 SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<=")
 STR     = "\""
-STRING  = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
+BACKSLASH = "\\"
+STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 ESCAPES = [abfnrtv]
 
 %%
@@ -70,6 +72,7 @@ ESCAPES = [abfnrtv]
 {LINE_COMMENT}                          { return LINE_COMMENT; }
 {MULTILINE_COMMENT}                     { return MULTILINE_COMMENT; }
 {STRING}                                { return STRING; }
+{BACKSLASH}                             { return BACKSLASH; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
 "'" [^\\] "'"                           { return CHAR; }
@@ -114,6 +117,7 @@ ESCAPES = [abfnrtv]
 // Builtin
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
+{BACKSLASH}"forall"                     { return EFORALL; }
 "λ"                                     { return LAMBDA; }
 "≜"                                     { return TRI_EQUALS; }
 ":="                                    { return COLON_EQUALS; }
@@ -202,6 +206,7 @@ ESCAPES = [abfnrtv]
 "evaluates"                             { return EVALUATES; }
 
 {MSYM}                                  { return MATHSYMBOL; }
+//{MCOM}                                  { return MATHCOMMAND; }
 {SYM}                                   { return SYMBOL; }
 {U_BIGOPERATOR}                         { return BIGOPERATOR; }
 {IDENT}                                 { return IDENTIFIER; }

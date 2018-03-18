@@ -3,6 +3,7 @@ package com.jetbrains.resolve.action;
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -113,6 +114,7 @@ public class ResolveValidateAction extends ResolveAction {
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);
       String msg = sw.toString();
+
       Notification notification =
         new Notification("AnalyzeAction", "failed to execute " + targetFile.getPath(),
                          e.toString(),
@@ -150,6 +152,7 @@ public class ResolveValidateAction extends ResolveAction {
           if (errorMsg != null) msgs.add(errorMsg);
         }
         String combinedErrorMsg = Utils.join(msgs, "\n");
+
         showErrorToolTip(editor, offset, HintManager.getInstance(), combinedErrorMsg, e);
       }
 
@@ -195,10 +198,11 @@ public class ResolveValidateAction extends ResolveAction {
                                       EditorMouseEvent event) {
     int flags = HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE | HintManager.HIDE_BY_SCROLLING;
     int timeout = 0; // default?
-   // UIManager.getFont("Label.font")
+    // UIManager.getFont("Label.font")
+    Annotation annotation;
     hintMgr.showErrorHint(editor, msg, offset, offset + 1, HintManager.ABOVE, flags, timeout);
   }
-//for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
+  //for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
   //nope, it's not antlr, single (normal) chars have the same start and stop too..
   //I just loaded up IDEA 2016.2 and it uses two spaces for things like 𝒩.. what the hell..
 

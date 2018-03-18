@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ResMathSymbolName extends ResCompositeElement {
 
   @Nullable
+  PsiElement getBackslash();
+
+  @Nullable
   PsiElement getFalse();
 
   @Nullable

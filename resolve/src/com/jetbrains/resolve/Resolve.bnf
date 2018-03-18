@@ -51,6 +51,7 @@
         // Builtin
         EXISTS = '∃'
         FORALL = '∀'
+        FORALL_CMD = '\\forall'
         LAMBDA = 'λ'
         TRI_EQUALS = '≜'
         COLON_EQUALS = ':='
@@ -283,7 +284,7 @@ EntailsClause ::= which_entails MathExp {pin=1}
 // mathematical expressions
 
 MathAssertionExp ::= MathQuantifiedExp | MathExp
-MathQuantifiedExp ::= ('∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
+MathQuantifiedExp ::= (EFORALL|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
           MathInfixApplyExp
@@ -316,7 +317,7 @@ private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | Mat
 
 private MathOpSymbolName ::= MathSymbolExp
 MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (identifier|int|symbol|mathsymbol|true|false)
+MathSymbolName  ::= (backslash identifier|identifier|int|symbol|mathsymbol|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}

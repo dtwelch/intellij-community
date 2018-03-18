@@ -45,6 +45,12 @@ public class ResMathQuantifiedExpImpl extends ResMathExpImpl implements ResMathQ
 
   @Override
   @Nullable
+  public PsiElement getEforall() {
+    return findChildByType(EFORALL);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getExists() {
     return findChildByType(EXISTS);
   }

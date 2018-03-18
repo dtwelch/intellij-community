@@ -865,10 +865,9 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ('∃'|'∀') MathVarDeclGroup ',' MathAssertionExp
+  // (EFORALL|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp
   public static boolean MathQuantifiedExp(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathQuantifiedExp")) return false;
-    if (!nextTokenIs(b, "<math quantified exp>", FORALL, EXISTS)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _COLLAPSE_, MATH_QUANTIFIED_EXP, "<math quantified exp>");
     r = MathQuantifiedExp_0(b, l + 1);
@@ -880,12 +879,13 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // '∃'|'∀'
+  // EFORALL|'∃'|'∀'
   private static boolean MathQuantifiedExp_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathQuantifiedExp_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EXISTS);
+    r = consumeToken(b, EFORALL);
+    if (!r) r = consumeToken(b, EXISTS);
     if (!r) r = consumeToken(b, FORALL);
     exit_section_(b, m, null, r);
     return r;
@@ -984,12 +984,13 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // identifier|int|symbol|mathsymbol|true|false
+  // backslash identifier|identifier|int|symbol|mathsymbol|true|false
   public static boolean MathSymbolName(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathSymbolName")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MATH_SYMBOL_NAME, "<math symbol name>");
-    r = consumeToken(b, IDENTIFIER);
+    r = parseTokens(b, 0, BACKSLASH, IDENTIFIER);
+    if (!r) r = consumeToken(b, IDENTIFIER);
     if (!r) r = consumeToken(b, INT);
     if (!r) r = consumeToken(b, SYMBOL);
     if (!r) r = consumeToken(b, MATHSYMBOL);
