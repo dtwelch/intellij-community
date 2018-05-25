@@ -37,4 +37,16 @@ public class ResParamDeclImpl extends ResCompositeElementImpl implements ResPara
     return findNotNullChildByClass(ResParameterMode.class);
   }
 
+  @Override
+  @Nullable
+  public ResType getType() {
+    return findChildByClass(ResType.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getColon() {
+    return findChildByType(COLON);
+  }
+
 }

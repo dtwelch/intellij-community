@@ -63,7 +63,7 @@
         // Keywords (capitalized)
         CART_PROD     = 'Cart_Prod'
         CATEGORICAL   = 'Categorical'
-        //CONCEPT       = 'Concept'
+        CONCEPT       = 'Concept'
         COROLLARY     = 'Corollary'
         COERCER       = 'Coercer'
         CHAINABLE     = 'Chainable'
@@ -82,7 +82,7 @@
         //RECORD        = 'Record'
         //RECURSIVE     = 'Recursive'
         THEOREM       = 'Theorem'
-        //TYPE_FAMILY   = 'Type'
+        TYPE_FAMILY   = 'Type'
         TYPE_PARAM    = 'type'
         VALUED        = 'Valued'
         //VAR           = 'Var'
@@ -100,7 +100,7 @@
     implements("Math.*DefnDecl")="com.jetbrains.resolve.psi.ResMathDefnDecl"
     implements(".*ModuleDecl")="com.jetbrains.resolve.psi.ResModuleDecl"
     implements("Math(Prefix|Infix|Outfix|Postfix)(DefnSig)")="com.jetbrains.resolve.psi.ResMathDefnSig"
-    //implements("(Procedure|Operation)Decl|OperationProcedureDecl")="com.jetbrains.resolve.psi.ResOperationLikeNode"
+    implements("(Procedure|Operation)Decl|OperationProcedureDecl")="com.jetbrains.resolve.psi.ResOperationLikeNode"
     implements(".*ReferenceExp")="com.jetbrains.resolve.psi.ResReferenceExpBase"
     implements("(Spec|Realiz)ModuleParameters")="com.jetbrains.resolve.psi.ResModuleParameters"
     implements(".*((Var|Param|Field)Def|(MathTheorem|TypeParam|Exemplar|Facility)Decl|ModuleIdentifierSpec)")="com.jetbrains.resolve.psi.ResNamedElement"
@@ -126,12 +126,19 @@
 
 ModuleDecl ::=
         PrecisModuleDecl
+      | ConceptModuleDecl
       | RealizationModuleDecl
 
 PrecisModuleDecl ::= 'Precis' identifier (extends ModuleIdentifierSpec)? ';'
 UsesList?
 PrecisBlock
 end identifier ';' {pin(".*")=2}
+
+ConceptModuleDecl ::= 'Concept' identifier SpecModuleParameters? ';'
+UsesList?
+RequiresClause?
+ConceptBlock
+end identifier ';' {pin(".*")=1}
 
 RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ModuleIdentifierSpec (of ModuleIdentifierSpec)? ';'
 UsesList?
@@ -157,17 +164,10 @@ ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[g
 // Module blocks & items
 
 PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+ConceptBlock ::= ConceptItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 RealizBlock ::= RealizItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+
 private ItemsRecover ::= !(end)
-
-private RealizItem ::=
-   /*   TypeReprDecl
-    | OperationProcedureDecl
-    | FacilityDecl
-    | ProcedureDecl
-    |*/ MathStandardDefnDecl {pin=1 recoverWhile=ImplItemRecover}
-
-private ImplItemRecover ::= !(/*'Type'|'Operation'|'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
 
 private PrecisItem ::=
             MathStandardDefnDecl
@@ -178,21 +178,51 @@ private PrecisItem ::=
 
 private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end)
 
+private ConceptItem ::=
+      TypeModelDecl
+    | OperationDecl
+    | MathStandardDefnDecl
+    | ConstraintsClause {pin=1 recoverWhile=ConceptItemRecover}
+
+private ConceptItemRecover ::= !('Type'|'Operation'|'Definition'|'Valued'|constraints|end)
+
+private RealizItem ::=
+    //  TypeReprDecl
+    /*|*/ OperationProcedureDecl
+    //| FacilityDecl
+    | ProcedureDecl
+    /*|*/ MathStandardDefnDecl {pin=1 recoverWhile=RealizItemRecover}
+
+private RealizItemRecover ::= !('Type'|'Operation'|/*'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
+
+// type refs & decls
+
+Type ::= /*RecordType |*/ NamedType {methods=[getUnderlyingType] extends=MathExp}
+private NamedType ::= TypeReferenceExp QualifiedTypeReferenceExp?
+TypeReferenceExp ::= identifier { methods=[getReference getQualifier resolve] }
+left QualifiedTypeReferenceExp ::= '::' identifier {elementType=TypeReferenceExp}
+//RecordType ::= 'Record' RecordVarDeclGroup* end {pin=1 extends=Type}
+
+TypeModelDecl ::= 'Type' family identifier TypeModelPortion ';'
+    ExemplarDecl ConstraintsClause? IntializationClause? {pin=3}
+ExemplarDecl ::= exemplar identifier ';' {pin=2 methods=[getResMathMetaTypeExpInner]}
+private TypeModelPortion ::= is modeled by MathExp {pin=4}
+
+// type initialization rules
+
 // parameter and parameter-list related rules
 
-/*
 SpecModuleParameters ::= '(' SpecModuleParamList ')' {pin=1}
 private SpecModuleParamList ::= SpecParamDecl  (';' SpecParamDecl)* {recoverWhile=ParamListRec}
 private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathStandardDefnDecl
-*/
 
 RealizModuleParameters ::= '(' ImplModuleParamList ')' {pin=1}
 private ImplModuleParamList ::= ImplParamDecl  (';' ImplParamDecl)* {recoverWhile=ParamListRec}
 private ImplParamDecl ::= ParamDecl//|OperationDecl
 
-//private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
-//private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}
-ParamDecl ::= ParameterMode ParamDefinitionListNoPin /*':' Type*/ {pin=1}
+private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
+private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}
+ParamDecl ::= ParameterMode ParamDefinitionListNoPin ':' Type {pin=1}
 private ParamDefinitionListNoPin ::= ParamDef &(!(';'|')')) (',' ParamDef)* {pin=1}
 ParamDef ::= identifier
 
@@ -201,12 +231,51 @@ ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|i
 
 // program variable decls
 
+/*
+RecordVarDeclGroup ::= FieldVarDeclGroup ';' {pin=1}
+FieldVarDeclGroup ::= FieldVarDefList ':' Type {pin=1}
+private FieldVarDefList ::= FieldDef &(!(';'))(',' FieldDef)*
+FieldDef ::= identifier
+*/
+VarDeclGroup ::= 'Var' VarSpec ';' {pin=1}
+VarSpec ::= VarDefList ':' Type {pin=1}//{methods=[processDeclarations]}
+private VarDefList ::= VarDef &(!(';'))(',' VarDef)*
+VarDef ::= identifier {methods=[getResTypeInner getReference]}
 
 // facility decls
 
+OperationDecl ::= 'Operation' identifier OperationLikeParameters (':' Type)? ';'
+RequiresClause? EnsuresClause? {pin=2}
+
+OperationProcedureDecl ::= 'Operation' identifier OperationLikeParameters (':' Type)? ';'
+RequiresClause? EnsuresClause?
+OpProcBody
+end CloseIdentifier ';' {pin=2}
+private OpProcBody ::= ('Recursive')? 'Procedure' OpBlock {pin=2}
+
+ProcedureDecl ::= ('Recursive')? 'Procedure' identifier OperationLikeParameters (':' Type)? ';'
+OpBlock
+end CloseIdentifier ';' {pin=3}
+
+OpBlock ::= VarDeclGroup* Statements?
+CloseIdentifier ::= identifier
 
 // statements
 
+Statement ::= SimpleStatement | WhileStatement | IfStatement | NoticeStatement
+SimpleStatement ::= Exp (AssignStatement|SwapStatement)? ';' {pin(".*")=1}
+private Statements ::= Statement* {recoverWhile=StatementRecover}
+private StatementRecover ::= !(end|':='|':=:'|'If'|'While'|else|'Notice'|identifier)
+
+left AssignStatement ::= ':=' Exp {pin=1}
+left SwapStatement ::= ':=:' Exp {pin=1}
+
+NoticeStatement ::= 'Notice' MathExp ';'
+WhileStatement ::= 'While' Exp ChangingClause? MaintainingClause? DecreasingClause?
+do Statements end ';'
+
+IfStatement ::= 'If' Exp then Statements (ElseStatement)? end ';' {pin=1}
+ElseStatement ::= else Statements {pin=1}
 
 // program expressions
 
@@ -229,7 +298,7 @@ LiteralExp ::= (int|string|true|false)  {extends=Exp}
 ArgumentList ::= '(' ExpArgumentList? ')' {pin=1}
 private ExpArgumentList ::= Exp (',' Exp)* {pin(".*")=1}
 
-// math constructs
+// mathematical constructs
 
 MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
 MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
@@ -270,15 +339,15 @@ MathVarDef ::= MathSymbolName
 
 // mathematical clauses
 
-//IntializationClause ::= initialization (EnsuresClause) ;
+IntializationClause ::= initialization (EnsuresClause) ;
 RequiresClause ::= requires MathAssertionExp (EntailsClause)? ';' {pin=1}
-/*EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
+EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
 ConstraintsClause ::= constraints MathAssertionExp ';' {pin=1}
-ConventionsClause ::= conventions MathAssertionExp (EntailsClause)? ';' {pin=1}
-CorrespondenceClause ::= correspondence MathAssertionExp ';' {pin=1}
+//ConventionsClause ::= conventions MathAssertionExp (EntailsClause)? ';' {pin=1}
+//CorrespondenceClause ::= correspondence MathAssertionExp ';' {pin=1}
 ChangingClause ::= changing ExpArgumentList ';' {pin=1}
 MaintainingClause ::= maintaining MathAssertionExp ';' {pin=1}
-DecreasingClause ::= decreasing MathAssertionExp ';' {pin=1}*/
+DecreasingClause ::= decreasing MathAssertionExp ';' {pin=1}
 EntailsClause ::= which_entails MathExp {pin=1}
 
 // mathematical expressions
@@ -305,6 +374,7 @@ MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 MathFunctionAppList ::= '(' MathArgList ')'
 private MathOutfixAppList ::= MathBracketName MathNonStdAppList MathBracketName {pin=3}
 private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
+
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
 private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | MathLambdaExp

@@ -13,6 +13,7 @@ import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiModificationTracker;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.Predicate;
 import com.jetbrains.resolve.psi.*;
@@ -126,6 +127,25 @@ public class ResPsiImplUtil {
   @Nullable
   public static ResMathReferenceExp getQualifier(@NotNull ResMathReferenceExp o) {
     return PsiTreeUtil.getChildOfType(o, ResMathReferenceExp.class);
+  }
+
+  @NotNull
+  public static ResType getUnderlyingType(@NotNull final ResType o) {
+    ResType type = RecursionManager.doPreventingRecursion(o, true, new Computable<ResType>() {
+      @Override
+      public ResType compute() {
+        return getTypeInner(o);
+      }
+    });
+    return ObjectUtils.notNull(type, o);
+  }
+
+  @NotNull
+  private static ResType getTypeInner(@NotNull ResType o) {
+    if (o instanceof ResOperationLikeNode) {
+      return o;
+    }
+    return o;
   }
 
   /**

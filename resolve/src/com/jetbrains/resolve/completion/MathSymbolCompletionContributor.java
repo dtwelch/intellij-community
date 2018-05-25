@@ -36,7 +36,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
                                     ProcessingContext context,
                                     @NotNull CompletionResultSet result) {
 
-        Editor editor = parameters.getEditor();
+       /* Editor editor = parameters.getEditor();
         Document doc = editor.getDocument();
         char cs = doc.getCharsSequence().charAt(parameters.getOffset() - 1);
         int offset = parameters.getOffset();
@@ -62,7 +62,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
           for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
             result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
           }
-        }
+        }*/
       }
     });
   }

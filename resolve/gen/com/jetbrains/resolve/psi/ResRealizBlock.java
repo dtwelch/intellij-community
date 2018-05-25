@@ -10,6 +10,12 @@ public interface ResRealizBlock extends ResBlock {
   @NotNull
   List<ResMathStandardDefnDecl> getMathStandardDefnDeclList();
 
+  @NotNull
+  List<ResOperationProcedureDecl> getOperationProcedureDeclList();
+
+  @NotNull
+  List<ResProcedureDecl> getProcedureDeclList();
+
   //WARNING: processDeclarations(...) is skipped
   //matching processDeclarations(ResRealizBlock, ...)
   //methods are not found in ResPsiImplUtil

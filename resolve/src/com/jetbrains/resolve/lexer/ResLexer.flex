@@ -124,14 +124,14 @@ ESCAPES = [abfnrtv]
 ":=:"                                   { return COLON_EQUALS_COLON; }
 
 // Keywords
-//"by"                                    { return BY; }
+"by"                                    { return BY; }
 
 "Cart_Prod"                             { return CART_PROD; }
 "Categorical"                           { return CATEGORICAL; }
-//"changing"                              { return CHANGING; }
+"changing"                              { return CHANGING; }
 "Chainable"                             { return CHAINABLE; }
-//"Concept"                               { return CONCEPT; }
-//"constraints"                           { return CONSTRAINTS; }
+"Concept"                               { return CONCEPT; }
+"constraints"                           { return CONSTRAINTS; }
 //"conventions"                           { return CONVENTIONS; }
 "Corollary"                             { return COROLLARY; }
 "Coercer"                               { return COERCER; }
@@ -154,31 +154,31 @@ ESCAPES = [abfnrtv]
 
 //"Facility"                              { return FACILITY;  }
 //"false"                                 { return FALSE; }
-//"family"                                { return FAMILY; }
+"family"                                { return FAMILY; }
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
 "if"                                    { return IF; }
-//"If"                                    { return IF_PROG; }
+"If"                                    { return IF_PROG; }
 "Implicit"                              { return IMPLICIT; }
-//"initialization"                        { return INITIALIZATION; }
+"initialization"                        { return INITIALIZATION; }
 "Inductive"                             { return INDUCTIVE; }
 "is"                                    { return IS; }
 
 //"realized"                              { return REALIZED; }
 "Realization"                           { return REALIZATION; }
 
-//"maintaining"                           { return MAINTAINING; }
-//"modeled"                               { return MODELED; }
+"maintaining"                           { return MAINTAINING; }
+"modeled"                               { return MODELED; }
 
-//"Operation"                             { return OPERATION; }
+"Operation"                             { return OPERATION; }
 "otherwise"                             { return OTHERWISE; }
 "of"                                    { return OF; }
 
-//"Procedure"                             { return PROCEDURE; }
+"Procedure"                             { return PROCEDURE; }
 "Precis"                                { return PRECIS; }
 
-//"Recursive"                             { return RECURSIVE; }
+"Recursive"                             { return RECURSIVE; }
 "Recognition"                           { return RECOGNITION; }
 //"Record"                                { return RECORD; }
 "requires"                              { return REQUIRES; }
@@ -186,13 +186,13 @@ ESCAPES = [abfnrtv]
 //"then"                                  { return THEN; }
 //"true"                                  { return TRUE; }
 "Theorem"                               { return THEOREM; }
-//"Type"                                  { return TYPE_FAMILY; }
+"Type"                                  { return TYPE_FAMILY; }
 "type"                                  { return TYPE_PARAM; }
 
 "uses"                                  { return USES; }
 "Valued"                                { return VALUED; }
-//"Var"                                   { return VAR; }
-//"While"                                 { return WHILE; }
+"Var"                                   { return VAR; }
+"While"                                 { return WHILE; }
 "which_entails"                         { return WHICH_ENTAILS; }
 
 // Parameter modes

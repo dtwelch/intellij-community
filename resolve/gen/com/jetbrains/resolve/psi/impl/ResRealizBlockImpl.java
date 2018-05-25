@@ -31,4 +31,16 @@ public class ResRealizBlockImpl extends ResCompositeElementImpl implements ResRe
     return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathStandardDefnDecl.class);
   }
 
+  @Override
+  @NotNull
+  public List<ResOperationProcedureDecl> getOperationProcedureDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResOperationProcedureDecl.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ResProcedureDecl> getProcedureDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResProcedureDecl.class);
+  }
+
 }
