@@ -1,6 +1,7 @@
 package com.jetbrains.resolve;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 
@@ -8,6 +9,8 @@ public class ResolveIcons {
   private static Icon load(String path) {
     return IconLoader.getIcon(path, ResolveIcons.class);
   }
+
+  public static final Icon DIRECTORY = PlatformIcons.DIRECTORY_CLOSED_ICON;
 
   public static final Icon RESOLVE_FILE = load("/icons/com/jetbrains/resolve/resolveFile.png");
 

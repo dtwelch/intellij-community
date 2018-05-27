@@ -115,13 +115,13 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     //if (purelyMathTypeExp != null) return purelyMathTypeExp;
 
     //ok, maybe we're dealing with a programmatic type or something...
-   /* ResType progType = findSiblingType();
+    ResType progType = findSiblingType();
     if (progType != null && progType.getTypeReferenceExp() != null) {
       PsiElement resolvedProgramType = progType.getTypeReferenceExp().getReference().resolve();
       if (resolvedProgramType instanceof ResTypeLikeNodeDecl) {
-        return ((ResTypeLikeNodeDecl)resolvedProgramType).getMathMetaTypeExp();
+        return ((ResTypeLikeNodeDecl) resolvedProgramType).getMathMetaTypeExp();
       }
-    }*/
+    }
     return null;
   }
 
@@ -131,28 +131,27 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
   public Icon getIcon(int flags) {
     Icon icon = null;
     if (this instanceof ResPrecisModuleDecl) icon = ResolveIcons.PRECIS;
-    /*else if (this instanceof ResPrecisExtensionModuleDecl) icon = RESOLVEIcons.PRECIS_EXT;
-    else if (this instanceof ResConceptModuleDecl) icon = RESOLVEIcons.CONCEPT;
-    else if (this instanceof ResConceptExtensionModuleDecl) icon = RESOLVEIcons.CONCEPT_EXT;
-    else if (this instanceof ResImplModuleDecl) icon = RESOLVEIcons.IMPL;*/
-    //else if (this instanceof ResFacilityModuleDecl) icon = ResolveIcons.FACILITY;
-    /*else if (this instanceof ResTypeModelDecl) icon = RESOLVEIcons.TYPE_MODEL;
-    else if (this instanceof ResTypeReprDecl) icon = RESOLVEIcons.TYPE_REPR;
-    else if (this instanceof ResFacilityDecl) icon = RESOLVEIcons.FACILITY;
-    else if (this instanceof ResTypeParamDecl) icon = RESOLVEIcons.GENERIC_TYPE;
-    else if (this instanceof ResMathVarDef) icon = RESOLVEIcons.VARIABLE;
-    else if (this instanceof ResOperationDecl) icon = RESOLVEIcons.FUNCTION_DECL;
-    else if (this instanceof ResOperationProcedureDecl) icon = RESOLVEIcons.FUNCTION_IMPL;
-    else if (this instanceof ResProcedureDecl) icon = RESOLVEIcons.FUNCTION_IMPL;
-    else if (this instanceof ResParamDef) icon = RESOLVEIcons.PARAMETER;*/
+    else if (this instanceof ResConceptModuleDecl) icon = ResolveIcons.CONCEPT;
+    else if (this instanceof ResConceptExtensionModuleDecl) icon = ResolveIcons.CONCEPT_EXT;
+    else if (this instanceof ResRealizationModuleDecl) icon = ResolveIcons.REALIZ;
+    else if (this instanceof ResFacilityModuleDecl) icon = ResolveIcons.FACILITY;
+    else if (this instanceof ResTypeModelDecl) icon = ResolveIcons.TYPE_MODEL;
+    else if (this instanceof ResTypeReprDecl) icon = ResolveIcons.TYPE_REPR;
+    else if (this instanceof ResFacilityDecl) icon = ResolveIcons.FACILITY;
+    else if (this instanceof ResTypeParamDecl) icon = ResolveIcons.GENERIC_TYPE;
+    else if (this instanceof ResMathVarDef) icon = ResolveIcons.VARIABLE;
+    else if (this instanceof ResOperationDecl) icon = ResolveIcons.FUNCTION_DECL;
+    else if (this instanceof ResOperationProcedureDecl) icon = ResolveIcons.FUNCTION_IMPL;
+    else if (this instanceof ResProcedureDecl) icon = ResolveIcons.FUNCTION_IMPL;
+    else if (this instanceof ResParamDef) icon = ResolveIcons.PARAMETER;
     //TODO: complete the icon list here as you go along
 
     if (icon != null) {
-      /*if ((flags & Iconable.ICON_FLAG_VISIBILITY) != 0) {
+      if ((flags & Iconable.ICON_FLAG_VISIBILITY) != 0) {
         RowIcon rowIcon = ElementBase.createLayeredIcon(this, icon, flags);
         rowIcon.setIcon(isUsesClauseVisible() ? PlatformIcons.PUBLIC_ICON : PlatformIcons.PRIVATE_ICON, 1);
         return rowIcon;
-      }*/
+      }
       return icon;
     }
     return super.getIcon(flags);

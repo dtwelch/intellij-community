@@ -36,6 +36,17 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
                                     ProcessingContext context,
                                     @NotNull CompletionResultSet result) {
 
+        Editor editor = parameters.getEditor();
+        Document doc = editor.getDocument();
+        if (parameters.getOffset() > 1 &&
+            doc.getCharsSequence().charAt(parameters.getOffset() - 1) == '\\') {
+          //so I think we want to pretty much add all elements in our symbol map
+          Map<String, String> x = SYMBOL_MAP;
+          for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
+            result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
+          }
+        }
+
        /* Editor editor = parameters.getEditor();
         Document doc = editor.getDocument();
         char cs = doc.getCharsSequence().charAt(parameters.getOffset() - 1);

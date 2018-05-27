@@ -13,6 +13,7 @@ import com.jetbrains.resolve.psi.*;
 import com.jetbrains.resolve.psi.impl.ResMathVarLikeReference;
 import com.jetbrains.resolve.psi.impl.ResReference;
 import com.jetbrains.resolve.psi.impl.ResScopeProcessor;
+import com.jetbrains.resolve.psi.impl.ResTypeReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +44,11 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
       ((ResReference)reference).processResolveVariants(new MyRESOLVEScopeProcessor(result, false) {
         @Override
         protected boolean accept(@NotNull PsiElement e) {
-          return true;  /*!(e instanceof ResMathDefnSig);*/
+          return !(e instanceof ResMathDefnSig);
         }
       });
     }
-   /* else if (reference instanceof ResTypeReference) {
+    else if (reference instanceof ResTypeReference) {
       PsiElement element = reference.getElement();
       ResScopeProcessor aProcessor = new MyRESOLVEScopeProcessor(result, true) {
         @Override
@@ -59,17 +60,22 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
         }
       };
       ((ResTypeReference)reference).processResolveVariants(aProcessor);
-    }*/
+    }
     else if (reference instanceof ResMathVarLikeReference) {
+
+      //Handle wildcard math queries.
+      //UPDATE: We don't need this actually. Just type control + space to provide a list of all possible
+      //completions.
+
       ResScopeProcessor aProcessor = new MyRESOLVEScopeProcessor(result, true) {
         @Override
         protected boolean accept(@NotNull PsiElement e) {
           return e instanceof ResMathDefnSig ||
                  e instanceof ResMathVarDef ||
-                 /*e instanceof ResFieldDef ||
+                 e instanceof ResFieldDef ||
                  e instanceof ResParamDef ||
                  e instanceof ResTypeParamDecl ||
-                 e instanceof ResExemplarDecl ||*/
+                 e instanceof ResExemplarDecl ||
                  e instanceof ResFile;
         }
       };
@@ -111,13 +117,13 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
       else if (o instanceof ResModuleDecl) {
         return ResolveCompletionUtil.createResModuleLookupElement((ResModuleDecl)o);
       }
-      /*else if (o instanceof ResOperationLikeNode) {
+      else if (o instanceof ResOperationLikeNode) {
         String name = ((ResOperationLikeNode)o).getName();
         if (name != null) {
-          return RESOLVECompletionUtil.createOpLikeLookupElement((ResOperationLikeNode)o, name, null,
-                                                                 RESOLVECompletionUtil.FUNCTION_PRIORITY);
+          return ResolveCompletionUtil.createOpLikeLookupElement((ResOperationLikeNode)o, name, null,
+                                                                 ResolveCompletionUtil.FUNCTION_PRIORITY);
         }
-      }*/
+      }
       else {
         return ResolveCompletionUtil.createVariableLikeLookupElement((ResNamedElement)o);
       }
