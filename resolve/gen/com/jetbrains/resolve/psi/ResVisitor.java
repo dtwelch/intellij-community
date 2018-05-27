@@ -30,6 +30,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitBlock(o);
   }
 
+  public void visitConceptExtensionModuleDecl(@NotNull ResConceptExtensionModuleDecl o) {
+    visitModuleDecl(o);
+  }
+
   public void visitConceptModuleDecl(@NotNull ResConceptModuleDecl o) {
     visitModuleDecl(o);
   }
@@ -74,8 +78,16 @@ public class ResVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitFacilityBlock(@NotNull ResFacilityBlock o) {
+    visitBlock(o);
+  }
+
   public void visitFacilityDecl(@NotNull ResFacilityDecl o) {
     visitNamedElement(o);
+  }
+
+  public void visitFacilityModuleDecl(@NotNull ResFacilityModuleDecl o) {
+    visitModuleDecl(o);
   }
 
   public void visitFieldDef(@NotNull ResFieldDef o) {

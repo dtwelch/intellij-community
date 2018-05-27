@@ -1,8 +1,10 @@
 package com.jetbrains.resolve.psi;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the root of all module like declarations in RESOLVE.
@@ -12,68 +14,53 @@ public interface ResModuleDecl extends ResNamedElement {
   boolean shouldAutoSearchUses();
 
   @NotNull
-  ResBlock getBlock();
+  public List<ResModuleIdentifierSpec> getStandardModulesToSearch();
 
   @NotNull
-  List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
+  public ResBlock getBlock();
 
   /**
-   * Returns a list of module (header) identifiers.
-   * <p>
-   * For example, in the case of {@code T extends U}, this method would return a list containing an
-   * {@link ResModuleIdentifierSpec} for {@code U}.
+   * Returns all {@link ResModuleIdentifierSpec}s identifying modules that this module happens to extend. For example,
+   * if a particular instance of this class represents is an (enhancement) realization module named {@code T_Realiz}
+   * then in the case of:
+   * <pre>
+   *   Realization T_Realiz for T_Enhancement of T_Concept from Foo.Y;
+   *    ...
+   * </pre>
+   * the list returned will be {@link [T_Enhancement, T_Concept from Foo.Y]}.
    *
-   * @return a list of all super module references in the module's header.
+   * @return The list of module identifiers referenced in the module's header.
    */
   @NotNull
-  List<ResModuleIdentifierSpec> getModuleHeaderIdentifierSpecs();
+  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
 
   @NotNull
-  List<ResModuleIdentifierSpec> getStandardModulesToSearch();
+  public Map<String, ResModuleIdentifierSpec> getModuleIdentifierSpecMap();
 
   @NotNull
-  List<ResMathDefnDecl> getMathDefinitionDecls();
+  public List<ResMathDefnDecl> getMathDefinitionDecls();
 
   @NotNull
-  List<ResMathDefnSig> getMathDefnSigs();
+  public List<ResMathDefnSig> getMathDefnSigs();
 
-  /*@NotNull
-  ResBlock getBlock();
+  @NotNull
+  public List<ResTypeLikeNodeDecl> getTypes();
 
-      @NotNull
-      public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
+  @NotNull
+  public List<ResFacilityDecl> getFacilities();
 
-      @NotNull
-      public Map<String, ResModuleIdentifierSpec> getModuleIdentifierSpecMap();
+  @Nullable
+  public ResModuleParameters getModuleParameters();
 
-      @NotNull
-      public List<ResReferenceExp> getModuleHeaderIdentifierSpecs();
+  @NotNull
+  public List<ResTypeParamDecl> getGenericTypeParams();
 
-      @NotNull
-      public List<ResMathDefnDecl> getMathDefinitionDecls();
+  @NotNull
+  public List<ResParamDef> getConstantParamDefs();
 
-      @NotNull
-      public List<ResMathDefnSig> getMathDefnSigs();
+  @NotNull
+  public List<ResMathDefnSig> getDefinitionParamSigs();
 
-      @NotNull
-      public List<ResTypeLikeNodeDecl> getTypes();
-
-      @NotNull
-      public List<ResFacilityDecl> getFacilities();
-
-      @Nullable
-      public ResModuleParameters getModuleParameters();
-
-      @NotNull
-      public List<ResTypeParamDecl> getGenericTypeParams();
-
-      @NotNull
-      public List<ResParamDef> getConstantParamDefs();
-
-      @NotNull
-      public List<ResMathDefnSig> getDefinitionParamSigs();
-
-      @NotNull
-      public List<ResOperationLikeNode> getOperationLikeThings();
-  */
+  @NotNull
+  public List<ResOperationLikeNode> getOperationLikeThings();
 }

@@ -39,18 +39,87 @@ public class ResFile extends PsiFileBase {
   }
 
   @NotNull
+  public List<ResMathDefnSig> getMathDefnSignatures() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return enclosedModule != null ? enclosedModule.getMathDefnSigs() : new ArrayList<ResMathDefnSig>();
+  }
+
+  @NotNull
   public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
     ResModuleDecl enclosedModule = getEnclosedModule();
-    return enclosedModule != null ? enclosedModule.getModuleIdentifierSpecs() : new ArrayList<>();
+    return enclosedModule != null ? enclosedModule.getModuleIdentifierSpecs() :
+           new ArrayList<ResModuleIdentifierSpec>();
+  }
+
+   /* @NotNull
+    public List<ResModuleIdentifier> getSuperModuleModuleIdentifierList() {
+        ResModuleDecl enclosedModule = getEnclosedModule();
+        return enclosedModule != null ? enclosedModule.getSuperModuleSpecList() :
+                new ArrayList<ResModuleIdentifier>();
+    }*/
+
+  @NotNull
+  public List<ResTypeParamDecl> getGenericTypeParams() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return (enclosedModule != null) ? enclosedModule.getGenericTypeParams() : new ArrayList<ResTypeParamDecl>();
+  }
+
+  @NotNull
+  public List<ResParamDecl> getConstantModuleParams() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    List<ResParamDecl> params = new ArrayList<>();
+    if (enclosedModule == null) return params;
+    ResModuleParameters moduleParams = enclosedModule.getModuleParameters();
+    if (moduleParams instanceof ResSpecModuleParameters) {
+      params.addAll(((ResSpecModuleParameters) params).getParamDeclList());
+    }
+    return params;
+  }
+
+  @NotNull
+  public List<ResTypeLikeNodeDecl> getTypes() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return enclosedModule != null ? enclosedModule.getTypes() : new ArrayList<ResTypeLikeNodeDecl>();
+  }
+
+  @NotNull
+  public List<ResFacilityDecl> getFacilities() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return enclosedModule != null ? enclosedModule.getFacilities() : new ArrayList<ResFacilityDecl>();
+  }
+
+  @NotNull
+  public List<ResOperationLikeNode> getOperationLikeThings() {
+    ResModuleDecl enclosedModule = getEnclosedModule();
+    return enclosedModule != null ? enclosedModule.getOperationLikeThings() : new ArrayList<ResOperationLikeNode>();
+  }
+
+    /*@NotNull public List<ResAnnotatableOperationLikeNode> getOperationImpls() {
+        ResModuleDecl enclosedModule = getEnclosedModule();
+        return enclosedModule != null ? enclosedModule.getOperationsWithImpls() :
+                new ArrayList<ResAnnotatableOperationLikeNode>();
+    }*/
+
+  public boolean hasMainOperationWithBody() { // todo create a map for faster search
+    List<ResOperationLikeNode> operations = getOperationLikeThings();
+    if (!(getEnclosedModule() instanceof ResFacilityModuleDecl)) return false;
+    for (ResOperationLikeNode o : operations) {
+      if (o instanceof ResOperationProcedureDecl &&
+          o.getName() != null && o.getName().equalsIgnoreCase("main")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
   public Icon getIcon(int s) {
     if (getEnclosedModule() == null) {
-      return ResolveIcons.RESOLVE_FILE;
+      return RESOLVEIcons.FILE;
     }
     else {
       return getEnclosedModule().getIcon(0);
     }
   }
+
 }

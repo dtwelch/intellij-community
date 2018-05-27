@@ -69,25 +69,25 @@
         CHAINABLE     = 'Chainable'
         //DEFINES       = 'Defines'
         DEFINITION    = 'Definition'
-        //ENHANCEMENT   = 'Enhancement'
-        //FACILITY      = 'Facility'
-        //IF_PROG       = 'If'
+        ENHANCEMENT   = 'Enhancement'
+        FACILITY      = 'Facility'
+        IF_PROG       = 'If'
         IMPLICIT      = 'Implicit'
         INDUCTIVE     = 'Inductive'
         OPERATION     = 'Operation'
         PRECIS        = 'Precis'
-        //PROCEDURE     = 'Procedure'
+        PROCEDURE     = 'Procedure'
         REALIZATION   = 'Realization'
         RECOGNITION   = 'Recognition'
-        //RECORD        = 'Record'
-        //RECURSIVE     = 'Recursive'
+        RECORD        = 'Record'
+        RECURSIVE     = 'Recursive'
         THEOREM       = 'Theorem'
         TYPE_FAMILY   = 'Type'
         TYPE_PARAM    = 'type'
         VALUED        = 'Valued'
-        //VAR           = 'Var'
-        //NOTICE        = 'Notice'
-        //WHILE         = 'While'
+        VAR           = 'Var'
+        NOTICE        = 'Notice'
+        WHILE         = 'While'
 
         //these two are so grammarkit's live preview feature will work right,
         //disregard them otherwise
@@ -127,7 +127,9 @@
 ModuleDecl ::=
         PrecisModuleDecl
       | ConceptModuleDecl
+      | ConceptExtensionModuleDecl
       | RealizationModuleDecl
+      | FacilityModuleDecl
 
 PrecisModuleDecl ::= 'Precis' identifier (extends ModuleIdentifierSpec)? ';'
 UsesList?
@@ -140,11 +142,24 @@ RequiresClause?
 ConceptBlock
 end identifier ';' {pin(".*")=1}
 
+ConceptExtensionModuleDecl ::=
+'Enhancement' identifier SpecModuleParameters? for ModuleIdentifierSpec ';'
+UsesList?
+RequiresClause?
+ConceptBlock
+end identifier ';' {pin(".*")=2}
+
 RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ModuleIdentifierSpec (of ModuleIdentifierSpec)? ';'
 UsesList?
 RequiresClause?
 RealizBlock
 end identifier ';' {pin(".*")=2}
+
+FacilityModuleDecl ::= 'Facility' identifier ';'
+UsesList?
+RequiresClause?
+FacilityBlock
+end identifier ';' {pin(".*")=3}
 
 // uses, imports
 
@@ -165,6 +180,7 @@ ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[g
 
 PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 ConceptBlock ::= ConceptItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+FacilityBlock ::= FacilityItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 RealizBlock ::= RealizItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 
 private ItemsRecover ::= !(end)
@@ -195,6 +211,14 @@ private RealizItem ::=
 
 private RealizItemRecover ::= !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Procedure'|end)
 
+private FacilityItem ::=
+      FacilityDecl
+    | OperationProcedureDecl
+    | TypeReprDecl
+    | MathStandardDefnDecl {pin=1 recoverWhile=FacilityItemRecover}
+
+private FacilityItemRecover ::= !('Facility'|'Definition'|'Operation'|'Type'|end)
+
 // type refs & decls
 
 Type ::= RecordType | NamedType {methods=[getUnderlyingType] extends=MathExp}
@@ -213,7 +237,7 @@ ExemplarDecl
 ConventionsClause?
 CorrespondenceClause?
 TypeImplInit?
-{pin=2 methods=[getResTypeInner getResMathMetaTypeExpInner]}
+{pin=2 methods=[getResTypeInner]}
 
 // type initialization rules
 
@@ -240,7 +264,6 @@ TypeParamDecl ::= 'type' identifier {pin=2}
 ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|identifier)
 
 // program variable decls
-
 
 RecordVarDeclGroup ::= FieldVarDeclGroup ';' {pin=1}
 FieldVarDeclGroup ::= FieldVarDefList ':' Type {pin=1}

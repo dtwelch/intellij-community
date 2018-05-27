@@ -37,6 +37,40 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     return findNotNullChildByClass(ResBlock.class);
   }
 
+  //really this should just lookup a map from the std directory
+  @Override
+  public boolean shouldAutoSearchUses() {
+    Project project = getProject();
+    Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+    PsiFile psiFile = getContainingFile();
+    if (sdk == null || psiFile == null) return false;
+
+    PsiDirectory dir = psiFile.getOriginalFile().getContainingDirectory();
+    if (dir == null) return false;
+    String homePath = sdk.getHomePath();
+    String dirPath = dir.getVirtualFile().getPath();
+    boolean isCoreLibraryModule = homePath != null && dir.getVirtualFile().getPath().contains(homePath);
+    boolean noAutoStandardUseChecked = ResolveCompilerSettings.getInstance().isNoAutoStandardUses();
+
+    //if we don't represent a core library module, and the "no-std-uses-flag" setting isn't checked,
+    //then we should automatically include standard imports.
+    return !isCoreLibraryModule && !noAutoStandardUseChecked;
+  }
+
+  //TODO: Store a list of the standard modules somewhere in RESOLVEROOT so we can avoid hardcoding them
+  // (and their names here)
+  @NotNull
+  @Override
+  public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
+    return CachedValuesManager.getCachedValue(this, () -> {
+      List<String> toConvert = ContainerUtil.newArrayList();
+      toConvert.add("Class_Theory");
+      toConvert.add("Boolean_Theory");
+      return CachedValueProvider.Result.create(
+        ResElementFactory.createUsesSpecList(getProject(), toConvert), this);
+    });
+  }
+
   @NotNull
   public List<ResModuleIdentifierSpec> getImports() {
     return CachedValuesManager.getCachedValue(this, new CachedValueProvider<List<ResModuleIdentifierSpec>>() {

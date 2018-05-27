@@ -38,8 +38,8 @@ public interface ResNamedElement extends ResTypeOwner, ResMathMetaTypeExpOwner, 
   @NotNull
   PsiFile getContainingFile();
 
-  //@Nullable
-  //ResType findSiblingType();
+  @Nullable
+  ResType findSiblingType();
 
   @Nullable
   ResMathExp findSiblingMathMetaType();

@@ -132,28 +132,28 @@ ESCAPES = [abfnrtv]
 "Chainable"                             { return CHAINABLE; }
 "Concept"                               { return CONCEPT; }
 "constraints"                           { return CONSTRAINTS; }
-//"conventions"                           { return CONVENTIONS; }
+"conventions"                           { return CONVENTIONS; }
 "Corollary"                             { return COROLLARY; }
 "Coercer"                               { return COERCER; }
-//"correspondence"                        { return CORRESPONDENCE; }
+"correspondence"                        { return CORRESPONDENCE; }
 
-//"do"                                    { return DO; }
-//"decreasing"                            { return DECREASING; }
+"do"                                    { return DO; }
+"decreasing"                            { return DECREASING; }
 "Definition"                            { return DEFINITION; }
 "Def"                                   { return DEFINITION; }
 //"Defines"                               { return DEFINES; }
 
-//"else"                                  { return ELSE; }
-//"Enhancement"                           { return ENHANCEMENT; }
-//"enhanced"                              { return ENHANCED; }
+"else"                                  { return ELSE; }
+"Enhancement"                           { return ENHANCEMENT; }
+"enhanced"                              { return ENHANCED; }
 "end"                                     { return END;  }
-//"ensures"                               { return ENSURES; }
-//"exemplar"                              { return EXEMPLAR; }
-//"externally"                            { return EXTERNALLY; }
+"ensures"                               { return ENSURES; }
+"exemplar"                              { return EXEMPLAR; }
+"externally"                            { return EXTERNALLY; }
 "extends"                                 { return EXTENDS; }
 
-//"Facility"                              { return FACILITY;  }
-//"false"                                 { return FALSE; }
+"Facility"                              { return FACILITY;  }
+"false"                                 { return FALSE; }
 "family"                                { return FAMILY; }
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
@@ -180,11 +180,11 @@ ESCAPES = [abfnrtv]
 
 "Recursive"                             { return RECURSIVE; }
 "Recognition"                           { return RECOGNITION; }
-//"Record"                                { return RECORD; }
+"Record"                                { return RECORD; }
 "requires"                              { return REQUIRES; }
 
-//"then"                                  { return THEN; }
-//"true"                                  { return TRUE; }
+"then"                                  { return THEN; }
+"true"                                  { return TRUE; }
 "Theorem"                               { return THEOREM; }
 "Type"                                  { return TYPE_FAMILY; }
 "type"                                  { return TYPE_PARAM; }
@@ -206,7 +206,6 @@ ESCAPES = [abfnrtv]
 "evaluates"                             { return EVALUATES; }
 
 {MSYM}                                  { return MATHSYMBOL; }
-//{MCOM}                                  { return MATHCOMMAND; }
 {SYM}                                   { return SYMBOL; }
 {U_BIGOPERATOR}                         { return BIGOPERATOR; }
 {IDENT}                                 { return IDENTIFIER; }
