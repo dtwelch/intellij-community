@@ -3,12 +3,11 @@ package com.jetbrains.resolve.psi.impl;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.RecursionManager;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.ResolveState;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceOwner;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.psi.impl.source.tree.LeafElement;
+import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiModificationTracker;
@@ -16,11 +15,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.Predicate;
+import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.psi.*;
 import com.jetbrains.resolve.psi.impl.imports.ResModuleLibraryReference;
 import com.jetbrains.resolve.psi.impl.imports.ResModuleReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Gathered from the language
@@ -99,9 +101,25 @@ public class ResPsiImplUtil {
     return resolveModuleOrLibraryIdentifier(libraryIdentifier.getReferences(), e -> e instanceof PsiDirectory);
   }
 
-  @Nullable
-  public static PsiElement resolve(@NotNull ResReferenceExp o) {
-    return o.getReference().resolve();
+  /**
+   * Note that we don't extend {@link PsiPolyVariantReference} for module references (like we do for
+   * {@link ResTypeReference}, and {@link ResReference}), instead we simply represent them in the PSI as a
+   * {@link ResReferenceExp}.
+   * <p>
+   * And since {@link ResReference} is the reference type/resolver for all reference exps, we just need a method to
+   * indicate situations where we only expect to resolve to other modules. Accordingly, the only place I can see
+   * where we actually use ordinary PSI reference exps to reference a <em>module</em> is within facility decl nodes --
+   * so this should really only be needed in
+   * {@link ResReference#processUsesImports(ResFile, ResScopeProcessor, ResolveState)}.</p>
+   *
+   * @param o an arbitrary reference expression.
+   *
+   * @return whether or not {@code o} should resolve back to some {@link PsiFile} containing a module.
+   */
+  public static boolean shouldReferenceModule(ResReferenceExp o) {
+    return PsiTreeUtil.getParentOfType(o, ResFacilityDecl.class) != null &&
+           PsiTreeUtil.getParentOfType(o, ResModuleSpecArgList.class) == null &&
+           PsiTreeUtil.getParentOfType(o, ResModuleRealizArgList.class) == null;
   }
 
   @NotNull
@@ -109,9 +127,10 @@ public class ResPsiImplUtil {
     return moduleIdentifierSpec.getModuleIdentifier().getText();
   }
 
-  @NotNull
+  //TODO: This will come up when aliases get introduced
+  @Nullable
   public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
-    return o.getModuleIdentifier();
+    return null;
   }
 
   @NotNull
@@ -120,13 +139,71 @@ public class ResPsiImplUtil {
   }
 
   @Nullable
+  public static ResMathReferenceExp getQualifier(@NotNull ResMathReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResMathReferenceExp.class);
+  }
+
+  @Nullable
+  public static ResTypeReferenceExp getQualifier(@NotNull ResTypeReferenceExp o) {
+    return PsiTreeUtil.getChildOfType(o, ResTypeReferenceExp.class);
+  }
+
+  @Nullable
   public static ResReferenceExp getQualifier(@NotNull ResReferenceExp o) {
     return PsiTreeUtil.getChildOfType(o, ResReferenceExp.class);
   }
 
   @Nullable
-  public static ResMathReferenceExp getQualifier(@NotNull ResMathReferenceExp o) {
-    return PsiTreeUtil.getChildOfType(o, ResMathReferenceExp.class);
+  public static PsiElement resolve(@NotNull ResReferenceExp o) {
+    return o.getReference().resolve();
+  }
+
+  @Nullable
+  public static PsiElement resolve(@NotNull ResTypeReferenceExp o) { // todo: replace with default method in GoReferenceExpressionBase
+    return o.getReference().resolve();
+  }
+
+  @NotNull
+  public static PsiReference getReference(@NotNull ResTypeReferenceExp o) {
+    return new ResTypeReference(o);
+  }
+
+  @Nullable
+  public static PsiReference getReference(@NotNull ResVarDef o) {
+    return new ResVarReference(o);
+  }
+
+  @NotNull
+  public static String getText(@Nullable ResType o) {
+    if (o == null) return "";
+    String text = o.getText();
+    if (text == null) return "";
+    return text.replaceAll("\\s+", " ");
+  }
+
+  @Nullable
+  public static ResType getResTypeInner(@NotNull ResTypeReprDecl o,
+                                        @SuppressWarnings("UnusedParameters")
+                                        @Nullable ResolveState context) {
+    return o.getType();
+  }
+
+  @Nullable
+  public static ResType getResType(@NotNull final ResExp o, @Nullable final ResolveState context) {
+    return RecursionManager.doPreventingRecursion(o, true, new Computable<ResType>() {
+      @Override
+      public ResType compute() {
+        if (context != null) return getResTypeInner(o, context);
+        return CachedValuesManager.getCachedValue(o, new CachedValueProvider<ResType>() {
+          @Nullable
+          @Override
+          public Result<ResType> compute() {
+            return Result.create(getResTypeInner(o, null),
+                                 PsiModificationTracker.MODIFICATION_COUNT);
+          }
+        });
+      }
+    });
   }
 
   @NotNull
@@ -148,6 +225,96 @@ public class ResPsiImplUtil {
     return o;
   }
 
+  @Nullable
+  public static ResType getResTypeInner(@NotNull final ResExp o, @Nullable ResolveState context) {
+    if (o instanceof ResReferenceExp) {
+      PsiReference reference = o.getReference();
+      PsiElement resolve = reference != null ? reference.resolve() : null;
+
+      //TODO: It was the commented out line before 7/19/2016
+      //if (resolve instanceof ResTypeOwner) return ((ResTypeOwner) resolve).getResType(context);
+      if (resolve instanceof ResTypeOwner) return typeOrParameterType((ResTypeOwner) resolve, context);
+    }
+    else if (o instanceof ResSelectorExp) {
+      ResExp item = ContainerUtil.getLastItem(((ResSelectorExp) o).getExpList());
+      return item != null ? item.getResType(context) : null;
+    }
+    return null;
+  }
+
+  @Nullable
+  public static ResType typeOrParameterType(@NotNull ResTypeOwner resolve, @Nullable ResolveState context) {
+    if (resolve instanceof ResOperationLikeNode) {
+      return new ResLightType.LightFunctionType((ResOperationLikeNode) resolve);
+    }
+    return ((ResTypeOwner) resolve).getResType(context);
+  }
+
+  @Nullable
+  public static ResType getResTypeInner(@NotNull ResVarDef o, @Nullable ResolveState context) {
+    PsiElement parent = o.getParent();
+    if (parent instanceof ResVarSpec) {
+      return ((ResVarSpec) parent).getType();
+    }
+    return null;
+  }
+
+  public static boolean processDeclarations(@NotNull ResCompositeElement o,
+                                            @NotNull PsiScopeProcessor processor,
+                                            @NotNull ResolveState state,
+                                            PsiElement lastParent,
+                                            @NotNull PsiElement place) {
+    boolean isAncestor = PsiTreeUtil.isAncestor(o, place, false);
+    if (o instanceof ResVarSpec) {
+      return isAncestor || ResCompositeElementImpl.processDeclarationsDefault(o, processor, state, lastParent, place);
+    }
+    if (isAncestor) {
+      return ResCompositeElementImpl.processDeclarationsDefault(o, processor, state, lastParent, place);
+    }
+    if (o instanceof ResBlock) { //||
+      // o instanceof ResIfStatement ||
+      // o instanceof ResWhileStatement  {
+      return processor.execute(o, state);
+    }
+    return ResCompositeElementImpl.processDeclarationsDefault(
+      o, processor, state, lastParent, place);
+  }
+
+  @Nullable
+  public static ResFile resolveSpecification(ResFacilityDecl o) {
+    return resolveFacilityModuleId(o.getModuleIdentifierList(), 0);
+  }
+  @Nullable
+  public static ResFile resolveImplementation(ResFacilityDecl o) {
+    return resolveFacilityModuleId(o.getModuleIdentifierList(), 1);
+  }
+
+  @Nullable
+  public static ResFile resolveSpecification(ResExtensionPairing o) {
+    return resolveFacilityModuleId(o.getModuleIdentifierList(), 0);
+  }
+  @Nullable
+  public static ResFile resolveImplementation(ResExtensionPairing o) {
+    return resolveFacilityModuleId(o.getModuleIdentifierList(), 1);
+  }
+
+  @Nullable
+  private static ResFile resolveFacilityModuleId(@NotNull List<ResModuleIdentifier> o, int idNum) {
+    if (o.size() != 2) return null;
+    ResModuleIdentifier id = o.get(idNum);
+    PsiElement result = id.resolve();
+    return result != null ? (ResFile) result : null;
+  }
+
+  public static boolean shouldGoDeeper(@SuppressWarnings("UnusedParameters") ResModuleIdentifierSpec o) {
+    return false;
+  }
+
+  public static boolean prevDot(@Nullable PsiElement parent) {
+    PsiElement prev = parent == null ? null : PsiTreeUtil.prevVisibleLeaf(parent);
+    return prev instanceof LeafElement && ((LeafElement) prev).getElementType() == ResTypes.DOT;
+  }
+
   /**
    * An expression denoting the classification of a mathematical expression {@code o} written in terms of another
    * mathematical expression.
@@ -155,20 +322,34 @@ public class ResPsiImplUtil {
   @Nullable
   public static ResMathExp getResMathMetaTypeExp(@NotNull final ResMathExp o,
                                                  @Nullable final ResolveState context) {
-    return RecursionManager.doPreventingRecursion(
-      o, true, new Computable<ResMathExp>() {
-        @Override
-        public ResMathExp compute() {
-          if (context != null) return getResMathTypeMetaExpInner(o, context);
-          return CachedValuesManager.getCachedValue(o, new CachedValueProvider<ResMathExp>() {
-            @Override
-            public Result<ResMathExp> compute() {
-              return Result.create(getResMathTypeMetaExpInner(o, null),
-                                   PsiModificationTracker.MODIFICATION_COUNT);
-            }
-          });
-        }
-      });
+    return RecursionManager.doPreventingRecursion(o, true,
+                                                  new Computable<ResMathExp>() {
+                                                    @Override
+                                                    public ResMathExp compute() {
+                                                      if (context != null) return getResMathTypeMetaExpInner(o, context);
+                                                      return CachedValuesManager.getCachedValue(o,
+                                                                                                new CachedValueProvider<ResMathExp>() {
+                                                                                                  @Nullable
+                                                                                                  @Override
+                                                                                                  public Result<ResMathExp> compute() {
+                                                                                                    return Result.create(getResMathTypeMetaExpInner(o, null),
+                                                                                                                         PsiModificationTracker.MODIFICATION_COUNT);
+                                                                                                  }
+                                                                                                });
+                                                    }
+                                                  });
+  }
+
+  @Nullable
+  public static ResMathExp getResMathMetaTypeExpInner(@NotNull ResExemplarDecl o,
+                                                      @SuppressWarnings("UnusedParameters")
+                                                      @Nullable ResolveState context) {
+    ResTypeLikeNodeDecl typeLikeThing = PsiTreeUtil.getParentOfType(o, ResTypeLikeNodeDecl.class);
+    return typeLikeThing == null ? null : typeLikeThing.getMathMetaTypeExp();
+        /*
+        ResTypeModelDecl model = PsiTreeUtil.getParentOfType(o, ResTypeModelDecl.class);
+        return model == null ? null : model.getMathExp();
+        */
   }
 
   @Nullable

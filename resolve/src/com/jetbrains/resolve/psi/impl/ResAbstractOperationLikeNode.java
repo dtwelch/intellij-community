@@ -3,7 +3,10 @@ package com.jetbrains.resolve.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.resolve.ResTypes;
+import com.jetbrains.resolve.psi.ResEnsuresClause;
+import com.jetbrains.resolve.psi.ResOperationLikeNode;
 import com.jetbrains.resolve.psi.ResProgSymbolName;
+import com.jetbrains.resolve.psi.ResRequiresClause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

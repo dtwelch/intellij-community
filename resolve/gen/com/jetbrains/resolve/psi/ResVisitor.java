@@ -11,7 +11,7 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitAssignStatement(@NotNull ResAssignStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitBinaryExp(@NotNull ResBinaryExp o) {
@@ -38,12 +38,20 @@ public class ResVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitConventionsClause(@NotNull ResConventionsClause o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitCorrespondenceClause(@NotNull ResCorrespondenceClause o) {
+    visitCompositeElement(o);
+  }
+
   public void visitDecreasingClause(@NotNull ResDecreasingClause o) {
     visitCompositeElement(o);
   }
 
   public void visitElseStatement(@NotNull ResElseStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitEnsuresClause(@NotNull ResEnsuresClause o) {
@@ -62,8 +70,24 @@ public class ResVisitor extends PsiElementVisitor {
     visitTypeOwner(o);
   }
 
-  public void visitIfStatement(@NotNull ResIfStatement o) {
+  public void visitExtensionPairing(@NotNull ResExtensionPairing o) {
     visitCompositeElement(o);
+  }
+
+  public void visitFacilityDecl(@NotNull ResFacilityDecl o) {
+    visitNamedElement(o);
+  }
+
+  public void visitFieldDef(@NotNull ResFieldDef o) {
+    visitNamedElement(o);
+  }
+
+  public void visitFieldVarDeclGroup(@NotNull ResFieldVarDeclGroup o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitIfStatement(@NotNull ResIfStatement o) {
+    visitStatement(o);
   }
 
   public void visitInfixExp(@NotNull ResInfixExp o) {
@@ -223,12 +247,20 @@ public class ResVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitModuleRealizArgList(@NotNull ResModuleRealizArgList o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitModuleSpecArgList(@NotNull ResModuleSpecArgList o) {
+    visitCompositeElement(o);
+  }
+
   public void visitNestedExp(@NotNull ResNestedExp o) {
     visitExp(o);
   }
 
   public void visitNoticeStatement(@NotNull ResNoticeStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitOpBlock(@NotNull ResOpBlock o) {
@@ -287,6 +319,14 @@ public class ResVisitor extends PsiElementVisitor {
     visitModuleDecl(o);
   }
 
+  public void visitRecordType(@NotNull ResRecordType o) {
+    visitType(o);
+  }
+
+  public void visitRecordVarDeclGroup(@NotNull ResRecordVarDeclGroup o) {
+    visitCompositeElement(o);
+  }
+
   public void visitReferenceExp(@NotNull ResReferenceExp o) {
     visitExp(o);
     // visitReferenceExpBase(o);
@@ -301,7 +341,7 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitSimpleStatement(@NotNull ResSimpleStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitSpecModuleParameters(@NotNull ResSpecModuleParameters o) {
@@ -313,15 +353,19 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitSwapStatement(@NotNull ResSwapStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitType(@NotNull ResType o) {
     visitMathExp(o);
   }
 
-  public void visitTypeModelDecl(@NotNull ResTypeModelDecl o) {
+  public void visitTypeImplInit(@NotNull ResTypeImplInit o) {
     visitCompositeElement(o);
+  }
+
+  public void visitTypeModelDecl(@NotNull ResTypeModelDecl o) {
+    visitTypeLikeNodeDecl(o);
   }
 
   public void visitTypeParamDecl(@NotNull ResTypeParamDecl o) {
@@ -330,6 +374,10 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitTypeReferenceExp(@NotNull ResTypeReferenceExp o) {
     visitReferenceExpBase(o);
+  }
+
+  public void visitTypeReprDecl(@NotNull ResTypeReprDecl o) {
+    visitTypeLikeNodeDecl(o);
   }
 
   public void visitUsesList(@NotNull ResUsesList o) {
@@ -349,7 +397,7 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitWhileStatement(@NotNull ResWhileStatement o) {
-    visitCompositeElement(o);
+    visitStatement(o);
   }
 
   public void visitBlock(@NotNull ResBlock o) {
@@ -381,6 +429,10 @@ public class ResVisitor extends PsiElementVisitor {
   }
 
   public void visitReferenceExpBase(@NotNull ResReferenceExpBase o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeLikeNodeDecl(@NotNull ResTypeLikeNodeDecl o) {
     visitCompositeElement(o);
   }
 

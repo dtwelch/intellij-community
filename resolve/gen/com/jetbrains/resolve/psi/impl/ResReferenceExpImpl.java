@@ -46,4 +46,8 @@ public class ResReferenceExpImpl extends ResExpImpl implements ResReferenceExp {
     return ResPsiImplUtil.resolve(this);
   }
 
+  public boolean shouldReferenceModule() {
+    return ResPsiImplUtil.shouldReferenceModule(this);
+  }
+
 }

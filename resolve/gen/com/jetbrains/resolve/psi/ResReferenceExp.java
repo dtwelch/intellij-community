@@ -20,8 +20,6 @@ public interface ResReferenceExp extends ResExp, ResReferenceExpBase {
   @Nullable
   PsiElement resolve();
 
-  //WARNING: shouldReferenceModule(...) is skipped
-  //matching shouldReferenceModule(ResReferenceExp, ...)
-  //methods are not found in ResPsiImplUtil
+  boolean shouldReferenceModule();
 
 }

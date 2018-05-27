@@ -23,9 +23,7 @@ import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implements ResModuleDecl {
@@ -33,66 +31,66 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   ResAbstractModuleImpl(@NotNull ASTNode node) {
     super(node);
   }
-  //really this should just lookup a map from the std directory
-  @Override
-  public boolean shouldAutoSearchUses() {
-    Project project = getProject();
-    Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-    PsiFile psiFile = getContainingFile();
-    if (sdk == null || psiFile == null) return false;
-
-    PsiDirectory dir = psiFile.getOriginalFile().getContainingDirectory();
-    if (dir == null) return false;
-    String homePath = sdk.getHomePath();
-    String dirPath = dir.getVirtualFile().getPath();
-    boolean isCoreLibraryModule = homePath != null && dir.getVirtualFile().getPath().contains(homePath);
-    boolean noAutoStandardUseChecked = ResolveCompilerSettings.getInstance().isNoAutoStandardUses();
-
-    //if we don't represent a core library module, and the "no-std-uses-flag" setting isn't checked,
-    //then we should automatically include standard imports.
-    return !isCoreLibraryModule && !noAutoStandardUseChecked;
-  }
-
-  //TODO: Store a list of the standard modules somewhere in RESOLVEROOT so we can avoid hardcoding them
-  // (and their names here)
-  @NotNull
-  @Override
-  public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
-    return CachedValuesManager.getCachedValue(this, () -> {
-      List<String> toConvert = ContainerUtil.newArrayList();
-      toConvert.add("Class_Theory");
-      toConvert.add("Boolean_Theory");
-      return CachedValueProvider.Result.create(
-        ResElementFactory.createUsesSpecList(getProject(), toConvert), this);
-    });
-  }
-
-  /*
-  @NotNull
-  public List<GoConstDefinition> getConstants() {
-    return CachedValuesManager.getCachedValue(this, () -> {
-      StubElement<GoFile> stub = getStub();
-      List<GoConstDefinition> result;
-      if (stub != null) {
-        result = ContainerUtil.newArrayList();
-        List<GoConstSpec> constSpecs = getChildrenByType(stub, GoTypes.CONST_SPEC, GoConstSpecStubElementType.ARRAY_FACTORY);
-        for (GoConstSpec spec : constSpecs) {
-          GoConstSpecStub specStub = spec.getStub();
-          if (specStub == null) continue;
-          result.addAll(getChildrenByType(specStub, GoTypes.CONST_DEFINITION, GoConstDefinitionStubElementType.ARRAY_FACTORY));
-        }
-      }
-      else {
-        result = calcConsts();
-      }
-      return CachedValueProvider.Result.create(result, this);
-    });
-  }*/
 
   @NotNull
   public ResBlock getBlock() {
     return findNotNullChildByClass(ResBlock.class);
   }
+
+  @NotNull
+  public List<ResModuleIdentifierSpec> getImports() {
+    return CachedValuesManager.getCachedValue(this, new CachedValueProvider<List<ResModuleIdentifierSpec>>() {
+      @Override
+      public Result<List<ResModuleIdentifierSpec>> compute() {
+        List<ResModuleIdentifierSpec> imports = calcImports();
+        return Result.create(imports, ResAbstractModuleImpl.this);
+      }
+    });
+  }
+
+  @NotNull
+  public List<ResReferenceExp> getModuleHeaderReferences() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResReferenceExp.class);
+  }
+
+  /**
+   * @return map like { module name, maybe alias -> module ident spec } for module
+   */
+    /*public Map<String, ResModuleIdentifierSpec> getUsesMap() {
+        return CachedValuesManager.getCachedValue(this, new CachedValueProvider<Map<String, ResModuleIdentifierSpec>>() {
+            @Nullable
+            @Override
+            public Result<Map<String, ResModuleIdentifierSpec>> compute() {
+                Map<String, ResModuleIdentifierSpec> map = new LinkedHashMap<>();
+                List<Object> dependencies = ContainerUtil.newArrayList(GoFile.this);
+                Module module = ModuleUtilCore.findModuleForPsiElement(GoFile.this);
+                for (ResModuleIdentifierSpec spec : getModuleIdentifierSpecs()) {
+                    if (spec.getAlias() != )
+                    String alias = spec.getAlias();
+                    ..
+                }
+                return Result.create(map, ArrayUtil.toObjectArray(dependencies));
+            }
+        });
+    }*/
+  @NotNull
+  public Map<String, ResModuleIdentifierSpec> getModuleIdentifierSpecMap() {
+    return CachedValuesManager.getCachedValue(this, new CachedValueProvider<Map<String, ResModuleIdentifierSpec>>() {
+      @Nullable
+      @Override
+      public Result<Map<String, ResModuleIdentifierSpec>> compute() {
+        Map<String, ResModuleIdentifierSpec> result = new HashMap<>();
+        for (ResModuleIdentifierSpec spec : getImports()) {
+          result.put(spec.getName(), spec);
+          //if (spec.getAlias() != null) {
+          //    result.put(spec.getAlias().getText(), spec);
+          //}
+        }
+        return Result.create(result, ResAbstractModuleImpl.this);
+      }
+    });
+  }
+
 
   @Nullable
   @Override
@@ -100,15 +98,22 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     return findChildByType(ResTypes.IDENTIFIER);
   }
 
-  @NotNull
-  @Override
-  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
-    return getUsesList() != null ? getUsesList().getModuleIdentifierSpecList() : ContainerUtil.newArrayList();
+   /* @NotNull
+    public List<ResModuleSpec> getSuperModuleSpecList() {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, ResModuleSpec.class);
+    }*/
+
+  @Nullable
+  public ResModuleParameters getModuleParameters() {
+    return PsiTreeUtil.findChildOfType(this, ResModuleParameters.class);
   }
 
   @NotNull
-  public List<ResModuleIdentifierSpec> getModuleHeaderIdentifierSpecs() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResModuleIdentifierSpec.class);
+  @Override
+  @Deprecated
+  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
+    return getUsesList() != null ? getUsesList().getModuleIdentifierSpecList() :
+           ContainerUtil.<ResModuleIdentifierSpec>newArrayList();
   }
 
   @Nullable
@@ -118,15 +123,52 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
 
   @NotNull
   @Override
+  public List<ResTypeParamDecl> getGenericTypeParams() {
+    List<ResTypeParamDecl> genericTypes = new ArrayList<>();
+    ResModuleParameters params = getModuleParameters();
+    if (params instanceof ResSpecModuleParameters) {
+      genericTypes.addAll(((ResSpecModuleParameters)params).getTypeParamDeclList());
+    }
+    return genericTypes;
+  }
+
+  @NotNull
+  @Override
+  public List<ResParamDef> getConstantParamDefs() {
+    List<ResParamDef> result = new ArrayList<>();
+    ResModuleParameters params = getModuleParameters();
+    if (params instanceof ResSpecModuleParameters) {
+      for (ResParamDecl paramGroup : (((ResSpecModuleParameters)params).getParamDeclList())) {
+        result.addAll(paramGroup.getParamDefList());
+      }
+    }
+    return result;
+  }
+
+  @NotNull
+  @Override
+  public List<ResMathDefnSig> getDefinitionParamSigs() {
+    List<ResMathDefnSig> result = new ArrayList<>();
+    ResModuleParameters params = getModuleParameters();
+    if (params instanceof ResSpecModuleParameters) {
+      for (ResMathStandardDefnDecl paramGroup : (((ResSpecModuleParameters)params).getMathStandardDefnDeclList())) {
+        result.addAll(paramGroup.getSignatures());
+      }
+    }
+    return result;
+  }
+
+  @NotNull
+  @Override
   public List<ResMathDefnDecl> getMathDefinitionDecls() {
-    return CachedValuesManager.getCachedValue(
-      this,
-      new CachedValueProvider<List<ResMathDefnDecl>>() {
-        @Override
-        public Result<List<ResMathDefnDecl>> compute() {
-          return Result.create(calc(ResMathDefnDecl.class), ResAbstractModuleImpl.this);
-        }
-      });
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<List<ResMathDefnDecl>>() {
+                                                @Override
+                                                public Result<List<ResMathDefnDecl>> compute() {
+                                                  return Result.create(calc(ResMathDefnDecl.class),
+                                                                       ResAbstractModuleImpl.this);
+                                                }
+                                              });
   }
 
   @NotNull
@@ -138,6 +180,42 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
       signatures.addAll(sigs);
     }
     return signatures;
+  }
+
+  @NotNull
+  public List<ResTypeLikeNodeDecl> getTypes() {
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<List<ResTypeLikeNodeDecl>>() {
+                                                @Override
+                                                public Result<List<ResTypeLikeNodeDecl>> compute() {
+                                                  return Result.create(calc(ResTypeLikeNodeDecl.class),
+                                                                       ResAbstractModuleImpl.this);
+                                                }
+                                              });
+  }
+
+  @NotNull
+  public List<ResFacilityDecl> getFacilities() {
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<List<ResFacilityDecl>>() {
+                                                @Override
+                                                public Result<List<ResFacilityDecl>> compute() {
+                                                  return Result.create(calc(ResFacilityDecl.class),
+                                                                       ResAbstractModuleImpl.this);
+                                                }
+                                              });
+  }
+
+  @NotNull
+  public List<ResOperationLikeNode> getOperationLikeThings() {
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<List<ResOperationLikeNode>>() {
+                                                @Override
+                                                public Result<List<ResOperationLikeNode>> compute() {
+                                                  return Result.create(calc(ResOperationLikeNode.class),
+                                                                       ResAbstractModuleImpl.this);
+                                                }
+                                              });
   }
 
   @NotNull
@@ -168,5 +246,16 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
         return true;
       }
     }.process(module);
+  }
+
+  @NotNull
+  private List<ResModuleIdentifierSpec> calcImports() {
+    List<ResModuleIdentifierSpec> result = ContainerUtil.newArrayList();
+    ResUsesList list = getUsesList();
+    if (list == null) return ContainerUtil.emptyList();
+    for (ResModuleIdentifierSpec identifier : list.getModuleIdentifierSpecList()) {
+      result.add(identifier);
+    }
+    return result;
   }
 }

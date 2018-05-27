@@ -5,6 +5,7 @@ import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.ResolveState;
 import com.intellij.psi.impl.ElementBase;
+import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiModificationTracker;
@@ -13,10 +14,7 @@ import com.intellij.ui.RowIcon;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.PlatformIcons;
 import com.jetbrains.resolve.ResolveIcons;
-import com.jetbrains.resolve.psi.ResCompositeElement;
-import com.jetbrains.resolve.psi.ResMathExp;
-import com.jetbrains.resolve.psi.ResNamedElement;
-import com.jetbrains.resolve.psi.ResPrecisModuleDecl;
+import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,9 +34,14 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
    * @return whether or not this element should be visible from a uses clause.
    */
   public boolean isUsesClauseVisible() {
-    return /*(!(this instanceof ResOperationDecl) &&
+    return (!(this instanceof ResOperationDecl) &&
             !(this instanceof ResProcedureDecl) &&
-            !(this instanceof ResParamDef));*/ true;
+            !(this instanceof ResParamDef));
+  }
+
+  @Override
+  public boolean shouldGoDeeper() {
+    return true;
   }
 
   @Nullable
@@ -68,6 +71,14 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
   public int getTextOffset() {
     PsiElement identifier = getIdentifier();
     return identifier != null ? identifier.getTextOffset() : super.getTextOffset();
+  }
+
+  @Override
+  public boolean processDeclarations(@NotNull PsiScopeProcessor processor,
+                                     @NotNull ResolveState state,
+                                     PsiElement lastParent,
+                                     @NotNull PsiElement place) {
+    return ResCompositeElementImpl.processDeclarationsDefault(this, processor, state, lastParent, place);
   }
 
   @Nullable

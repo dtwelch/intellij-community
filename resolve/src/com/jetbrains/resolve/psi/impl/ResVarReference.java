@@ -3,8 +3,7 @@ package com.jetbrains.resolve.psi.impl;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.ResolveState;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.jetbrains.resolve.psi.ResCompositeElement;
-import com.jetbrains.resolve.psi.ResMathVarDef;
+import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,12 +77,11 @@ public class ResVarReference extends
 
     @Override
     protected boolean crossOff(@NotNull PsiElement e) {
-      /*return !(e instanceof ResVarDef) &&
+      return !(e instanceof ResVarDef) &&
              !(e instanceof ResParamDef) &&
              !(e instanceof ResFieldDef) &&
              !(e instanceof ResTypeLikeNodeDecl) &&
-             !(e instanceof ResFacilityDecl);*/
-      return true;
+             !(e instanceof ResFacilityDecl);
     }
   }
 }
