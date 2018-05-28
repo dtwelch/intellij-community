@@ -77,9 +77,7 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResFacilityModuleDecl;
+      return element.getParent().getParent() instanceof ResFacilityModuleDecl;
     }
   }
 
@@ -90,35 +88,29 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptModuleDecl;
     }
   }
 
-  public static class ResolveConceptExtModuleContextType extends ResolveLiveTemplateContextType {
-    protected ResolveConceptExtModuleContextType() {
-      super("RESOLVE_CONCEPT_EXT_MODULE", "RESOLVE extension module", ResolveEverywhereContextType.class);
+  public static class ResolveEnhancementModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolveEnhancementModuleContextType() {
+      super("RESOLVE_ENHANCEMENT_MODULE", "RESOLVE enhancement module", ResolveEverywhereContextType.class);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
     }
   }
 
-  public static class ResolveImplModuleContextType extends ResolveLiveTemplateContextType {
-    protected ResolveImplModuleContextType() {
-      super("RESOLVE_IMPL_MODULE", "RESOLVE concept (+ ext) implementation module", ResolveEverywhereContextType.class);
+  public static class ResolveRealizationModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolveRealizationModuleContextType() {
+      super("RESOLVE_REALIZ_MODULE", "RESOLVE implementation module", ResolveEverywhereContextType.class);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
     }
   }
 }

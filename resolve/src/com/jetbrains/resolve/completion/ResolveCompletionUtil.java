@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class RESOLVECompletionUtil {
+public class ResolveCompletionUtil {
 
   public static final int VAR_PRIORITY = 30;
   public static final int FUNCTION_PRIORITY = 15;

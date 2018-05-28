@@ -108,12 +108,12 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
       else if (o instanceof ResMathVarDef) {
         return ResolveCompletionUtil.createMathVarLookupElement((ResMathVarDef)o);
       }
-      /*else if (o instanceof ResTypeLikeNodeDecl || o instanceof ResTypeParamDecl) {
-        return RESOLVECompletionUtil.createTypeLookupElement((ResNamedElement)o);
+      else if (o instanceof ResTypeLikeNodeDecl || o instanceof ResTypeParamDecl) {
+        return ResolveCompletionUtil.createTypeLookupElement((ResNamedElement)o);
       }
       else if (o instanceof ResFacilityDecl) {
-        return RESOLVECompletionUtil.createFacilityLookupElement(((ResFacilityDecl)o));
-      }*/
+        return ResolveCompletionUtil.createFacilityLookupElement(((ResFacilityDecl)o));
+      }
       else if (o instanceof ResModuleDecl) {
         return ResolveCompletionUtil.createResModuleLookupElement((ResModuleDecl)o);
       }
