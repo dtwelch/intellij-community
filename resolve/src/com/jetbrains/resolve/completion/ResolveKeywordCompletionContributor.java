@@ -33,6 +33,47 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
 
     extend(CompletionType.BASIC, categoricalForPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "for"));
+
+    extend(CompletionType.BASIC, modulePattern(ResRealizationModuleDecl.class, ResRealizBlock.class),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition"));
+
+    extend(CompletionType.BASIC, modulePattern(ResConceptModuleDecl.class, ResConceptBlock.class),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
+                                                "Definition", "Def", "Implicit", "constraints"));
+
+    extend(CompletionType.BASIC, modulePattern(ResConceptExtensionModuleDecl.class, ResConceptBlock.class),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition", "Def", "Implicit"));
+
+    extend(CompletionType.BASIC, parameterModePattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
+                                                "evaluates", "updates", "alters", "clears", "preserves", "restores", "replaces"));
+
+    extend(CompletionType.BASIC, recordTypePattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Record"));
+
+    extend(CompletionType.BASIC, typeParamPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "type"));
+
+    extend(CompletionType.BASIC, statementPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
+
+    extend(CompletionType.BASIC, mathCartProdPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Cart_Prod"));
+
+    extend(CompletionType.BASIC, variablePattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Var"));
+
+    extend(CompletionType.BASIC, statementPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
+
+    extend(CompletionType.BASIC, moduleRequiresPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
+
+    extend(CompletionType.BASIC, modelInitialization(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "initialization"));
+    extend(CompletionType.BASIC, initializationEnsures(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
+
   }
 
   //TODO: Redo this eventually, it doesn't work quite right yet.
@@ -41,6 +82,11 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
                                       .withParent(ResModuleDecl.class)
                                       .andOr(psiElement().withFirstNonWhitespaceChild(psiElement()),
                                              psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));
+  }
+
+  private static Capture<PsiElement> recordTypePattern() {
+    return psiElement(ResTypes.IDENTIFIER).withParent(psiElement(ResTypes.TYPE_REFERENCE_EXP)
+                                                        .withParent(psiElement().withParent(ResTypeReprDecl.class)));
   }
 
   private static Capture<PsiElement> categoricalForPattern() {
@@ -79,5 +125,51 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
   private static Capture<PsiElement> modulePattern(Class<? extends ResModuleDecl> moduleType,
                                                    Class<? extends ResBlock> blockType) {
     return onKeywordStartWithParent(psiElement(blockType).withParent(moduleType));
+  }
+
+  private static Capture<PsiElement> mathCartProdPattern() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(ResTypes.MATH_SYMBOL_NAME)
+                    .withParent(psiElement(ResTypes.MATH_REFERENCE_EXP)));
+  }
+
+  private static Capture<PsiElement> moduleRequiresPattern() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(PsiErrorElement.class)
+                    .withParent(ResBlock.class)
+                    .atStartOf(psiElement(ResBlock.class)));
+  }
+
+  private static Capture<PsiElement> typeParamPattern() {
+    return psiElement(ResTypes.IDENTIFIER).withParent(ResParameterMode.class).inside(ResSpecModuleParameters.class);
+  }
+
+  private static Capture<PsiElement> initializationEnsures() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(PsiErrorElement.class).afterLeaf(psiElement(ResTypes.INITIALIZATION)));
+  }
+
+  private static Capture<PsiElement> modelInitialization() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(PsiErrorElement.class)
+                    .afterSibling(psiElement(ResTypeModelDecl.class)
+                                    .withLastChild(psiElement().andOr(psiElement(ResExemplarDecl.class),
+                                                                      psiElement(ResConstraintsClause.class)))));
+  }
+
+  private static Capture<PsiElement> statementPattern() {
+    //IntellijIdeaRulezzz is what the psiElement(ResTypes.IDENTIFIER) bit with previous sibling = "::"
+    return psiElement(ResTypes.IDENTIFIER).andNot(psiElement().afterLeaf(psiElement(ResTypes.COLON_COLON)))
+      .withParent(psiElement(ResTypes.REFERENCE_EXP)
+                    .withParent(psiElement(ResTypes.SIMPLE_STATEMENT)));
+  }
+
+  private static Capture<PsiElement> parameterModePattern() {
+    return psiElement(ResTypes.IDENTIFIER).withParent(ResParameterMode.class);
+  }
+
+  private static Capture<PsiElement> variablePattern() {
+    return psiElement(ResTypes.IDENTIFIER).withParent(psiElement(ResTypes.REFERENCE_EXP)
+                                                        .isFirstAcceptedChild(psiElement()));
   }
 }

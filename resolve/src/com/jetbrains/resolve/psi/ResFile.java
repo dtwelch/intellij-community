@@ -115,7 +115,7 @@ public class ResFile extends PsiFileBase {
   @Override
   public Icon getIcon(int s) {
     if (getEnclosedModule() == null) {
-      return RESOLVEIcons.FILE;
+      return ResolveIcons.RESOLVE_FILE;
     }
     else {
       return getEnclosedModule().getIcon(0);

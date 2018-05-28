@@ -30,7 +30,7 @@ public class ResVisitor extends PsiElementVisitor {
     visitBlock(o);
   }
 
-  public void visitConceptExtensionModuleDecl(@NotNull ResConceptExtensionModuleDecl o) {
+  public void visitConceptEnhancementModuleDecl(@NotNull ResConceptEnhancementModuleDecl o) {
     visitModuleDecl(o);
   }
 
@@ -134,7 +134,7 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathExp(o);
   }
 
-  public void visitMathBigUnionExp(@NotNull ResMathBigUnionExp o) {
+  public void visitMathBinderAppExp(@NotNull ResMathBinderAppExp o) {
     visitMathExp(o);
   }
 
@@ -144,10 +144,6 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathCategoricalDefnDecl(@NotNull ResMathCategoricalDefnDecl o) {
     visitMathDefnDecl(o);
-  }
-
-  public void visitMathClssftnAssrtExp(@NotNull ResMathClssftnAssrtExp o) {
-    visitMathExp(o);
   }
 
   public void visitMathExp(@NotNull ResMathExp o) {
@@ -233,6 +229,10 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathTheoremDecl(@NotNull ResMathTheoremDecl o) {
     visitNamedElement(o);
+  }
+
+  public void visitMathTypeAssertionExp(@NotNull ResMathTypeAssertionExp o) {
+    visitMathExp(o);
   }
 
   public void visitMathVarDecl(@NotNull ResMathVarDecl o) {

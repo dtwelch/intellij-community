@@ -39,17 +39,18 @@ INT_DIGIT     = [0-9]
 NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
 
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
-MSYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR}  | {U_RELATION} | {U_GREEK})
+MSYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
                  "⇁"|"↼"|"⇀"|"⇃"|"⇂"|"↿"|"↾"|"↑"|"⇑"|"↓"|"⇓"|"↕"|"⇕")
 
 U_LETTER      = ("ℕ"|"ℤ"|"ℂ"|"𝔹"|"ℚ"|"ℝ"|"𝒫"|"℘")
 
-U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 
 U_OPERATOR    = ("∧"|"∨"|"¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"|
                  "⋆"|"∙"|"∘"|"∼"|"⋈"|"⋉"|"⋊"|"∸")
+
+U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 
 U_RELATION    = ("≤"|"≥"|"≠"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
@@ -206,7 +207,6 @@ ESCAPES = [abfnrtv]
 
 {MSYM}                                  { return MATHSYMBOL; }
 {SYM}                                   { return SYMBOL; }
-{U_BIGOPERATOR}                         { return BIGOPERATOR; }
 {IDENT}                                 { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }

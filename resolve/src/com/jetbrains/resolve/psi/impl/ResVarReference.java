@@ -7,11 +7,9 @@ import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ResVarReference extends
-                             //ResCachedReference<ResVarDef> { //TODOTODO
-                               ResCachedReference<ResMathVarDef> {
+public class ResVarReference extends ResCachedReference<ResVarDef> {
 
-  protected ResVarReference(@NotNull ResMathVarDef element) {
+  protected ResVarReference(@NotNull ResVarDef element) {
     super(element);
   }
 
@@ -30,14 +28,14 @@ public class ResVarReference extends
 
   @Override
   public boolean processResolveVariants(@NotNull final ResScopeProcessor processor) {
-    /*ResVarProcessor p = processor instanceof ResVarProcessor
+    ResVarProcessor p = processor instanceof ResVarProcessor
                         ? ((ResVarProcessor) processor)
                         : new ResVarProcessor(myElement, processor.isCompletion()) {
                           @Override
                           public boolean execute(@NotNull PsiElement e, @NotNull ResolveState state) {
                             return super.execute(e, state) && processor.execute(e, state);
                           }
-                        };*/
+                        };
     return false;
   }
 
@@ -71,8 +69,7 @@ public class ResVarReference extends
         if (elseStatement != null) return elseStatement.getBlock();
        */
       //TODO: NOT RIGHT YET.. SHOULD JUST BE A GENERAL FXN BLOCK...
-      //return PsiTreeUtil.getParentOfType(o, ResOpBlock.class);
-      return null;
+      return PsiTreeUtil.getParentOfType(o, ResOpBlock.class);
     }
 
     @Override

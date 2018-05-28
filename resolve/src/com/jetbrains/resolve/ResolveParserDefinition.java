@@ -39,18 +39,18 @@ public class ResolveParserDefinition implements ParserDefinition {
   public static final TokenSet NUMBERS = TokenSet.create(INT);
 
   public static final TokenSet KEYWORDS =
-    TokenSet.create(/*CONCEPT, FACILITY,*/ PRECIS, /*ENHANCEMENT,*/ REALIZATION,
+    TokenSet.create(CONCEPT, FACILITY, PRECIS, ENHANCEMENT, REALIZATION,
                     END, EXTENDS, USES,
 
                     THEOREM, COROLLARY, RECOGNITION, IMPLICIT, DEFINITION,
                     CATEGORICAL, INDUCTIVE/*, DEFINES*/, CHAINABLE, VALUED, COERCER,
 
-                    REQUIRES/*, ENSURES*/, WHICH_ENTAILS, /*CHANGING, MAINTAINING,
-                    DECREASING, NOTICE, CONFIRM, REMEMBER, CORRESPONDENCE,
+                    REQUIRES, ENSURES, WHICH_ENTAILS, CHANGING, MAINTAINING,
+                    DECREASING, NOTICE, CORRESPONDENCE,
                     EXEMPLAR, CONSTRAINTS, CONVENTIONS, INITIALIZATION,
-                    VAR,*/ TYPE_PARAM, /*FAMILY, DO,*/ IF, /*ELSE, ENHANCED, BY,*/ CART_PROD,
-                    /*EXTERNALLY,*/ FOR, FROM, IS, /*REALIZED, MODELED,*/
-                    OPERATION, /*PROCEDURE,*/ OTHERWISE/*, RECORD, THEN, WHILE*/);
+                    VAR, TYPE_PARAM, FAMILY, DO, IF, ELSE, ENHANCED, BY, CART_PROD,
+                    EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED,
+                    OPERATION, PROCEDURE, OTHERWISE, RECORD, THEN, WHILE);
 
   public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, PRIME, COLON_EQUALS,
                                                            LBRACK, RBRACK, LANGLE, RANGLE, /*LCUP, RCUP,*/ LCEIL, RCEIL,

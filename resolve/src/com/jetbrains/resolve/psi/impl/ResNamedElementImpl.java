@@ -81,18 +81,46 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     return ResCompositeElementImpl.processDeclarationsDefault(this, processor, state, lastParent, place);
   }
 
+
+  @Nullable
+  @Override
+  public ResType getResType(@Nullable ResolveState context) {
+    if (context != null) return getResTypeInner(context);
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<ResType>() {
+                                                @Nullable
+                                                @Override
+                                                public Result<ResType> compute() {
+                                                  return Result.create(getResTypeInner(null),
+                                                                       PsiModificationTracker.MODIFICATION_COUNT);
+                                                }
+                                              });
+  }
+
   @Nullable
   @Override
   public ResMathExp getResMathMetaTypeExp(@Nullable ResolveState context) {
     if (context != null) return getResMathMetaTypeExpInner(context);
-    return CachedValuesManager
-      .getCachedValue(this,
-                      new CachedValueProvider<ResMathExp>() {
-                        @Override
-                        public Result<ResMathExp> compute() {
-                          return Result.create(getResMathMetaTypeExpInner(null), PsiModificationTracker.MODIFICATION_COUNT);
-                        }
-                      });
+    return CachedValuesManager.getCachedValue(this,
+                                              new CachedValueProvider<ResMathExp>() {
+                                                @Nullable
+                                                @Override
+                                                public Result<ResMathExp> compute() {
+                                                  return Result.create(getResMathMetaTypeExpInner(null),
+                                                                       PsiModificationTracker.MODIFICATION_COUNT);
+                                                }
+                                              });
+  }
+
+  @Nullable
+  protected ResType getResTypeInner(@Nullable ResolveState context) {
+    return findSiblingType();
+  }
+
+  @Nullable
+  @Override
+  public ResType findSiblingType() {
+    return PsiTreeUtil.getNextSiblingOfType(this, ResType.class);
   }
 
   @Nullable
@@ -100,7 +128,6 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     ResMathExp nextExp = findSiblingMathMetaType();
     return nextExp;
   }
-
   /**
    * Ok, here's the deal: this will basically look to our right hand side siblings of {@code this} AST (or, in
    * Jetbrains speak: PSI) node for a math exp and return the first one it finds.

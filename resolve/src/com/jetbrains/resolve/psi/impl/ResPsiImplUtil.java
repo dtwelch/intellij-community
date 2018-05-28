@@ -65,10 +65,6 @@ public class ResPsiImplUtil {
     return !text.isEmpty() ? TextRange.create(0, text.length() - 1) : TextRange.EMPTY_RANGE;
   }
 
-  public static boolean shouldGoDeeper(@SuppressWarnings("UnusedParameters") ResModuleIdentifierSpec o) {
-    return false;
-  }
-
   @NotNull
   public static ResReference getReference(@NotNull ResReferenceExp o) {
     return new ResReference(o);

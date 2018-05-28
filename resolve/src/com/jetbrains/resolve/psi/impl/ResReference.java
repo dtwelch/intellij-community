@@ -226,6 +226,14 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       .createSmartPsiElementPointer(myElement));
   }
 
+  private static boolean processProgParamDecls(@NotNull ResScopeProcessorBase processor,
+                                               @NotNull List<ResParamDecl> parameters) {
+    for (ResParamDecl declaration : parameters) {
+      if (!processNamedElements(processor, ResolveState.initial(), declaration.getParamDefList(), true)) return false;
+    }
+    return true;
+  }
+
   private boolean processBlock(@NotNull ResScopeProcessor processor,
                                @NotNull ResolveState state,
                                boolean localResolve) {
@@ -249,8 +257,51 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     return true;
   }
 
-  // TODO: Not sure why the logic here needs to be so complicated.. clean it up.
+  public static boolean processUsesImports(@NotNull ResFile file,
+                                           @NotNull ResScopeProcessor processor,
+                                           @NotNull ResolveState state) {
+    if (file.getEnclosedModule() == null) return true;
+    return processUsesImports(file.getEnclosedModule(), processor, state);
+  }
 
+  //OK: So it looks like this is the method that's going to have to initiate the search into the super modules...
+  //Update: Ok so at least this method is doing what I *think* it needs to be doing right now. Don't get me wrong its a godawful
+  //mess, but at least its working as I expect for the moment. TODO: Clean it up, improve names etc.
+  private static boolean processUsesImports(@NotNull ResModuleDecl moduleDecl,
+                                            @NotNull ResScopeProcessor processor,
+                                            @NotNull ResolveState state) {
+    List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
+
+    List<ResModuleIdentifierSpec> headerModules = moduleDecl.getModuleIdentifierSpecs();
+    for (ResModuleIdentifierSpec o : usesItems) {
+      //if (o.getAlias() != null) {
+      //    if (!processor.execute(o, state.put(ACTUAL_NAME, o.getAlias().getText()))) return false;
+      //}
+      //else {
+      PsiElement resolve = o.getModuleIdentifier().resolve();
+      if (resolve != null && resolve instanceof ResFile) {
+        for (ResModuleIdentifierSpec e : headerModules) {
+          //process the super module's uses clauses
+          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile) resolve).getModuleIdentifierSpecs();
+
+          for (ResModuleIdentifierSpec e1 : superModuleUses) {
+            PsiElement eRes = e1.getModuleIdentifier().resolve();
+            if (eRes != null) {
+              if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
+            }
+          }
+        }
+        processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
+        boolean forSuperModule = forSuperModule(moduleDecl, o.getName());
+        if (!processModuleLevelEntities((ResFile) resolve, processor, state, forSuperModule)) return false;
+      }
+      //}
+    }
+    return true;
+  }
+
+
+  // TODO: Not sure why the logic here needs to be so complicated.. clean it up.
   /**
    * Searches the specifications of any facility modules accessible from {@code file}.
    */
@@ -261,8 +312,8 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     Set<ResModuleIdentifier> v = new LinkedHashSet<>();
     List<String> superModuleRefs = new ArrayList<>();
     if (file.getEnclosedModule() != null) {
-      for (ResReferenceExp e : file.getEnclosedModule().getModuleHeaderReferences()) {
-        superModuleRefs.add(e.getText());
+      for (ResModuleIdentifierSpec e : file.getEnclosedModule().getModuleIdentifierSpecs()) {
+        superModuleRefs.add(e.getModuleIdentifier().getText());
       }
     }
     List<ResModuleDecl> superModuleDecls = new ArrayList<>();
@@ -357,7 +408,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     }
 
     //now search through module-identifier-specs in the current module's header
-    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleHeaderIdentifierSpecs();
+    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleIdentifierSpecs();
     for (ResModuleIdentifierSpec e : superModuleSpecs) {
       PsiElement resolve = e.getModuleIdentifier().resolve();
       if (!(resolve instanceof ResFile)) continue;
@@ -385,7 +436,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
    * Returns true if {@code currentUsesName} is named in a module's first line as a spec being implemented.
    */
   private static boolean forSuperModule(@NotNull ResModuleDecl module, @NotNull String currentUsesName) {
-    for (ResModuleIdentifierSpec e : module.getModuleHeaderIdentifierSpecs()) {
+    for (ResModuleIdentifierSpec e : module.getModuleIdentifierSpecs()) {
       if (e.getIdentifier().getText().equals(currentUsesName)) return true;
     }
     return false;

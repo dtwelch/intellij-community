@@ -21,13 +21,14 @@ public interface ResModuleDecl extends ResNamedElement {
 
   /**
    * Returns all {@link ResModuleIdentifierSpec}s identifying modules that this module happens to extend. For example,
-   * if a particular instance of this class represents is an (enhancement) realization module named {@code T_Realiz}
-   * then in the case of:
+   * if a particular instance of this class represents is an (enhancement) realization module named {@code T_Realiz},
+   * i.e.:
    * <pre>
    *   Realization T_Realiz for T_Enhancement of T_Concept from Foo.Y;
    *    ...
    * </pre>
-   * the list returned will be {@link [T_Enhancement, T_Concept from Foo.Y]}.
+   * then a call to this method will return a list that looks like this {@link [T_Enhancement, T_Concept from Foo.Y]}.
+   * Where each element is a well formed module identifier spec.
    *
    * @return The list of module identifiers referenced in the module's header.
    */

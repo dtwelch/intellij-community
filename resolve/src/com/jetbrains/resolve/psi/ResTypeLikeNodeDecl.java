@@ -1,7 +1,6 @@
 package com.jetbrains.resolve.psi;
 
 import com.intellij.psi.PsiElement;
-import edu.clemson.resolve.jetbrains.psi.impl.ResAbstractTypeDeclLikeNodeImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

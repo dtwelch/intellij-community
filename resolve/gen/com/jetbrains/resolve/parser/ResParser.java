@@ -38,8 +38,8 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == CONCEPT_BLOCK) {
       r = ConceptBlock(b, 0);
     }
-    else if (t == CONCEPT_EXTENSION_MODULE_DECL) {
-      r = ConceptExtensionModuleDecl(b, 0);
+    else if (t == CONCEPT_ENHANCEMENT_MODULE_DECL) {
+      r = ConceptEnhancementModuleDecl(b, 0);
     }
     else if (t == CONCEPT_MODULE_DECL) {
       r = ConceptModuleDecl(b, 0);
@@ -288,11 +288,11 @@ public class ResParser implements PsiParser, LightPsiParser {
       PARAM_EXP, REFERENCE_EXP, SELECTOR_EXP),
     create_token_set_(ASSIGN_STATEMENT, ELSE_STATEMENT, IF_STATEMENT, NOTICE_STATEMENT,
       SIMPLE_STATEMENT, STATEMENT, SWAP_STATEMENT, WHILE_STATEMENT),
-    create_token_set_(MATH_ALTERNATIVE_EXP, MATH_ALTERNATIVE_ITEM_EXP, MATH_ASSERTION_EXP, MATH_BIG_UNION_EXP,
-      MATH_CART_PROD_EXP, MATH_CLSSFTN_ASSRT_EXP, MATH_EXP, MATH_INCOMING_EXP,
-      MATH_INFIX_APPLY_EXP, MATH_LAMBDA_EXP, MATH_MIXFIX_APPLY_EXP, MATH_NESTED_EXP,
-      MATH_OUTFIX_APPLY_EXP, MATH_PREFIX_APPLY_EXP, MATH_QUANTIFIED_EXP, MATH_REFERENCE_EXP,
-      MATH_SELECTOR_EXP, RECORD_TYPE, TYPE),
+    create_token_set_(MATH_ALTERNATIVE_EXP, MATH_ALTERNATIVE_ITEM_EXP, MATH_ASSERTION_EXP, MATH_BINDER_APP_EXP,
+      MATH_CART_PROD_EXP, MATH_EXP, MATH_INCOMING_EXP, MATH_INFIX_APPLY_EXP,
+      MATH_LAMBDA_EXP, MATH_MIXFIX_APPLY_EXP, MATH_NESTED_EXP, MATH_OUTFIX_APPLY_EXP,
+      MATH_PREFIX_APPLY_EXP, MATH_QUANTIFIED_EXP, MATH_REFERENCE_EXP, MATH_SELECTOR_EXP,
+      MATH_TYPE_ASSERTION_EXP, RECORD_TYPE, TYPE),
   };
 
   /* ********************************************************** */
@@ -390,19 +390,19 @@ public class ResParser implements PsiParser, LightPsiParser {
   // RequiresClause?
   // ConceptBlock
   // end identifier ';'
-  public static boolean ConceptExtensionModuleDecl(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ConceptExtensionModuleDecl")) return false;
+  public static boolean ConceptEnhancementModuleDecl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConceptEnhancementModuleDecl")) return false;
     if (!nextTokenIs(b, ENHANCEMENT)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, CONCEPT_EXTENSION_MODULE_DECL, null);
+    Marker m = enter_section_(b, l, _NONE_, CONCEPT_ENHANCEMENT_MODULE_DECL, null);
     r = consumeTokens(b, 2, ENHANCEMENT, IDENTIFIER);
     p = r; // pin = 2
-    r = r && report_error_(b, ConceptExtensionModuleDecl_2(b, l + 1));
+    r = r && report_error_(b, ConceptEnhancementModuleDecl_2(b, l + 1));
     r = p && report_error_(b, consumeToken(b, FOR)) && r;
     r = p && report_error_(b, ModuleIdentifierSpec(b, l + 1)) && r;
     r = p && report_error_(b, consumeToken(b, SEMICOLON)) && r;
-    r = p && report_error_(b, ConceptExtensionModuleDecl_6(b, l + 1)) && r;
-    r = p && report_error_(b, ConceptExtensionModuleDecl_7(b, l + 1)) && r;
+    r = p && report_error_(b, ConceptEnhancementModuleDecl_6(b, l + 1)) && r;
+    r = p && report_error_(b, ConceptEnhancementModuleDecl_7(b, l + 1)) && r;
     r = p && report_error_(b, ConceptBlock(b, l + 1)) && r;
     r = p && report_error_(b, consumeTokens(b, -1, END, IDENTIFIER, SEMICOLON)) && r;
     exit_section_(b, l, m, r, p, null);
@@ -410,22 +410,22 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   // SpecModuleParameters?
-  private static boolean ConceptExtensionModuleDecl_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ConceptExtensionModuleDecl_2")) return false;
+  private static boolean ConceptEnhancementModuleDecl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConceptEnhancementModuleDecl_2")) return false;
     SpecModuleParameters(b, l + 1);
     return true;
   }
 
   // UsesList?
-  private static boolean ConceptExtensionModuleDecl_6(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ConceptExtensionModuleDecl_6")) return false;
+  private static boolean ConceptEnhancementModuleDecl_6(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConceptEnhancementModuleDecl_6")) return false;
     UsesList(b, l + 1);
     return true;
   }
 
   // RequiresClause?
-  private static boolean ConceptExtensionModuleDecl_7(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ConceptExtensionModuleDecl_7")) return false;
+  private static boolean ConceptEnhancementModuleDecl_7(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConceptEnhancementModuleDecl_7")) return false;
     RequiresClause(b, l + 1);
     return true;
   }
@@ -1980,7 +1980,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // PrecisModuleDecl
   //       | ConceptModuleDecl
-  //       | ConceptExtensionModuleDecl
+  //       | ConceptEnhancementModuleDecl
   //       | RealizationModuleDecl
   //       | FacilityModuleDecl
   static boolean ModuleDecl(PsiBuilder b, int l) {
@@ -1989,7 +1989,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = PrecisModuleDecl(b, l + 1);
     if (!r) r = ConceptModuleDecl(b, l + 1);
-    if (!r) r = ConceptExtensionModuleDecl(b, l + 1);
+    if (!r) r = ConceptEnhancementModuleDecl(b, l + 1);
     if (!r) r = RealizationModuleDecl(b, l + 1);
     if (!r) r = FacilityModuleDecl(b, l + 1);
     exit_section_(b, m, null, r);
@@ -3624,8 +3624,8 @@ public class ResParser implements PsiParser, LightPsiParser {
   // 2: POSTFIX(MathMixfixApplyExp)
   // 3: ATOM(MathNestedExp)
   // 4: ATOM(MathIncomingExp) ATOM(MathSymbolExp) BINARY(MathSelectorExp) ATOM(MathLambdaExp)
-  //    ATOM(MathAlternativeExp) BINARY(MathClssftnAssrtExp) ATOM(MathOutfixApplyExp) ATOM(MathCartProdExp)
-  //    PREFIX(MathBigUnionExp)
+  //    ATOM(MathAlternativeExp) BINARY(MathTypeAssertionExp) ATOM(MathOutfixApplyExp) ATOM(MathCartProdExp)
+  //    BINARY(MathBinderAppExp)
   public static boolean MathExp(PsiBuilder b, int l, int g) {
     if (!recursion_guard_(b, l, "MathExp")) return false;
     addVariant(b, "<math exp>");
@@ -3638,7 +3638,6 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = MathAlternativeExp(b, l + 1);
     if (!r) r = MathOutfixApplyExp(b, l + 1);
     if (!r) r = MathCartProdExp(b, l + 1);
-    if (!r) r = MathBigUnionExp(b, l + 1);
     p = r;
     r = r && MathExp_0(b, l + 1, g);
     exit_section_(b, l, m, null, r, p, null);
@@ -3666,9 +3665,13 @@ public class ResParser implements PsiParser, LightPsiParser {
         r = MathExp(b, l, 4);
         exit_section_(b, l, m, MATH_SELECTOR_EXP, r, true, null);
       }
-      else if (g < 4 && MathClssftnAssrtExp_0(b, l + 1)) {
+      else if (g < 4 && MathTypeAssertionExp_0(b, l + 1)) {
         r = MathExp(b, l, 4);
-        exit_section_(b, l, m, MATH_CLSSFTN_ASSRT_EXP, r, true, null);
+        exit_section_(b, l, m, MATH_TYPE_ASSERTION_EXP, r, true, null);
+      }
+      else if (g < 4 && leftMarkerIs(b, MATH_REFERENCE_EXP) && MathBinderAppExp_0(b, l + 1)) {
+        r = MathExp(b, l, 4);
+        exit_section_(b, l, m, MATH_BINDER_APP_EXP, r, true, null);
       }
       else {
         exit_section_(b, l, m, null, false, false, null);
@@ -3765,8 +3768,8 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   // ':'|'ː'
-  private static boolean MathClssftnAssrtExp_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathClssftnAssrtExp_0")) return false;
+  private static boolean MathTypeAssertionExp_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathTypeAssertionExp_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokenSmart(b, COLON);
@@ -3815,25 +3818,12 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  public static boolean MathBigUnionExp(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathBigUnionExp")) return false;
-    if (!nextTokenIsSmart(b, BIGOPERATOR)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, null);
-    r = MathBigUnionExp_0(b, l + 1);
-    p = r;
-    r = p && MathExp(b, l, -1);
-    exit_section_(b, l, m, MATH_BIG_UNION_EXP, r, p, null);
-    return r || p;
-  }
-
-  // bigoperator MathVarDecl ','
-  private static boolean MathBigUnionExp_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathBigUnionExp_0")) return false;
+  // MathVarDecl ','
+  private static boolean MathBinderAppExp_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathBinderAppExp_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokenSmart(b, BIGOPERATOR);
-    r = r && MathVarDecl(b, l + 1);
+    r = MathVarDecl(b, l + 1);
     r = r && consumeToken(b, COMMA);
     exit_section_(b, m, null, r);
     return r;

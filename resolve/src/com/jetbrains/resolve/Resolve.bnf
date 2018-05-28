@@ -127,7 +127,7 @@
 ModuleDecl ::=
         PrecisModuleDecl
       | ConceptModuleDecl
-      | ConceptExtensionModuleDecl
+      | ConceptEnhancementModuleDecl
       | RealizationModuleDecl
       | FacilityModuleDecl
 
@@ -142,7 +142,7 @@ RequiresClause?
 ConceptBlock
 end identifier ';' {pin(".*")=1}
 
-ConceptExtensionModuleDecl ::=
+ConceptEnhancementModuleDecl ::=
 'Enhancement' identifier SpecModuleParameters? for ModuleIdentifierSpec ';'
 UsesList?
 RequiresClause?
