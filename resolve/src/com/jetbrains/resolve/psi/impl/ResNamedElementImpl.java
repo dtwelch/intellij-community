@@ -159,7 +159,7 @@ public abstract class ResNamedElementImpl extends ResCompositeElementImpl
     Icon icon = null;
     if (this instanceof ResPrecisModuleDecl) icon = ResolveIcons.PRECIS;
     else if (this instanceof ResConceptModuleDecl) icon = ResolveIcons.CONCEPT;
-    else if (this instanceof ResConceptExtensionModuleDecl) icon = ResolveIcons.CONCEPT_EXT;
+    else if (this instanceof ResConceptEnhancementModuleDecl) icon = ResolveIcons.CONCEPT_EXT;
     else if (this instanceof ResRealizationModuleDecl) icon = ResolveIcons.REALIZ;
     else if (this instanceof ResFacilityModuleDecl) icon = ResolveIcons.FACILITY;
     else if (this instanceof ResTypeModelDecl) icon = ResolveIcons.TYPE_MODEL;

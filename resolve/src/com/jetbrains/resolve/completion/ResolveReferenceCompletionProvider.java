@@ -4,6 +4,8 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveState;
@@ -25,8 +27,13 @@ public class ResolveReferenceCompletionProvider extends CompletionProvider<Compl
                                 @NotNull CompletionResultSet result) {
     ResReferenceExpBase expression = PsiTreeUtil.getParentOfType(parameters.getPosition(), ResReferenceExpBase.class);
     if (expression != null) {
-      result = result.withPrefixMatcher(ResolveCompletionUtil.createPrefixMatcher(result.getPrefixMatcher()));
-      fillVariantsByReference(expression.getReference(), result);
+      Editor editor = parameters.getEditor();
+      Document doc = editor.getDocument();
+      if (parameters.getOffset() > 1 &&
+          doc.getCharsSequence().charAt(parameters.getOffset() - 1) != '\\') {
+        result = result.withPrefixMatcher(ResolveCompletionUtil.createPrefixMatcher(result.getPrefixMatcher()));
+        fillVariantsByReference(expression.getReference(), result);
+      }
     }
   }
 

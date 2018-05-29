@@ -99,7 +99,7 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptEnhancementModuleDecl;
     }
   }
 
@@ -110,7 +110,7 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptEnhancementModuleDecl;
     }
   }
 }

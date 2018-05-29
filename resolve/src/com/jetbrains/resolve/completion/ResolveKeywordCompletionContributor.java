@@ -41,7 +41,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
                                                 "Definition", "Def", "Implicit", "constraints"));
 
-    extend(CompletionType.BASIC, modulePattern(ResConceptExtensionModuleDecl.class, ResConceptBlock.class),
+    extend(CompletionType.BASIC, modulePattern(ResConceptEnhancementModuleDecl.class, ResConceptBlock.class),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition", "Def", "Implicit"));
 
     extend(CompletionType.BASIC, parameterModePattern(),
