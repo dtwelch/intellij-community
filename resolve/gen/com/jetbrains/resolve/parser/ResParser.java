@@ -797,68 +797,36 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'Facility' identifier is ModuleIdentifier ModuleSpecArgList? [FromClause]
-  // (externally)? realized by ModuleIdentifier ModuleRealizArgList? [FromClause]
+  // 'Facility' identifier is ModuleIdentifier
+  // (externally)? realized by ModuleIdentifier
   // ExtensionList? ';'
   public static boolean FacilityDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityDecl")) return false;
     if (!nextTokenIs(b, FACILITY)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, FACILITY_DECL, null);
-    r = consumeTokens(b, 2, FACILITY, IDENTIFIER, IS);
-    p = r; // pin = 2
-    r = r && report_error_(b, ModuleIdentifier(b, l + 1));
-    r = p && report_error_(b, FacilityDecl_4(b, l + 1)) && r;
-    r = p && report_error_(b, FacilityDecl_5(b, l + 1)) && r;
-    r = p && report_error_(b, FacilityDecl_6(b, l + 1)) && r;
+    r = consumeTokens(b, 0, FACILITY, IDENTIFIER, IS);
+    r = r && ModuleIdentifier(b, l + 1);
+    p = r; // pin = 4
+    r = r && report_error_(b, FacilityDecl_4(b, l + 1));
     r = p && report_error_(b, consumeTokens(b, -1, REALIZED, BY)) && r;
     r = p && report_error_(b, ModuleIdentifier(b, l + 1)) && r;
-    r = p && report_error_(b, FacilityDecl_10(b, l + 1)) && r;
-    r = p && report_error_(b, FacilityDecl_11(b, l + 1)) && r;
-    r = p && report_error_(b, FacilityDecl_12(b, l + 1)) && r;
+    r = p && report_error_(b, FacilityDecl_8(b, l + 1)) && r;
     r = p && consumeToken(b, SEMICOLON) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // ModuleSpecArgList?
+  // (externally)?
   private static boolean FacilityDecl_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityDecl_4")) return false;
-    ModuleSpecArgList(b, l + 1);
-    return true;
-  }
-
-  // [FromClause]
-  private static boolean FacilityDecl_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityDecl_5")) return false;
-    FromClause(b, l + 1);
-    return true;
-  }
-
-  // (externally)?
-  private static boolean FacilityDecl_6(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityDecl_6")) return false;
     consumeToken(b, EXTERNALLY);
     return true;
   }
 
-  // ModuleRealizArgList?
-  private static boolean FacilityDecl_10(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityDecl_10")) return false;
-    ModuleRealizArgList(b, l + 1);
-    return true;
-  }
-
-  // [FromClause]
-  private static boolean FacilityDecl_11(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityDecl_11")) return false;
-    FromClause(b, l + 1);
-    return true;
-  }
-
   // ExtensionList?
-  private static boolean FacilityDecl_12(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FacilityDecl_12")) return false;
+  private static boolean FacilityDecl_8(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "FacilityDecl_8")) return false;
     ExtensionList(b, l + 1);
     return true;
   }

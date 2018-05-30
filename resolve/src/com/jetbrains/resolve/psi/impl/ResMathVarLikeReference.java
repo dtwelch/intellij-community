@@ -90,7 +90,6 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     if (!processBlock(processor, state, true)) return false;
     if (!ResReference.processModuleLevelEntities(file, processor, state, localResolve)) return false;
     if (!ResReference.processModuleHeaderAndExplicitUsesImports(file, processor, state)) return false;
-    //if (!processBuiltin(processor, state, myElement)) return false;
     return true;
   }
 

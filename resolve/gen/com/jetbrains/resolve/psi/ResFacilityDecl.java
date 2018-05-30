@@ -14,15 +14,6 @@ public interface ResFacilityDecl extends ResNamedElement {
   List<ResModuleIdentifier> getModuleIdentifierList();
 
   @NotNull
-  List<ResModuleLibraryIdentifier> getModuleLibraryIdentifierList();
-
-  @Nullable
-  ResModuleRealizArgList getModuleRealizArgList();
-
-  @Nullable
-  ResModuleSpecArgList getModuleSpecArgList();
-
-  @NotNull
   PsiElement getFacility();
 
   @Nullable
@@ -37,7 +28,7 @@ public interface ResFacilityDecl extends ResNamedElement {
   @NotNull
   PsiElement getIdentifier();
 
-  @Nullable
+  @NotNull
   PsiElement getIs();
 
   @Nullable

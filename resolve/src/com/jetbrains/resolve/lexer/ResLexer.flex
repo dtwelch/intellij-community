@@ -46,7 +46,6 @@ U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
 
 U_LETTER      = ("ℕ"|"ℤ"|"ℂ"|"𝔹"|"ℚ"|"ℝ"|"𝒫"|"℘")
 
-
 U_OPERATOR    = ("∧"|"∨"|"¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"|
                  "⋆"|"∙"|"∘"|"∼"|"⋈"|"⋉"|"⋊"|"∸")
 
@@ -148,11 +147,11 @@ ESCAPES = [abfnrtv]
 "else"                                  { return ELSE; }
 "Enhancement"                           { return ENHANCEMENT; }
 "enhanced"                              { return ENHANCED; }
-"end"                                     { return END;  }
+"end"                                   { return END;  }
 "ensures"                               { return ENSURES; }
 "exemplar"                              { return EXEMPLAR; }
 "externally"                            { return EXTERNALLY; }
-"extends"                                 { return EXTENDS; }
+"extends"                               { return EXTENDS; }
 
 "Facility"                              { return FACILITY;  }
 "false"                                 { return FALSE; }
@@ -167,7 +166,7 @@ ESCAPES = [abfnrtv]
 "Inductive"                             { return INDUCTIVE; }
 "is"                                    { return IS; }
 
-//"realized"                              { return REALIZED; }
+"realized"                              { return REALIZED; }
 "Realization"                           { return REALIZATION; }
 
 "maintaining"                           { return MAINTAINING; }
