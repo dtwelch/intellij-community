@@ -54,10 +54,12 @@ U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 U_RELATION    = ("≤"|"≥"|"≠"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
 
-U_GREEK       = [\u0370-\u03FF]
-
+U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"|"ν"|"ξ"|
+                 "ο"|"π"|"ρ"|"ς"|"σ"|"τ"|"υ"|"φ"|"χ"|"ψ"|"ω"|"Γ"|"Δ"|"Θ"|"Λ"|
+                 "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
+LAMBDA = "λ"
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<=")
+SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"-->"|"->")
 STR     = "\""
 BACKSLASH = "\\"
 STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
@@ -119,8 +121,7 @@ ESCAPES = [abfnrtv]
 {BACKSLASH}"forall"                     { return EFORALL; }
 {BACKSLASH}"exists"                     { return EEXISTS; }
 {BACKSLASH}{IDENT}                      { return CMD; }
-"λ"                                     { return LAMBDA; }
-"≜"                                     { return TRI_EQUALS; }
+"≜"                                     { return TRIEQUALS; }
 ":="                                    { return COLON_EQUALS; }
 ":=:"                                   { return COLON_EQUALS_COLON; }
 

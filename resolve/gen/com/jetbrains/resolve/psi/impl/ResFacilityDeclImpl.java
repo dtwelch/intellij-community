@@ -39,6 +39,24 @@ public class ResFacilityDeclImpl extends ResNamedElementImpl implements ResFacil
 
   @Override
   @NotNull
+  public List<ResModuleLibraryIdentifier> getModuleLibraryIdentifierList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResModuleLibraryIdentifier.class);
+  }
+
+  @Override
+  @Nullable
+  public ResModuleRealizArgList getModuleRealizArgList() {
+    return findChildByClass(ResModuleRealizArgList.class);
+  }
+
+  @Override
+  @Nullable
+  public ResModuleSpecArgList getModuleSpecArgList() {
+    return findChildByClass(ResModuleSpecArgList.class);
+  }
+
+  @Override
+  @NotNull
   public PsiElement getFacility() {
     return findNotNullChildByType(FACILITY);
   }
@@ -68,9 +86,9 @@ public class ResFacilityDeclImpl extends ResNamedElementImpl implements ResFacil
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getIs() {
-    return findNotNullChildByType(IS);
+    return findChildByType(IS);
   }
 
   @Override

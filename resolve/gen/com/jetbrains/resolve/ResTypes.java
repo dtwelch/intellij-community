@@ -158,7 +158,6 @@ public interface ResTypes {
   IElementType FAMILY = new ResTokenType("family");
   IElementType FOR = new ResTokenType("for");
   IElementType FORALL = new ResTokenType("∀");
-  IElementType FORALL_CMD = new ResTokenType("\\\\forall");
   IElementType FROM = new ResTokenType("from");
   IElementType IDENTIFIER = new ResTokenType("identifier");
   IElementType IF = new ResTokenType("if");
@@ -170,7 +169,7 @@ public interface ResTypes {
   IElementType INITIALIZATION = new ResTokenType("initialization");
   IElementType INT = new ResTokenType("int");
   IElementType IS = new ResTokenType("is");
-  IElementType LAMBDA = new ResTokenType("λ");
+  IElementType LAMBDA = new ResTokenType("LAMBDA");
   IElementType LANGLE = new ResTokenType("⟨");
   IElementType LBRACE = new ResTokenType("{");
   IElementType LBRACK = new ResTokenType("[");
@@ -208,7 +207,7 @@ public interface ResTypes {
   IElementType THEN = new ResTokenType("then");
   IElementType THEOREM = new ResTokenType("Theorem");
   IElementType TRICOLON = new ResTokenType("ː");
-  IElementType TRI_EQUALS = new ResTokenType("≜");
+  IElementType TRIEQUALS = new ResTokenType("≜");
   IElementType TRUE = new ResTokenType("true");
   IElementType TYPE_FAMILY = new ResTokenType("Type");
   IElementType TYPE_PARAM = new ResTokenType("type");

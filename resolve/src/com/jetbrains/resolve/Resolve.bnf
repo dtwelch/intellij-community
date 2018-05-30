@@ -51,10 +51,8 @@
         // Builtin
         EXISTS = '∃'
         FORALL = '∀'
-        FORALL_CMD = '\\forall'
-        LAMBDA = 'λ'
-        TRI_EQUALS = '≜'
         COLON_EQUALS = ':='
+        TRIEQUALS = '≜'
         COLON_EQUALS_COLON = ':=:'
         BAD_CHARACTER = '"\\"'
 
@@ -277,11 +275,10 @@ VarDef ::= identifier {methods=[getResTypeInner getReference]}
 
 // facility decls
 
-FacilityDecl ::= 'Facility' identifier is ModuleIdentifier
-(externally)? realized by ModuleIdentifier
-ExtensionList? ';' {pin=4 methods=[resolveSpecification resolveImplementation]}
+FacilityDecl ::= 'Facility' identifier is ModuleIdentifier ModuleSpecArgList? [FromClause]
+(externally)? realized by ModuleIdentifier ModuleRealizArgList? [FromClause]
+ExtensionList? ';' {pin=2 methods=[resolveSpecification resolveImplementation]}
 
-//private Foo ::= ModuleIdentifier ModuleSpecArgList? (FromClause)?
 private ExtensionList ::= (ExtensionPairing)* {recoverWhile=ExtensionListRec}
 private ExtensionListRec ::= !(';')
 
@@ -446,7 +443,7 @@ MathReferenceExp ::= MathSymbolName {methods=[getReference getQualifier getIdent
 
 MathCartProdExp ::= 'Cart_Prod' ResMathCartVarGroup+  end {pin=1}
 private ResMathCartVarGroup ::= MathVarDeclGroup ';' {pin=1}
-MathLambdaExp ::= 'λ' MathVarDecl ','  MathExp {pin=1}
+MathLambdaExp ::= LAMBDA MathVarDecl ','  MathExp {pin=1}
 MathAlternativeExp ::= '{{' MathAlternativesList '}}' {pin=1}
 MathAlternativesList ::= MathAlternativeItemExp+
 MathAlternativeItemExp ::= MathExp (if MathExp ';' | otherwise ';')

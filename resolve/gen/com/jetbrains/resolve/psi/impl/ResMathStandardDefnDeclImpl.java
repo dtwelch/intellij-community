@@ -87,8 +87,8 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
 
   @Override
   @Nullable
-  public PsiElement getTriEquals() {
-    return findChildByType(TRI_EQUALS);
+  public PsiElement getTriequals() {
+    return findChildByType(TRIEQUALS);
   }
 
   @Override
