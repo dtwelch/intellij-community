@@ -72,7 +72,6 @@ ESCAPES = [abfnrtv]
 {LINE_COMMENT}                          { return LINE_COMMENT; }
 {MULTILINE_COMMENT}                     { return MULTILINE_COMMENT; }
 {STRING}                                { return STRING; }
-{BACKSLASH}                             { return BACKSLASH; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
 "'" [^\\] "'"                           { return CHAR; }
@@ -88,6 +87,7 @@ ESCAPES = [abfnrtv]
 
 ":"                                     { return COLON; }
 "ː"                                     { return TRICOLON; }
+{BACKSLASH}"ː"                          { return ETRICOLON; }
 "::"                                    { return COLON_COLON; }
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }
@@ -118,6 +118,8 @@ ESCAPES = [abfnrtv]
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
 {BACKSLASH}"forall"                     { return EFORALL; }
+{BACKSLASH}"exists"                     { return EEXISTS; }
+{BACKSLASH}{IDENT}                      { return CMD; }
 "λ"                                     { return LAMBDA; }
 "≜"                                     { return TRI_EQUALS; }
 ":="                                    { return COLON_EQUALS; }

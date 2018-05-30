@@ -1,6 +1,7 @@
 package com.jetbrains.resolve.completion;
 
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
@@ -36,8 +37,9 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
                                     ProcessingContext context,
                                     @NotNull CompletionResultSet result) {
 
-        Editor editor = parameters.getEditor();
+        /*Editor editor = parameters.getEditor();
         Document doc = editor.getDocument();
+        char x1=  doc.getCharsSequence().charAt(parameters.getOffset() - 1);
         if (parameters.getOffset() > 1 &&
             doc.getCharsSequence().charAt(parameters.getOffset() - 1) == '\\') {
           //so I think we want to pretty much add all elements in our symbol map
@@ -45,8 +47,34 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
           for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
             result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
           }
-        }
+        }*/
+        Editor editor = parameters.getEditor();
+        Document doc = editor.getDocument();
+        char cs = doc.getCharsSequence().charAt(parameters.getOffset() - 1);
+        int offset = parameters.getOffset();
 
+        //I THINK THIS IS THE PROBLEM!!:
+        // WHEN I TRY TO COMPLETE \forall and I start typing \f the prefix matcher is trying to match \f!!!
+        // (not just f as it needs to right now! :) :)
+
+        //Note to self: Since I added the backslash identifier | ... to MathSymbolName in Resolve.bnf, prefix matching
+        //is a little more complicated (see not above that I wrote when I figured out what was going on)
+        //right now the prefix matcher will (sometimes) include the \ in front, if it is there I just strip it away
+        //and proceed normally...
+        if (parameters.getOffset() > 1 && cs == '\\') {
+          // result = result.withPrefixMatcher()
+          //so I think we want to pretty much add all elements in our symbol map
+          String prefix =result.getPrefixMatcher().getPrefix();
+          if (prefix.startsWith("\\")) {
+            prefix = prefix.length() > 1 ?  prefix.substring(1, prefix.length()) : "";
+          }
+          result = result.withPrefixMatcher(new CamelHumpMatcher(prefix, true));
+
+          Map<String, String> x = SYMBOL_MAP;
+          for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
+            result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
+          }
+        }
         /*Editor editor = parameters.getEditor();
         Document doc = editor.getDocument();
         char cs = doc.getCharsSequence().charAt(parameters.getOffset() - 1);
@@ -95,8 +123,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
         if (context.getStartOffset() - 1 > 0) {
           //editor.getDocument().get
           //editor.getDocument().deleteString(context.getStartOffset(), context.getStartOffset()+ symbolCommand.length()-1);
-          //editor.getDocument().deleteString(context.getStartOffset() - 1, context.getTailOffset()-1);
-          //InsertHandler<LookupElement> handler = new BasicInsertHandler<>();
+          editor.getDocument().deleteString(context.getStartOffset() - 1, context.getTailOffset());
           EditorModificationUtil.insertStringAtCaret(editor, symbol);
         }
       }
@@ -126,6 +153,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     return PrioritizedLookupElement.withPriority(builder, ResolveCompletionUtil.VAR_PRIORITY);
   }
 
+  /*
   private static void populateMap() {
     if (!SYMBOL_MAP.isEmpty()) return;
     //Arrows
@@ -266,8 +294,8 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("\\lambda", "λ");
     SYMBOL_MAP.put("\\triangleq", "≜");
     SYMBOL_MAP.put("\\tricolon", "ː");
-  }
-  /*
+  }*/
+
   private static void populateMap() {
     if (!SYMBOL_MAP.isEmpty()) return;
     //Arrows
@@ -315,6 +343,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("otimes", "⊗");
     SYMBOL_MAP.put("odot", "⊙");
     SYMBOL_MAP.put("ominus", "⊖");
+    SYMBOL_MAP.put("emptyset", "∅");
     SYMBOL_MAP.put("propto", "∝");
     SYMBOL_MAP.put("times", "×");
     SYMBOL_MAP.put("star", "⋆");
@@ -408,7 +437,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("lambda", "λ");
     SYMBOL_MAP.put("triangleq", "≜");
     SYMBOL_MAP.put("tricolon", "ː");
-  }*/
+  }
 
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
     return typeChar == '\\';

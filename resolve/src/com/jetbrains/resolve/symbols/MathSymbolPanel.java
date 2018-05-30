@@ -313,6 +313,7 @@ public class MathSymbolPanel extends JBPanel {
     category.add(new DefaultMutableTreeNode(new SymbolInfo("⊗", "otimes")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("⊙", "odot")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("⊖", "ominus")));
+    category.add(new DefaultMutableTreeNode(new SymbolInfo("∅", "emptyset")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("∝", "propto")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("×", "times")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("⋆", "star")));

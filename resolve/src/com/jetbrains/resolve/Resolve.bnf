@@ -252,7 +252,7 @@ private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathStandardDefnDecl
 
 RealizModuleParameters ::= '(' ImplModuleParamList ')' {pin=1}
 private ImplModuleParamList ::= ImplParamDecl  (';' ImplParamDecl)* {recoverWhile=ParamListRec}
-private ImplParamDecl ::= ParamDecl//|OperationDecl
+private ImplParamDecl ::= ParamDecl|OperationDecl
 
 private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
 private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}
@@ -364,16 +364,16 @@ MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(ii.)' MathAssertionExp ';' {pin=2}
 
 private MathDefnSig ::= MathPrefixDefnSig | MathPostfixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
-MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? (':'|'ː') MathExp {pin=1}
+MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? (':'|'ː'|ETRICOLON) MathExp {pin=1}
 
 private MathPrefixNameList ::= MathSymbolName (',' MathSymbolName)* {recoverWhile=MathPrefixListRec}
-private MathPrefixListRec ::= !(':'|'ː'|';'|'(')
+private MathPrefixListRec ::= !(':'|'ː'|';'|ETRICOLON|'(')
 private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
 private CategoricalSigListRec ::= !(is)
 
-MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' (':'|'ː') MathExp {pin=4}
-MathOutfixDefnSig ::= MathBracketName '(' MathDefnParamList ')' MathBracketName (':'|'ː') MathExp {pin=1}
-MathPostfixDefnSig ::= '(' MathVarDecl ')' MathBracketName '(' MathVarDecl ')' MathBracketName (':'|'ː') MathExp
+MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' (':'|'ː'|ETRICOLON) MathExp {pin=4}
+MathOutfixDefnSig ::= MathBracketName '(' MathDefnParamList ')' MathBracketName (':'|'ː'|ETRICOLON) MathExp {pin=1}
+MathPostfixDefnSig ::= '(' MathVarDecl ')' MathBracketName '(' MathVarDecl ')' MathBracketName (':'|'ː'|ETRICOLON) MathExp
 
 private MathDefinitionParams ::= '(' MathDefnParamList ')' { pin=1}
 private ParamListRec ::= !(')'|';')
@@ -381,9 +381,9 @@ private MathDefnParamList ::= MathVarDeclGroup (',' MathVarDeclGroup)* {pin=1 re
 
 // mathematical variables
 
-MathVarDeclGroup ::= MathVarDeclList (':'|'ː') MathExp {pin=1}
+MathVarDeclGroup ::= MathVarDeclList (':'|'ː'|ETRICOLON) MathExp {pin=1}
 
-MathVarDecl ::= MathVarDef (':'|'ː') MathExp {pin=2 extends=MathVarDeclGroup}
+MathVarDecl ::= MathVarDef (':'|'ː'|ETRICOLON) MathExp {pin=2 extends=MathVarDeclGroup}
 private MathVarDeclList ::= MathVarDef &(!(')')) (',' MathVarDef)* {pin=1}
 MathVarDef ::= MathSymbolName
 
@@ -403,7 +403,7 @@ EntailsClause ::= which_entails MathExp {pin=1}
 // mathematical expressions
 
 MathAssertionExp ::= MathQuantifiedExp | MathExp
-MathQuantifiedExp ::= (EFORALL|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
+MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
           MathInfixApplyExp
@@ -418,7 +418,7 @@ MathPrefixApplyExp ::= MathExp MathFunctionAppList
 MathMixfixApplyExp ::= MathExp MathBracketName MathNonStdAppList MathBracketName {pin=4}
 MathOutfixApplyExp ::=  MathOutfixAppList
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
-MathTypeAssertionExp ::= MathExp (':'|'ː') MathExp
+MathTypeAssertionExp ::= MathExp (':'|'ː'|ETRICOLON) MathExp
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 
 MathFunctionAppList ::= '(' MathArgList ')'
@@ -437,7 +437,7 @@ private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | Mat
 
 private MathOpSymbolName ::= MathSymbolExp
 MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (backslash identifier|identifier|int|symbol|mathsymbol|true|false)
+MathSymbolName  ::= (CMD|identifier|int|symbol|mathsymbol|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}

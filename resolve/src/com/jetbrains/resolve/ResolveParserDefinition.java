@@ -46,7 +46,7 @@ public class ResolveParserDefinition implements ParserDefinition {
                     CATEGORICAL, INDUCTIVE/*, DEFINES*/, CHAINABLE, VALUED, COERCER,
 
                     REQUIRES, ENSURES, WHICH_ENTAILS, CHANGING, MAINTAINING,
-                    DECREASING, NOTICE, CORRESPONDENCE,
+                    DECREASING, NOTICE, CORRESPONDENCE, TYPE_FAMILY,
                     EXEMPLAR, CONSTRAINTS, CONVENTIONS, INITIALIZATION,
                     VAR, TYPE_PARAM, FAMILY, DO, IF, ELSE, ENHANCED, BY, CART_PROD,
                     EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED,
@@ -55,6 +55,7 @@ public class ResolveParserDefinition implements ParserDefinition {
   public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, PRIME, COLON_EQUALS,
                                                            LBRACK, RBRACK, LANGLE, RANGLE, /*LCUP, RCUP,*/ LCEIL, RCEIL,
                                                            DBL_BAR, BAR, COLON_EQUALS_COLON);
+  public static final TokenSet PARAMETER_MODES = TokenSet.create(ALTERS, UPDATES, CLEARS, RESTORES, PRESERVES, REPLACES, EVALUATES);
 
   @NotNull
   @Override

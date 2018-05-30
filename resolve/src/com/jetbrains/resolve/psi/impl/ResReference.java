@@ -437,7 +437,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
    */
   private static boolean forSuperModule(@NotNull ResModuleDecl module, @NotNull String currentUsesName) {
     for (ResModuleIdentifierSpec e : module.getModuleIdentifierSpecs()) {
-      if (e.getIdentifier().getText().equals(currentUsesName)) return true;
+      if (e.getIdentifier() != null && e.getIdentifier().getText().equals(currentUsesName)) return true;
     }
     return false;
   }
