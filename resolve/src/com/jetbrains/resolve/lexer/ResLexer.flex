@@ -84,7 +84,6 @@ ESCAPES = [abfnrtv]
 "."                                     { return DOT; }
 "("                                     { return LPAREN; }
 ")"                                     { return RPAREN; }
-"′"                                      { return PRIME; }
 
 ":"                                     { return COLON; }
 "ː"                                     { return TRICOLON; }

@@ -185,7 +185,6 @@ public interface ResTypes {
   IElementType POUND = new ResTokenType("#");
   IElementType PRECIS = new ResTokenType("Precis");
   IElementType PRESERVES = new ResTokenType("preserves");
-  IElementType PRIME = new ResTokenType("′");
   IElementType PROCEDURE = new ResTokenType("Procedure");
   IElementType RANGLE = new ResTokenType("⟩");
   IElementType RAW_STRING = new ResTokenType("raw_string");

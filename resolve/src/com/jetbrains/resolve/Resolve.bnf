@@ -20,7 +20,6 @@
         DOT     = '.'
         LPAREN  = '('
         RPAREN  = ')'
-        PRIME   = '′'
 
         COLON       = ':'
         TRICOLON    = 'ː'
