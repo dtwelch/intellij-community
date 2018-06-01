@@ -47,8 +47,16 @@
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
     <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
-            text="RESOLVE Validate">
+            text="Resolve Validate">
       <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
+      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+    <action id="resolve.SugarFile" class="com.jetbrains.resolve.action.ResolveFormatAction"
+            text="Resolve Sugar Math">
+      <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
       <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
       <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
