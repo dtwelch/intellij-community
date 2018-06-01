@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ResolveFormatAction extends DumbAwareAction {
@@ -75,8 +76,12 @@ public abstract class ResolveFormatAction extends DumbAwareAction {
     }
   }*/
 
-  public abstract Map<String, String> getArgMap(@NotNull AnActionEvent e);
+  @NotNull
+  public abstract List<String> getArguments(@NotNull AnActionEvent e);
 
+  /**
+   * Somewhat longhanded way of saving the document (see go-plugin impl of gofmt)
+   */
   void commitDoc(Project project, VirtualFile file) {
     PsiDocumentManager psiMgr = PsiDocumentManager.getInstance(project);
     FileDocumentManager docMgr = FileDocumentManager.getInstance();

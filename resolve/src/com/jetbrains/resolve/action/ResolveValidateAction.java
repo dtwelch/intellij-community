@@ -63,7 +63,7 @@ public class ResolveValidateAction extends ResolveAction {
     //argMap.put("-lib", getContentRoot(project, resolveFile).getPath());
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Resolve compiler = setupAndRunCompiler(project, editor, resolveFile, cmdArgs, issueListener);
+    Resolve compiler = setupAndRunCompiler(project, "Validating Source", resolveFile, cmdArgs, issueListener);
     if (compiler.targetModule.hasParseErrors) return;
 
     annotateIssues(editor, resolveFile, compiler, issueListener);
@@ -76,15 +76,15 @@ public class ResolveValidateAction extends ResolveAction {
 
   @Nullable
   public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                            @NotNull Editor editor,
+                                            @NotNull String title,
                                             @NotNull VirtualFile targetFile,
                                             @NotNull List<String> args) {
-    return setupAndRunCompiler(project, editor, targetFile, args, null);
+    return setupAndRunCompiler(project, title, targetFile, args, null);
   }
 
   @NotNull
   public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                            @NotNull Editor editor,
+                                            @NotNull String title,
                                             @NotNull VirtualFile targetFile,
                                             @NotNull List<String> args,
                                             @Nullable Resolve.ResolveListener customListener) {
@@ -101,7 +101,7 @@ public class ResolveValidateAction extends ResolveAction {
     if (customListener != null) compiler.addListener(customListener);
     try {
       ProgressManager.getInstance().run(new Task.WithResult<Boolean, Exception>(
-        project, "Analyzing Current Source", false) {
+        project, title, false) {
         @Override
         protected Boolean compute(@NotNull ProgressIndicator indicator) throws Exception {
           compiler.processCommandLineTarget();
