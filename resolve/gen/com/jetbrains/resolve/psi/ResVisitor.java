@@ -190,6 +190,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathDefnSig(o);
   }
 
+  public void visitMathParameterDefnDecl(@NotNull ResMathParameterDefnDecl o) {
+    visitMathStandardDefnDecl(o);
+  }
+
   public void visitMathPostfixDefnSig(@NotNull ResMathPostfixDefnSig o) {
     visitMathDefnSig(o);
   }

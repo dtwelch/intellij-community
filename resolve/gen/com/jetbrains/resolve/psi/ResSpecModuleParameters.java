@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface ResSpecModuleParameters extends ResModuleParameters {
 
   @NotNull
-  List<ResMathStandardDefnDecl> getMathStandardDefnDeclList();
+  List<ResMathParameterDefnDecl> getMathParameterDefnDeclList();
 
   @NotNull
   List<ResParamDecl> getParamDeclList();

@@ -185,7 +185,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     List<ResMathDefnSig> result = new ArrayList<>();
     ResModuleParameters params = getModuleParameters();
     if (params instanceof ResSpecModuleParameters) {
-      for (ResMathStandardDefnDecl paramGroup : (((ResSpecModuleParameters)params).getMathStandardDefnDeclList())) {
+      for (ResMathStandardDefnDecl paramGroup : (((ResSpecModuleParameters)params).getMathParameterDefnDeclList())) {
         result.addAll(paramGroup.getSignatures());
       }
     }

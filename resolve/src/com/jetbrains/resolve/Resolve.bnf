@@ -245,11 +245,13 @@ OpBlock end ';'
 
 SpecModuleParameters ::= '(' SpecModuleParamList ')' {pin=1}
 private SpecModuleParamList ::= SpecParamDecl  (';' SpecParamDecl)* {recoverWhile=ParamListRec}
-private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathStandardDefnDecl
+private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathParameterDefnDecl
+
+MathParameterDefnDecl ::= 'Definition' MathDefnSig {pin=1 extends=MathStandardDefnDecl}
 
 RealizModuleParameters ::= '(' ImplModuleParamList ')' {pin=1}
 private ImplModuleParamList ::= ImplParamDecl  (';' ImplParamDecl)* {recoverWhile=ParamListRec}
-private ImplParamDecl ::= ParamDecl|OperationDecl
+private ImplParamDecl ::= ParamDecl | OperationDecl
 
 private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
 private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}

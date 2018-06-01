@@ -12,11 +12,10 @@ public class ResolveDesugarFileAction extends ResolveFormatFileAction {
 
   @NotNull
   @Override
-  public List<String> getArguments(@NotNull AnActionEvent e) {
-    VirtualFile file = e.getRequiredData(CommonDataKeys.VIRTUAL_FILE);
+  public List<String> getArguments(@NotNull String fileName) {
     List<String> result = new ArrayList<>();
     result.add("-desugar");
-    result.add(file.getCanonicalPath());
+    result.add(fileName);
     return result;
   }
 

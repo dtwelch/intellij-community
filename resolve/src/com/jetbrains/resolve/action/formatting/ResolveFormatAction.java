@@ -19,7 +19,7 @@ public abstract class ResolveFormatAction extends DumbAwareAction {
   }
 
   @NotNull
-  public abstract List<String> getArguments(@NotNull AnActionEvent e);
+  public abstract List<String> getArguments(@NotNull String fileName);
 
   /**
    * Somewhat longhanded way of saving the document (see go-plugin impl of gofmt)
@@ -37,4 +37,6 @@ public abstract class ResolveFormatAction extends DumbAwareAction {
     }
   }
 
+  @NotNull
+  public abstract String getTitle();
 }

@@ -27,8 +27,8 @@ public class ResSpecModuleParametersImpl extends ResCompositeElementImpl impleme
 
   @Override
   @NotNull
-  public List<ResMathStandardDefnDecl> getMathStandardDefnDeclList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathStandardDefnDecl.class);
+  public List<ResMathParameterDefnDecl> getMathParameterDefnDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathParameterDefnDecl.class);
   }
 
   @Override

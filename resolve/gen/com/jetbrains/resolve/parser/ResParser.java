@@ -125,6 +125,9 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == MATH_OUTFIX_DEFN_SIG) {
       r = MathOutfixDefnSig(b, 0);
     }
+    else if (t == MATH_PARAMETER_DEFN_DECL) {
+      r = MathParameterDefnDecl(b, 0);
+    }
     else if (t == MATH_POSTFIX_DEFN_SIG) {
       r = MathPostfixDefnSig(b, 0);
     }
@@ -283,6 +286,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
+    create_token_set_(MATH_PARAMETER_DEFN_DECL, MATH_STANDARD_DEFN_DECL),
     create_token_set_(MATH_VAR_DECL, MATH_VAR_DECL_GROUP),
     create_token_set_(EXP, INFIX_EXP, LITERAL_EXP, NESTED_EXP,
       PARAM_EXP, REFERENCE_EXP, SELECTOR_EXP),
@@ -1113,7 +1117,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ParamDecl|OperationDecl
+  // ParamDecl | OperationDecl
   static boolean ImplParamDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ImplParamDecl")) return false;
     boolean r;
@@ -1528,6 +1532,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, ETRICOLON);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  /* ********************************************************** */
+  // 'Definition' MathDefnSig
+  public static boolean MathParameterDefnDecl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathParameterDefnDecl")) return false;
+    if (!nextTokenIs(b, DEFINITION)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MATH_PARAMETER_DEFN_DECL, null);
+    r = consumeToken(b, DEFINITION);
+    p = r; // pin = 1
+    r = r && MathDefnSig(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -3070,14 +3088,14 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // TypeParamDecl | ParamDecl | MathStandardDefnDecl
+  // TypeParamDecl | ParamDecl | MathParameterDefnDecl
   static boolean SpecParamDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "SpecParamDecl")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = TypeParamDecl(b, l + 1);
     if (!r) r = ParamDecl(b, l + 1);
-    if (!r) r = MathStandardDefnDecl(b, l + 1);
+    if (!r) r = MathParameterDefnDecl(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResolveSugarFileAction extends ResolveFormatFileAction {
+public class ResolveSugarDirectoryAction extends ResolveFormatDirectoryAction {
 
   @NotNull
   @Override
@@ -22,6 +22,6 @@ public class ResolveSugarFileAction extends ResolveFormatFileAction {
   @NotNull
   @Override
   public String getTitle() {
-    return "Sugaring Code";
+    return "Sugaring code";
   }
 }

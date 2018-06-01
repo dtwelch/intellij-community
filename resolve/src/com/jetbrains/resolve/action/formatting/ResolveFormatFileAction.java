@@ -20,7 +20,11 @@ public abstract class ResolveFormatFileAction extends ResolveFormatAction {
   public void update(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-    if (project == null || file == null || !file.isInLocalFileSystem() || !isAvailableOnFile(file)) {
+    if (project == null ||
+        file == null ||
+        file.isDirectory() ||
+        !file.isInLocalFileSystem() ||
+        !isAvailableOnFile(file)) {
       e.getPresentation().setEnabled(false);
       return;
     }
@@ -34,17 +38,11 @@ public abstract class ResolveFormatFileAction extends ResolveFormatAction {
     if (project == null || !isAvailableOnFile(file)) return;
 
     commitDoc(project, file);
-    Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-    if (editor == null) return;
 
-    List<String> args = getArguments(e);
+    List<String> args = getArguments(file.getPath());
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Resolve compiler = ResolveValidateAction.setupAndRunCompiler(project, getTitle(), file, args, issueListener);
-    ResolveValidateAction.annotateIssues(editor, file, compiler, issueListener);
+    ResolveValidateAction.setupAndRunCompiler(project, getTitle(), file, args, issueListener);
     VfsUtil.markDirtyAndRefresh(true, true, true, file);
   }
-
-  @NotNull
-  public abstract String getTitle();
 }

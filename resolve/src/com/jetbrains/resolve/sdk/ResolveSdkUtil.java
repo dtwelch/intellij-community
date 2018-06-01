@@ -198,6 +198,12 @@ public class ResolveSdkUtil {
       });
   }
 
+  @Nullable
+  public static VirtualFile getResolvePathRoot(@NotNull final Project project) {
+    List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
+    return x.get(0);
+  }
+
   @NotNull
   private static Collection<Object> getSdkAndLibrariesCacheDependencies(@NotNull Project project) {
     Collection<Object> dependencies = ContainerUtil.newArrayList(

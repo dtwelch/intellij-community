@@ -4,15 +4,17 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.jetbrains.resolve.sdk.ResolveSdkType;
+import com.jetbrains.resolve.action.CompilerIssueListener;
+import com.jetbrains.resolve.action.ResolveValidateAction;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.io.File;
 import java.util.List;
 
-public class ResolveFormatDirectoryAction extends ResolveFormatAction {
+public abstract class ResolveFormatDirectoryAction extends ResolveFormatAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
@@ -22,6 +24,7 @@ public class ResolveFormatDirectoryAction extends ResolveFormatAction {
       e.getPresentation().setEnabled(false);
       return;
     }
+
     e.getPresentation().setEnabled(true);
   }
 
@@ -31,27 +34,44 @@ public class ResolveFormatDirectoryAction extends ResolveFormatAction {
     if (project == null) return;
 
     FileDocumentManager.getInstance().saveAllDocuments();
-    VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-    if (file == null) return;
-    VirtualFile projectRoot = null;
+    VirtualFile directory = e.getData(CommonDataKeys.VIRTUAL_FILE);
+    if (directory == null || !directory.isDirectory()) {
+      return; //dunno about this, don't think we need it we already do this in update()...
+    }
 
-    //we can only format projects within the scope of RESOLVEROOT or RESOLVEPATH
-    for (VirtualFile root : ResolveSdkUtil.getSourcesPathsToLookup(project)) {
-      if (file.getPath().startsWith(root.getPath())) {
-        projectRoot = root;
+    boolean onResolvePath = false;
+    boolean onResolveRootPath = false;
+    VirtualFile sdkResolveRootDir = ResolveSdkUtil.getSdkSrcDir(project);
+    VirtualFile sdkResolvePathDir = ResolveSdkUtil.getResolvePathRoot(project);
+    if (sdkResolveRootDir == null || sdkResolvePathDir == null) return; //houston we've got a problem
+
+    //can only run sugar directory on something in RESOLVEPATH or RESOLVEROOT (or these themselves)
+    for (VirtualFile vf : ResolveSdkUtil.getSourcesPathsToLookup(project)) {
+      String vfp = vf.getPath();
+      if (sdkResolveRootDir.getPath().equals(vfp) && directory.getPath().startsWith(vfp)) {
+        onResolveRootPath = true;
+        break;
+      }
+      else if (sdkResolvePathDir.getPath().equals(vfp) && directory.getPath().startsWith(vfp)) {
+        onResolvePath = true;
         break;
       }
     }
 
-    if (projectRoot == null) return;
+    if (!onResolvePath && !onResolveRootPath) {
+      e.getPresentation().setEnabled(false);
+      return;
+    }
+    String fname = onResolvePath
+                   ? directory.getPath().replace(
+                     sdkResolvePathDir.getPath(), "RESOLVEPATH" + File.separator + "src")
+                   : directory.getPath().replace(
+                     sdkResolveRootDir.getPath(), "RESOLVEROOT" + File.separator + "src") ;
 
-    int i;
-    i = 0;
-  }
+    List<String> args = getArguments(fname);
+    CompilerIssueListener issueListener = new CompilerIssueListener();
 
-  @NotNull
-  @Override
-  public List<String> getArguments(@NotNull AnActionEvent e) {
-    return Collections.emptyList();
+    ResolveValidateAction.setupAndRunCompiler(project, getTitle(), directory, args, issueListener);
+    VfsUtil.markDirtyAndRefresh(true, true, true, directory);
   }
 }
