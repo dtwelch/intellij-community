@@ -87,7 +87,7 @@ ESCAPES = [abfnrtv]
 
 ":"                                     { return COLON; }
 "ː"                                     { return TRICOLON; }
-{BACKSLASH}"ː"                          { return ETRICOLON; }
+{BACKSLASH}"tricolon"                   { return ETRICOLON; }
 "::"                                    { return COLON_COLON; }
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }

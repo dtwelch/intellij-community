@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.action;
+package com.jetbrains.resolve.action.formatting;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.actionSystem.AnAction;

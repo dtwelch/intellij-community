@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.action;
+package com.jetbrains.resolve.action.formatting;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -7,6 +7,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.jetbrains.resolve.action.CompilerIssueListener;
+import com.jetbrains.resolve.action.ResolveValidateAction;
 import edu.clemson.resolve.Resolve;
 import org.jetbrains.annotations.NotNull;
 
