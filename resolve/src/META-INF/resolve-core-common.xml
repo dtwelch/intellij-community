@@ -46,38 +46,29 @@
     <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
-    <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
-            text="Resolve Validate">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
-      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    <group id="ResolveTools" text="Resolve Tools" description="Resolve External Tools" icon="ResolveIcons.RESOLVE" popup="true">
+      <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
+              text="Resolve Validate">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      </action>
+      <action id="resolve.SugarFile" class="com.jetbrains.resolve.action.formatting.ResolveSugarFileAction"
+              text="Sugar Math">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
+      </action>
+      <action id="resolve.DesugarFile" class="com.jetbrains.resolve.action.formatting.ResolveDesugarFileAction"
+              text="Desugar Math">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
+      </action>
+      <action id="resolve.SugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveSugarDirectoryAction"
+              text="Sugar Math in Directory">
+      </action>
+      <action id="resolve.DesugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveDesugarDirectoryAction"
+              text="Desugar Math in Directory">
+      </action>
+      <add-to-group group-id="CodeMenu" anchor="last"/>
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </action>
-    <action id="resolve.SugarFile" class="com.jetbrains.resolve.action.formatting.ResolveSugarFileAction"
-            text="Sugar Math">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
-      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </action>
-    <action id="resolve.DesugarFile" class="com.jetbrains.resolve.action.formatting.ResolveDesugarFileAction"
-            text="Desugar Math">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
-      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </action>
-    <action id="resolve.SugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveSugarDirectoryAction"
-            text="Sugar Directory">
-      <!--<keyboard-shortcut keymap="$default" first-keystroke="control shift A"/>-->
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
-      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </action>
+      <add-to-group group-id="EditorLangPopupMenu" anchor="last"/>
+    </group>
   </actions>
 
   <module-components>

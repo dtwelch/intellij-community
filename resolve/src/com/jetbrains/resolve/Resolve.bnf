@@ -356,7 +356,7 @@ MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathPrefixDefnSigs is MathExp ';' {pin=2}
 
 MathStandardDefnDecl ::= ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
-'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';' {pin=5}
+'Definition'  MathDefnSig (('≜'|ETRIANGLEQ) MathAssertionExp)? ';' {pin=5}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'

@@ -32,6 +32,9 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   PsiElement getDefinition();
 
   @Nullable
+  PsiElement getEtriangleq();
+
+  @Nullable
   PsiElement getImplicit();
 
   @Nullable

@@ -59,7 +59,7 @@ U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
 LAMBDA = "λ"
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"-->"|"->")
+SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"-->"|"->"|"~>")
 STR     = "\""
 BACKSLASH = "\\"
 STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
@@ -119,6 +119,7 @@ ESCAPES = [abfnrtv]
 "∀"                                     { return FORALL; }
 {BACKSLASH}"forall"                     { return EFORALL; }
 {BACKSLASH}"exists"                     { return EEXISTS; }
+{BACKSLASH}"triangleq"                  { return ETRIANGLEQ; }
 {BACKSLASH}{IDENT}                      { return CMD; }
 "≜"                                     { return TRIEQUALS; }
 ":="                                    { return COLON_EQUALS; }

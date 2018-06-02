@@ -1781,7 +1781,7 @@ public class ResParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
-  // 'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';'
+  // 'Definition'  MathDefnSig (('≜'|ETRIANGLEQ) MathAssertionExp)? ';'
   public static boolean MathStandardDefnDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl")) return false;
     boolean r, p;
@@ -1827,20 +1827,31 @@ public class ResParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ('≜' MathAssertionExp)?
+  // (('≜'|ETRIANGLEQ) MathAssertionExp)?
   private static boolean MathStandardDefnDecl_6(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_6")) return false;
     MathStandardDefnDecl_6_0(b, l + 1);
     return true;
   }
 
-  // '≜' MathAssertionExp
+  // ('≜'|ETRIANGLEQ) MathAssertionExp
   private static boolean MathStandardDefnDecl_6_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, TRIEQUALS);
+    r = MathStandardDefnDecl_6_0_0(b, l + 1);
     r = r && MathAssertionExp(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // '≜'|ETRIANGLEQ
+  private static boolean MathStandardDefnDecl_6_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, TRIEQUALS);
+    if (!r) r = consumeToken(b, ETRIANGLEQ);
     exit_section_(b, m, null, r);
     return r;
   }

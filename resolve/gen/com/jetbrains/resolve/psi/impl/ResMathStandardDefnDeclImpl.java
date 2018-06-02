@@ -75,6 +75,12 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
 
   @Override
   @Nullable
+  public PsiElement getEtriangleq() {
+    return findChildByType(ETRIANGLEQ);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getImplicit() {
     return findChildByType(IMPLICIT);
   }

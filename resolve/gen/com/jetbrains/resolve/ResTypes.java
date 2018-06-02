@@ -148,6 +148,7 @@ public interface ResTypes {
   IElementType ENHANCED = new ResTokenType("enhanced");
   IElementType ENHANCEMENT = new ResTokenType("Enhancement");
   IElementType ENSURES = new ResTokenType("ensures");
+  IElementType ETRIANGLEQ = new ResTokenType("ETRIANGLEQ");
   IElementType ETRICOLON = new ResTokenType("ETRICOLON");
   IElementType EVALUATES = new ResTokenType("evaluates");
   IElementType EXEMPLAR = new ResTokenType("exemplar");
