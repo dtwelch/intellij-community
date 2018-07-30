@@ -69,12 +69,7 @@ public class ResolveValidateAction extends ResolveAction {
     annotateIssues(editor, resolveFile, compiler, issueListener);
   }
 
-  @Override
-  public void update(AnActionEvent e) {
-    e.getPresentation().setIcon(ResolveIcons.VALIDATE);
-  }
-
-  @Nullable
+  @NotNull
   public static Resolve setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
                                             @NotNull VirtualFile targetFile,

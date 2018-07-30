@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.ui.JBDefaultTreeCellRenderer;
 import com.intellij.util.Function;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
@@ -194,6 +195,7 @@ public class ResolveSdkUtil {
         public Result<Collection<VirtualFile>> compute() {
           return Result.create(getRESOLVEPathSourcesRootInner(project),
                                getSdkAndLibrariesCacheDependencies(project));
+          JBDefaultTreeCellRenderer
         }
       });
   }
