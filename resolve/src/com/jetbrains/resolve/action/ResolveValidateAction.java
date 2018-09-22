@@ -59,30 +59,18 @@ public class ResolveValidateAction extends ResolveAction {
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) return;
 
-    List<String> cmdArgs = ContainerUtil.newArrayList();
-    cmdArgs.add(resolveFile.getCanonicalPath());
-    if (ResolveCompilerSettings.getInstance().isNoAutoStandardUses()) {
-      cmdArgs.add("-no-std-uses");
-    }
-
-    String[] args = new String[3];
+    String[] args = new String[1];
     args[0] = resolveFile.getPath();
-    args[1] = "-no-std-uses";
+    //args[1] = "-no-std-uses";
 
 
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Main.InitConfig env = Main.InitConfig.INSTANCE;
-    env.targetFile = resolveFile.getPath();
-
-
     //Resolve compiler = setupAndRunCompiler(project, "Validating Source", resolveFile, cmdArgs, issueListener);
     //TODO: call setupAndRunCompiler here instead of the three following lines:
-    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
-    control.addAdditionalCompilerListener(issueListener);
-    control.loadProgram(new File(env.targetFile));
 
-    setupAndRunCompiler(project, "Validating RESOLVE source files", resolveFile, args, issueListener);
+    AbstractUserInterfaceControl control =
+      setupAndRunCompiler(project, "Validating RESOLVE source files", resolveFile, args, issueListener);
 
     if (control.getEnvironment().targetModule == null ||
         control.getEnvironment().targetModule.hasParseErrors) {
@@ -91,7 +79,7 @@ public class ResolveValidateAction extends ResolveAction {
 
     annotateIssues(editor, resolveFile, control, issueListener);
   }
-  
+
   @NotNull
   public static AbstractUserInterfaceControl setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
@@ -101,8 +89,6 @@ public class ResolveValidateAction extends ResolveAction {
     Main.InitConfig env = Main.InitConfig.INSTANCE;
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
     Main.evaluateArguments(env, args);
-
-    control.loadProgram(new File(env.targetFile));
 
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
