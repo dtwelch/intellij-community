@@ -73,14 +73,6 @@ public class ResolveValidateAction extends ResolveAction {
   public static Resolve setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
                                             @NotNull VirtualFile targetFile,
-                                            @NotNull List<String> args) {
-    return setupAndRunCompiler(project, title, targetFile, args, null);
-  }
-
-  @NotNull
-  public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                            @NotNull String title,
-                                            @NotNull VirtualFile targetFile,
                                             @NotNull List<String> args,
                                             @Nullable Resolve.ResolveListener customListener) {
     Resolve compiler = getDefaultCompiler(args);
