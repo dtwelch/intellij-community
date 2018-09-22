@@ -91,32 +91,38 @@ public class ResolveValidateAction extends ResolveAction {
 
     annotateIssues(editor, resolveFile, control, issueListener);
   }
-
-
+  
   @NotNull
   public static AbstractUserInterfaceControl setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
                                             @NotNull VirtualFile targetFile,
                                             @NotNull String[] args,
                                             @Nullable ResolveCompilerListener customListener) {
-    Resolve compiler = getDefaultCompiler(args);
+    Main.InitConfig env = Main.InitConfig.INSTANCE;
+    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    Main.evaluateArguments(env, args);
+
+    control.loadProgram(new File(env.targetFile));
+
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
     String timeStamp = getTimeStamp();
     console.print(timeStamp + ": resolve " + Utils.join(args, " ") + "\n",
                   ConsoleViewContentType.SYSTEM_OUTPUT);
 
-    RunResolveListener defaultListener = new RunResolveListener(compiler, console);
-    compiler.removeListeners();
-    compiler.addListener(defaultListener);
-    if (customListener != null) compiler.addListener(customListener);
+    RunResolveListener defaultListener = new RunResolveListener(control, console);
+    //compiler.removeListeners();
+    control.addAdditionalCompilerListener(defaultListener);
+    if (customListener != null) {
+      control.addAdditionalCompilerListener(customListener);
+    }
     try {
       ProgressManager.getInstance().run(new Task.WithResult<Boolean, Exception>(
         project, title, false) {
         @Override
         protected Boolean compute(@NotNull ProgressIndicator indicator) throws Exception {
-          compiler.processCommandLineTarget();
-          return compiler.errMgr.getErrorCount() == 0;
+          control.loadProgram(new File(targetFile.getPath()));
+          return control.getErrorManager().getErrorCount() == 0;
         }
       });
     }
@@ -137,9 +143,9 @@ public class ResolveValidateAction extends ResolveAction {
     if (defaultListener.hasOutput) {
       ResolveStudioController.showConsoleWindow(project);
     }
-    return compiler;
+    return control;
   }
-*/
+
 
   public static void annotateIssues(Editor editor,
                                     VirtualFile targetFile,
