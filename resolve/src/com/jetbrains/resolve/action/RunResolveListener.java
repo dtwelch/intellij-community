@@ -1,11 +1,8 @@
 package com.jetbrains.resolve.action;
 
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import edu.clemson.resolve.Resolve;
-import edu.clemson.resolve.ResolveMessage;
+import edu.clemson.resolve.core.ResolveCompilerListener;
+import edu.clemson.resolve.core.ResolveMessage;
 import org.jetbrains.annotations.NotNull;
-import org.stringtemplate.v4.ST;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +14,30 @@ import java.util.List;
  * <p>
  * <a href="https://github.com/antlr/intellij-plugin-v4">https://github.com/antlr/intellij-plugin-v4/a>
  */
-public class RunResolveListener implements Resolve.ResolveListener {
+public class RunResolveListener implements ResolveCompilerListener {
 
   public final List<String> all = new ArrayList<String>();
-  private final Resolve compiler;
+
+  @Override
+  public void reportStatus(@NotNull String s) {
+
+  }
+
+  @Override
+  public void resetStatus() {
+
+  }
+
+  @Override
+  public void reportError(@NotNull ResolveMessage message) {
+
+  }
+
+  @Override
+  public void reportWarning(@NotNull ResolveMessage message) {
+
+  }
+  /*private final Resolve compiler;
   private final ConsoleView console;
   public boolean hasOutput = false;
 
@@ -57,5 +74,5 @@ public class RunResolveListener implements Resolve.ResolveListener {
     }
     console.print(outputMsg + "\n", errType);
     hasOutput = true;
-  }
+  }*/
 }

@@ -27,15 +27,20 @@ import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.ResolveStudioController;
 import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
-import edu.clemson.resolve.Resolve;
-import edu.clemson.resolve.ResolveMessage;
-import edu.clemson.resolve.Utils;
+import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.ResolveCompilerListener;
+import edu.clemson.resolve.core.ResolveMessage;
+import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
+import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
+import edu.clemson.resolve.core.control.UserInterfaceControl;
+import edu.clemson.resolve.util.Utils;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.ST;
 
 import java.awt.*;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -60,21 +65,40 @@ public class ResolveValidateAction extends ResolveAction {
       cmdArgs.add("-no-std-uses");
     }
 
-    //argMap.put("-lib", getContentRoot(project, resolveFile).getPath());
+    String[] args = new String[3];
+    args[0] = resolveFile.getPath();
+    args[1] = "-no-std-uses";
+
+
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Resolve compiler = setupAndRunCompiler(project, "Validating Source", resolveFile, cmdArgs, issueListener);
-    if (compiler.targetModule.hasParseErrors) return;
+    Main.InitConfig env = Main.InitConfig.INSTANCE;
+    env.targetFile = resolveFile.getPath();
 
-    annotateIssues(editor, resolveFile, compiler, issueListener);
+
+    //Resolve compiler = setupAndRunCompiler(project, "Validating Source", resolveFile, cmdArgs, issueListener);
+    //TODO: call setupAndRunCompiler here instead of the three following lines:
+    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    control.addAdditionalCompilerListener(issueListener);
+    control.loadProgram(new File(env.targetFile));
+
+    setupAndRunCompiler(project, "Validating RESOLVE source files", resolveFile, args, issueListener);
+
+    if (control.getEnvironment().targetModule == null ||
+        control.getEnvironment().targetModule.hasParseErrors) {
+      return;
+    }
+
+    annotateIssues(editor, resolveFile, control, issueListener);
   }
 
+
   @NotNull
-  public static Resolve setupAndRunCompiler(@NotNull Project project,
+  public static AbstractUserInterfaceControl setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
                                             @NotNull VirtualFile targetFile,
-                                            @NotNull List<String> args,
-                                            @Nullable Resolve.ResolveListener customListener) {
+                                            @NotNull String[] args,
+                                            @Nullable ResolveCompilerListener customListener) {
     Resolve compiler = getDefaultCompiler(args);
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
@@ -115,10 +139,11 @@ public class ResolveValidateAction extends ResolveAction {
     }
     return compiler;
   }
+*/
 
   public static void annotateIssues(Editor editor,
                                     VirtualFile targetFile,
-                                    Resolve compiler,
+                                    AbstractUserInterfaceControl compiler,
                                     CompilerIssueListener issueListener) {
     editor.getMarkupModel().removeAllHighlighters();    //first
 
@@ -147,6 +172,7 @@ public class ResolveValidateAction extends ResolveAction {
       public void mouseDragged(EditorMouseEvent e) {
       }
     };
+
     List<RangeHighlighter> issueRelatedHighlighters = new ArrayList<>();
     for (Issue issue : issueListener.issues) {
       annotateIssueInEditor(targetFile, issueRelatedHighlighters, editor, issue);
@@ -174,8 +200,8 @@ public class ResolveValidateAction extends ResolveAction {
     });
   }
 
-  public static String getIssueDisplayString(Resolve compiler, Issue e) {
-    ST st = compiler.errMgr.getMessageTemplate(e.msg);
+  public static String getIssueDisplayString(UserInterfaceControl compiler, Issue e) {
+    ST st = compiler.getErrorManager().getMessageTemplate(e.msg);
     return st.render();
   }
 

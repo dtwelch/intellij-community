@@ -10,9 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.util.ArrayUtil;
 import com.jetbrains.resolve.ResolveFileType;
-import edu.clemson.resolve.Resolve;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,15 +48,10 @@ abstract class ResolveAction extends AnAction implements DumbAware {
         return null;
     }
 
-    @NotNull
-    public static Resolve getDefaultCompiler(@NotNull Map<String, String> argMap) {
-        return getDefaultCompiler(getArgMapAsList(argMap));
-    }
-
-    @NotNull
-    public static Resolve getDefaultCompiler(@NotNull List<String> args) {
-        return new Resolve(ArrayUtil.toStringArray(args));
-    }
+    //@NotNull
+    //public static Resolve getDefaultCompiler(@NotNull List<String> args) {
+    //    return new Resolve(ArrayUtil.toStringArray(args));
+    //}
 
     @NotNull
     public static String getTimeStamp() {

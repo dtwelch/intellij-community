@@ -71,7 +71,7 @@ public abstract class ResolveFormatDirectoryAction extends ResolveFormatAction {
     List<String> args = getArguments(fname);
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    ResolveValidateAction.setupAndRunCompiler(project, getTitle(), directory, args, issueListener);
+    //ResolveValidateAction.setupAndRunCompiler(project, getTitle(), directory, args, issueListener);
     VfsUtil.markDirtyAndRefresh(true, true, true, directory);
   }
 }

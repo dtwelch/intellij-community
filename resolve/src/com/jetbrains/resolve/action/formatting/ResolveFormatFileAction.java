@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.jetbrains.resolve.action.CompilerIssueListener;
 import com.jetbrains.resolve.action.ResolveValidateAction;
-import edu.clemson.resolve.Resolve;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -42,7 +41,7 @@ public abstract class ResolveFormatFileAction extends ResolveFormatAction {
     List<String> args = getArguments(file.getPath());
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    ResolveValidateAction.setupAndRunCompiler(project, getTitle(), file, args, issueListener);
+    //ResolveValidateAction.setupAndRunCompiler(project, getTitle(), file, args, issueListener);
     VfsUtil.markDirtyAndRefresh(true, true, true, file);
   }
 }

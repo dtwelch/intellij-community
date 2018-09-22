@@ -86,7 +86,7 @@ public class ResolveSdkType extends SdkType {
     if (version == null) {
       return "Unknown Resolve version at " + sdkHome;
     }
-    return "Resolve " + version;
+    return "RESOLVE " + version;
   }
 
   @Nullable

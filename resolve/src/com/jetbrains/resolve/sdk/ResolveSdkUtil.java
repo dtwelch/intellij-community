@@ -149,13 +149,15 @@ public class ResolveSdkUtil {
   public static String retrieveResolveVersion(@NotNull String sdkPath) {
     try {
       VirtualFile sdkRoot = VirtualFileManager.getInstance().findFileByUrl(VfsUtilCore.pathToUrl(sdkPath));
+
       if (sdkRoot != null) {
         String cachedVersion = sdkRoot.getUserData(RESOLVE_VER_DATA_KEY);
         if (cachedVersion != null) {
           return !cachedVersion.isEmpty() ? cachedVersion : null;
         }
+        VirtualFile versionFile =
+          sdkRoot.findFileByRelativePath("/compiler/resources/edu/clemson/resolve/util/version");
 
-        VirtualFile versionFile = sdkRoot.findFileByRelativePath("VERSION.txt");
         if (versionFile != null) {
           String text = VfsUtilCore.loadText(versionFile);
           String version = parseResolveVersion(text);
@@ -195,7 +197,7 @@ public class ResolveSdkUtil {
         public Result<Collection<VirtualFile>> compute() {
           return Result.create(getRESOLVEPathSourcesRootInner(project),
                                getSdkAndLibrariesCacheDependencies(project));
-          JBDefaultTreeCellRenderer
+          //JBDefaultTreeCellRenderer
         }
       });
   }
