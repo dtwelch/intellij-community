@@ -22,6 +22,10 @@ public class ResolveCompilerFlagsConfigurable extends JPanel implements Configur
   private JCheckBox myAutoImportStandardUses;
   private JCheckBox myShowCompilerEnvVariables;
 
+  //format settings
+  private JCheckBox myUseMathAsciiAbbreviations;
+  private JCheckBox myUseMathUnicodeSymbols;
+
   public ResolveCompilerFlagsConfigurable(final Project project) {
     myProject = project;
     myResolveCompilerSettings = ResolveCompilerSettings.getInstance();
@@ -30,8 +34,15 @@ public class ResolveCompilerFlagsConfigurable extends JPanel implements Configur
     FormBuilder builder = FormBuilder.createFormBuilder();
     myAutoImportStandardUses = new JCheckBox(ResolveBundle.message("sdk.settings.auto.import.std.uses"));
     myShowCompilerEnvVariables = new JCheckBox(ResolveBundle.message("sdk.settings.show.compiler.env"));
+    myUseMathAsciiAbbreviations = new JCheckBox("sdk.settings.use.math.ascii.abbreviations");
+    myUseMathUnicodeSymbols = new JCheckBox("sdk.settings.use.math.unicode.symbols");
+
     builder.addComponent(myAutoImportStandardUses);
     builder.addComponent(myShowCompilerEnvVariables);
+    builder.addComponent(myAutoImportStandardUses);
+    builder.addComponent(myUseMathAsciiAbbreviations);
+    builder.addComponent(myUseMathUnicodeSymbols);
+
     JPanel result = builder.getPanel();
     result.setBorder(IdeBorderFactory.createTitledBorder(ResolveBundle.message("sdk.settings.compiler.flags"), true));
 
@@ -47,19 +58,25 @@ public class ResolveCompilerFlagsConfigurable extends JPanel implements Configur
   @Override
   public boolean isModified() {
     return myResolveCompilerSettings.isNoAutoStandardUses() != myAutoImportStandardUses.isSelected() ||
-           myResolveCompilerSettings.isShowCompilerEnvVarsOnRun() != myShowCompilerEnvVariables.isSelected();
+           myResolveCompilerSettings.isShowCompilerEnvVarsOnRun() != myShowCompilerEnvVariables.isSelected() ||
+           myResolveCompilerSettings.isUseMathAsciiAbbreviations() != myUseMathAsciiAbbreviations.isSelected() ||
+           myResolveCompilerSettings.isUseMathUnicodeSymbols() != myUseMathUnicodeSymbols.isSelected();
   }
 
   @Override
   public void apply() throws ConfigurationException {
     myResolveCompilerSettings.setNoAutoStandardUses(myAutoImportStandardUses.isSelected());
     myResolveCompilerSettings.setShowCompilerEnvVarsOnRun(myShowCompilerEnvVariables.isSelected());
+    myResolveCompilerSettings.setUseMathAsciiAbbreviations(myUseMathAsciiAbbreviations.isSelected());
+    myResolveCompilerSettings.setUseMathUnicodeSymbols(myUseMathUnicodeSymbols.isSelected());
   }
 
   @Override
   public void reset() {
     myAutoImportStandardUses.setSelected(myResolveCompilerSettings.isNoAutoStandardUses());
     myShowCompilerEnvVariables.setSelected(myResolveCompilerSettings.isNoAutoStandardUses());
+    myUseMathAsciiAbbreviations.setSelected(myUseMathAsciiAbbreviations.isSelected());
+    myUseMathUnicodeSymbols.setSelected(myUseMathUnicodeSymbols.isSelected());
   }
 
   @Override
@@ -68,11 +85,13 @@ public class ResolveCompilerFlagsConfigurable extends JPanel implements Configur
     UIUtil.dispose(myShowCompilerEnvVariables);
     myAutoImportStandardUses = null;
     myShowCompilerEnvVariables = null;
+    myUseMathAsciiAbbreviations = null;
+    myUseMathUnicodeSymbols = null;
   }
 
   @Nls
   @Override
   public String getDisplayName() {
-    return "Resolve";
+    return "RESOLVE";
   }
 }

@@ -61,13 +61,11 @@ public class ResolveValidateAction extends ResolveAction {
 
     String[] args = new String[1];
     args[0] = resolveFile.getPath();
+    //TODO: This needs to be obtained from settings.
     //args[1] = "-no-std-uses";
 
 
     CompilerIssueListener issueListener = new CompilerIssueListener();
-
-    //Resolve compiler = setupAndRunCompiler(project, "Validating Source", resolveFile, cmdArgs, issueListener);
-    //TODO: call setupAndRunCompiler here instead of the three following lines:
 
     AbstractUserInterfaceControl control =
       setupAndRunCompiler(project, "Validating RESOLVE source files", resolveFile, args, issueListener);

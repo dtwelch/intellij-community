@@ -4,6 +4,8 @@ import com.intellij.openapi.components.*;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+
 @State(
   name = "RESOLVE",
   storages = @Storage(file = StoragePathMacros.APP_CONFIG + "/editor.compilersettings.xml")
@@ -12,6 +14,8 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
 
   private boolean noAutoStandardUses = false;
   private boolean showCompilerEnvVarsOnRun = false;
+  private boolean useMathAsciiAbbreviations = false;
+  private boolean useMathUnicodeSymbols = true;
 
   public static ResolveCompilerSettings getInstance() {
     return ServiceManager.getService(ResolveCompilerSettings.class);
@@ -42,5 +46,22 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
 
   public void setShowCompilerEnvVarsOnRun(boolean showCompilerEnvVarsOnRun) {
     this.showCompilerEnvVarsOnRun = showCompilerEnvVarsOnRun;
+  }
+
+  //formatting getters and setters
+  public boolean isUseMathAsciiAbbreviations() {
+    return useMathAsciiAbbreviations;
+  }
+
+  public void setUseMathAsciiAbbreviations(boolean useMathAsciiAbbrevs) {
+    this.useMathAsciiAbbreviations = useMathAsciiAbbrevs;
+  }
+
+  public boolean isUseMathUnicodeSymbols() {
+    return useMathUnicodeSymbols;
+  }
+
+  public void setUseMathUnicodeSymbols(boolean useUnicode) {
+    this.useMathUnicodeSymbols = useUnicode;
   }
 }
