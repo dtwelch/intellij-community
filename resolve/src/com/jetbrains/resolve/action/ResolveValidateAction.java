@@ -59,11 +59,13 @@ public class ResolveValidateAction extends ResolveAction {
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) return;
 
-    String[] args = new String[1];
-    args[0] = resolveFile.getPath();
-    //TODO: This needs to be obtained from settings.
-    //args[1] = "-no-std-uses";
+    ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
 
+    String[] args = new String[2];
+    args[0] = resolveFile.getPath();
+    if (ideSettings.isNoAutoStandardUses()) {
+      args[1] = "-no-std-uses";
+    }
 
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
@@ -84,7 +86,7 @@ public class ResolveValidateAction extends ResolveAction {
                                             @NotNull VirtualFile targetFile,
                                             @NotNull String[] args,
                                             @Nullable ResolveCompilerListener customListener) {
-    Main.InitConfig env = Main.InitConfig.INSTANCE;
+    Main.InitConfig env = new Main.InitConfig();
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
     Main.evaluateArguments(env, args);
 

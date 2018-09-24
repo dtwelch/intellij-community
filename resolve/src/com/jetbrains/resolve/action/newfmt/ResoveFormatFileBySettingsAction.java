@@ -20,6 +20,7 @@ import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
 import edu.clemson.resolve.semantics.SimpleNotationAwareMathFormatter;
 import edu.clemson.resolve.util.Utils;
 import edu.clemson.resolve.verifier.prettyprint.NotationInfo;
+import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -54,10 +55,17 @@ public class ResoveFormatFileBySettingsAction extends ResolveFormatAction {
 
     //TODO: set NotationInfo here
     ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
-    NotationInfo.INSTANCE.UNICODE_ENABLED = ideSettings.isUseMathUnicodeSymbols();
-    NotationInfo.INSTANCE.USE_ASCII_ABBREVIATIONS = ideSettings.isUseMathAsciiAbbreviations();
 
-    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(Main.InitConfig.INSTANCE);
+    //NotationInfo.INSTANCE.UNICODE_ENABLED = ideSettings.isUseMathUnicodeSymbols();
+    //NotationInfo.INSTANCE.USE_ASCII_ABBREVIATIONS = ideSettings.isUseMathAsciiAbbreviations();
+
+    Main.InitConfig env = new Main.InitConfig();
+    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+      .setUseUnicodeNotFontAware(ideSettings.isUseMathUnicodeSymbols());
+    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+      .setUseAsciiAbbreviations(ideSettings.isUseMathAsciiAbbreviations());
+
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
     String timeStamp = getTimeStamp();
@@ -70,7 +78,6 @@ public class ResoveFormatFileBySettingsAction extends ResolveFormatAction {
 
     SimpleNotationAwareMathFormatter formatter = new SimpleNotationAwareMathFormatter(control);
     formatter.formatFileOrDirectory(file.getPath());
-
     //ResolveValidateAction.setupAndRunCompiler(project, getTitle(), file, args, issueListener);
     ResolveValidateAction.annotateIssues(editor, file, control, null);
 
