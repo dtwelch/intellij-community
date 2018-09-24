@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-abstract class ResolveAction extends AnAction implements DumbAware {
+public abstract class ResolveAction extends AnAction implements DumbAware {
 
     @Override
     public void update(AnActionEvent e) {

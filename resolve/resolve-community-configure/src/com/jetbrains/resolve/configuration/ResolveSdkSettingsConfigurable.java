@@ -81,8 +81,8 @@ public class ResolveSdkSettingsConfigurable extends
   public void reset() {
     myAutoImportStandardUses.setSelected(myResolveCompilerSettings.isNoAutoStandardUses());
     myShowCompilerEnvVariables.setSelected(myResolveCompilerSettings.isShowCompilerEnvVarsOnRun());
-    myUseMathAsciiAbbreviations.setSelected(myUseMathAsciiAbbreviations.isSelected());
-    myUseMathUnicodeSymbols.setSelected(myUseMathUnicodeSymbols.isSelected());
+    myUseMathAsciiAbbreviations.setSelected(myResolveCompilerSettings.isUseMathAsciiAbbreviations());
+    myUseMathUnicodeSymbols.setSelected(myResolveCompilerSettings.isUseMathUnicodeSymbols());
   }
 
   @Override

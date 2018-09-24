@@ -134,7 +134,7 @@ public class ResolveValidateAction extends ResolveAction {
   public static void annotateIssues(Editor editor,
                                     VirtualFile targetFile,
                                     AbstractUserInterfaceControl compiler,
-                                    CompilerIssueListener issueListener) {
+                                    @Nullable CompilerIssueListener issueListener) {
     editor.getMarkupModel().removeAllHighlighters();    //first
 
     EditorMouseMotionListener mouseListener = new EditorMouseMotionListener() {
@@ -164,8 +164,10 @@ public class ResolveValidateAction extends ResolveAction {
     };
 
     List<RangeHighlighter> issueRelatedHighlighters = new ArrayList<>();
-    for (Issue issue : issueListener.issues) {
-      annotateIssueInEditor(targetFile, issueRelatedHighlighters, editor, issue);
+    if (issueListener != null) {
+      for (Issue issue : issueListener.issues) {
+        annotateIssueInEditor(targetFile, issueRelatedHighlighters, editor, issue);
+      }
     }
 
     editor.addEditorMouseMotionListener(mouseListener);

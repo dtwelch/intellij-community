@@ -51,19 +51,12 @@
               text="Resolve Validate">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
       </action>
-      <action id="resolve.SugarFile" class="com.jetbrains.resolve.action.formatting.ResolveSugarFileAction"
-              text="Sugar Math">
+      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.newfmt.ResoveFormatFileBySettingsAction"
+              text="Format Math in File">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
       </action>
-      <action id="resolve.DesugarFile" class="com.jetbrains.resolve.action.formatting.ResolveDesugarFileAction"
-              text="Desugar Math">
-        <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
-      </action>
-      <action id="resolve.SugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveSugarDirectoryAction"
-              text="Sugar Math in Directory">
-      </action>
       <action id="resolve.DesugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveDesugarDirectoryAction"
-              text="Desugar Math in Directory">
+              text="Format Math in Directory">
       </action>
       <add-to-group group-id="CodeMenu" anchor="last"/>
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
