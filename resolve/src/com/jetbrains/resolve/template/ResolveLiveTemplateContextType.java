@@ -83,7 +83,7 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
   public static class ResolveConceptModuleContextType extends ResolveLiveTemplateContextType {
     protected ResolveConceptModuleContextType() {
-      super("RESOLVE_CONCEPT_MODULE", "RESOLVE Facility module", ResolveEverywhereContextType.class);
+      super("RESOLVE_CONCEPT_MODULE", "RESOLVE Concept module", ResolveEverywhereContextType.class);
     }
 
     @Override
