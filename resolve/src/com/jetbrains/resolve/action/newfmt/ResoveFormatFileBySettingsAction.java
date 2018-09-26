@@ -18,6 +18,7 @@ import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
 import edu.clemson.resolve.semantics.SimpleNotationAwareMathFormatter;
+import edu.clemson.resolve.util.Debug;
 import edu.clemson.resolve.util.Utils;
 import edu.clemson.resolve.verifier.prettyprint.NotationInfo;
 import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
@@ -53,14 +54,18 @@ public class ResoveFormatFileBySettingsAction extends ResolveFormatAction {
     if (editor == null) return;
     commitDoc(project, file);
 
-    //TODO: set NotationInfo here
     ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
 
     //NotationInfo.INSTANCE.UNICODE_ENABLED = ideSettings.isUseMathUnicodeSymbols();
     //NotationInfo.INSTANCE.USE_ASCII_ABBREVIATIONS = ideSettings.isUseMathAsciiAbbreviations();
 
     Main.InitConfig env = new Main.InitConfig();
+
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    Debug.ENABLE_DEBUG = true;
+
+    control.registerSupplementalASCIIAbbreviations();
+
     VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseUnicodeNotFontAware(ideSettings.isUseMathUnicodeSymbols());
     VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
@@ -82,12 +87,6 @@ public class ResoveFormatFileBySettingsAction extends ResolveFormatAction {
     ResolveValidateAction.annotateIssues(editor, file, control, null);
 
     VfsUtil.markDirtyAndRefresh(true, true, true, file);
-  }
-
-  @NotNull
-  @Override
-  public List<String> getArguments(@NotNull String fileName) {
-    return null;
   }
 
   @NotNull

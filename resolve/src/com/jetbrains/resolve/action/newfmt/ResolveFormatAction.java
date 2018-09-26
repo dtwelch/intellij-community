@@ -18,9 +18,6 @@ public abstract class ResolveFormatAction extends ResolveAction {
     return file.getFileType() == ResolveFileType.INSTANCE;
   }
 
-  @NotNull
-  public abstract List<String> getArguments(@NotNull String fileName);
-
   /**
    * Somewhat longhanded way of saving the document (see go-plugin impl of gofmt)
    */

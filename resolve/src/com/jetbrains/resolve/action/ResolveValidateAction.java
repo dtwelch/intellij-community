@@ -61,16 +61,17 @@ public class ResolveValidateAction extends ResolveAction {
 
     ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
 
-    String[] args = new String[2];
-    args[0] = resolveFile.getPath();
+    List<String> args = new ArrayList<>();
+    args.add(resolveFile.getPath());
     if (ideSettings.isNoAutoStandardUses()) {
-      args[1] = "-no-std-uses";
+      args.add("-no-std-uses");
     }
 
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
     AbstractUserInterfaceControl control =
-      setupAndRunCompiler(project, "Validating RESOLVE source files", resolveFile, args, issueListener);
+      setupAndRunCompiler(project, "Validating RESOLVE source files",
+                          resolveFile, args, issueListener);
 
     if (control.getEnvironment().targetModule == null ||
         control.getEnvironment().targetModule.hasParseErrors) {
@@ -84,11 +85,12 @@ public class ResolveValidateAction extends ResolveAction {
   public static AbstractUserInterfaceControl setupAndRunCompiler(@NotNull Project project,
                                             @NotNull String title,
                                             @NotNull VirtualFile targetFile,
-                                            @NotNull String[] args,
+                                            @NotNull List<String> args,
                                             @Nullable ResolveCompilerListener customListener) {
     Main.InitConfig env = new Main.InitConfig();
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
-    Main.evaluateArguments(env, args);
+    String[] argsArray = new String[args.size()];
+    Main.evaluateArguments(env, args.toArray(argsArray));
 
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
