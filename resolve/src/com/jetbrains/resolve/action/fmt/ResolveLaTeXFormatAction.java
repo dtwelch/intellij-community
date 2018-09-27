@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.action.newfmt;
+package com.jetbrains.resolve.action.fmt;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;

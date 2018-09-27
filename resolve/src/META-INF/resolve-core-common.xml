@@ -53,11 +53,15 @@
               text="Resolve Validate">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
       </action>
-      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.newfmt.ResolveFileFormatAction"
+      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.fmt.ResolveFileFormatAction"
               text="Format Math in File by Settings">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
       </action>
-      <action id="resolve.FormatLaTeXFile" class="com.jetbrains.resolve.action.newfmt.ResolveLaTeXFormatAction"
+      <action id="resolve.FormatDir" class="com.jetbrains.resolve.action.fmt.ResolveDirFormatAction"
+              text="Format Math in Directory by Settings">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
+      </action>
+      <action id="resolve.FormatLaTeXFile" class="com.jetbrains.resolve.action.fmt.ResolveLaTeXFormatAction"
               text="Format Math in File for LaTeX">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift L"/>
       </action>

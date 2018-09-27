@@ -1,4 +1,4 @@
-package com.jetbrains.resolve.action.newfmt;
+package com.jetbrains.resolve.action.fmt;
 
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
