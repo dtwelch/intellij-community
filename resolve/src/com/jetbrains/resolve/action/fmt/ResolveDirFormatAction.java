@@ -13,9 +13,6 @@ import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
 import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
 
 public class ResolveDirFormatAction extends AbstractFormatAction {
 
