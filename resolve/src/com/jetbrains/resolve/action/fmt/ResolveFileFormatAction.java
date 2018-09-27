@@ -65,25 +65,6 @@ public class ResolveFileFormatAction extends AbstractFormatAction {
     doFormat(editor, project, file, control);
   }
 
-  public static void doFormat(@NotNull Editor editor, @NotNull Project project,
-                              @NotNull VirtualFile file,
-                              @NotNull AbstractUserInterfaceControl control) {
-    ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
-    console.clear();
-    String timeStamp = getTimeStamp();
-
-    console.print(timeStamp + ": resolve " + "-format " + file.getPath() + "\n",
-                  ConsoleViewContentType.SYSTEM_OUTPUT);
-    RunResolveListener defaultListener = new RunResolveListener(control, console);
-    control.addAdditionalCompilerListener(defaultListener);
-
-    SyntaxAwareMathFormatter formatter = new SyntaxAwareMathFormatter(control);
-    formatter.formatFileOrDirectory(file.getPath());
-    ResolveValidateAction.annotateIssues(editor, file, control, null);
-
-    VfsUtil.markDirtyAndRefresh(true, true, true, file);
-  }
-
   @NotNull
   @Override
   public String getTitle() {

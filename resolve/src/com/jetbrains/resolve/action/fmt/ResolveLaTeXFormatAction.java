@@ -31,7 +31,7 @@ public class ResolveLaTeXFormatAction extends AbstractFormatAction {
       .setUseUnicodeNotFontAware(false);
     VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseAsciiAbbreviations(true);
-    ResolveFileFormatAction.doFormat(editor, project, file, control);
+    doFormat(editor, project, file, control);
   }
 
   @NotNull

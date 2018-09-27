@@ -6,7 +6,12 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
+import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
+import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
+import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +48,18 @@ public class ResolveDirFormatAction extends AbstractFormatAction {
     VirtualFile sdkResolvePathDir = ResolveSdkUtil.getResolvePathRoot(project);
     if (sdkResolveRootDir == null || sdkResolvePathDir == null) return; //houston we've got a problem
 
+    ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
+
+    Main.InitConfig env = new Main.InitConfig();
+
+    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    control.registerSupplementalASCIIAbbreviations();
+
+    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+      .setUseUnicodeNotFontAware(ideSettings.isUseMathUnicodeSymbols());
+    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+      .setUseAsciiAbbreviations(ideSettings.isUseMathAsciiAbbreviations());
+    doFormat(null, project, directory, control);
 
     //ResolveValidateAction.setupAndRunCompiler(project, getTitle(), directory, args, issueListener);
     VfsUtil.markDirtyAndRefresh(true, true, true, directory);
