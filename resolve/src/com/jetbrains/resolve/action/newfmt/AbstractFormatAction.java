@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public abstract class ResolveFormatAction extends ResolveAction {
+public abstract class AbstractFormatAction extends ResolveAction {
 
   protected boolean isAvailableOnFile(VirtualFile file) {
     return file.getFileType() == ResolveFileType.INSTANCE;

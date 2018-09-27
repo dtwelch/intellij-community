@@ -53,12 +53,13 @@
               text="Resolve Validate">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
       </action>
-      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.newfmt.ResoveFormatFileBySettingsAction"
-              text="Format Math in File">
+      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.newfmt.ResolveFileFormatAction"
+              text="Format Math in File by Settings">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
       </action>
-      <action id="resolve.DesugarDirectory" class="com.jetbrains.resolve.action.formatting.ResolveDesugarDirectoryAction"
-              text="Format Math in Directory">
+      <action id="resolve.FormatLaTeXFile" class="com.jetbrains.resolve.action.newfmt.ResolveLaTeXFormatAction"
+              text="Format Math in File for LaTeX">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift L"/>
       </action>
       <add-to-group group-id="CodeMenu" anchor="last"/>
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
