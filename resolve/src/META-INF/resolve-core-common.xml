@@ -48,7 +48,7 @@
     <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
-    <group id="ResolveTools" text="Resolve Tools" description="Resolve External Tools" icon="ResolveIcons.RESOLVE" popup="true">
+    <group id="ResolveTools" text="RESOLVE Tools" description="Resolve External Tools" icon="ResolveIcons.RESOLVE" popup="true">
       <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
               text="Resolve Validate">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
