@@ -16,8 +16,11 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.content.ContentFactory;
 import com.jetbrains.resolve.symbols.MathSymbolPanel;
+import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.verifier.gui.MainWindow;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -32,7 +35,7 @@ public class ResolveStudioController implements ProjectComponent {
   public static final Logger LOG = Logger.getInstance("RESOLVEPluginController");
 
   public static final String CONSOLE_WINDOW_ID = "RESOLVE Output";
-  //public static final String VERIFIER_WINDOW_ID = "RESOLVE Verifier";
+  public static final String VERIFIER_WINDOW_ID = "RESOLVE VCs";
   public static final String SYMBOL_WINDOW_ID = "Symbols";
 
   public boolean projectIsClosed = false;
@@ -72,9 +75,16 @@ public class ResolveStudioController implements ProjectComponent {
     //installListeners();
   }
 
+  public static class Foo extends JBPanel {
+
+  }
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+
+    Main.InitConfig env = new Main.InitConfig();
+    MainWindow mainVerifierWindowFrame = new MainWindow(env, false);
+    JPanel verifierPanel = mainVerifierWindowFrame.getContentsAsPanel();
 
     //verifierPanel = new VerifierPanel(project);
     mathSymbolPanel = new MathSymbolPanel(project);
@@ -82,9 +92,9 @@ public class ResolveStudioController implements ProjectComponent {
     ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
 
     //init verifier window
-    /*verifierWindow = toolWindowManager.registerToolWindow(VERIFIER_WINDOW_ID, true, ToolWindowAnchor.RIGHT);
+    verifierWindow = toolWindowManager.registerToolWindow(VERIFIER_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
     verifierWindow.getContentManager().addContent(contentFactory.createContent(verifierPanel, "", false));
-    verifierWindow.setIcon(RESOLVEIcons.TOOL_ICON);*/
+    //verifierWindow.setIcon(ResolveIcons.);
 
     //init math symbol browser window
     //TODO: Left for now (at least until the verifier window is up
