@@ -10,6 +10,7 @@ import com.jetbrains.resolve.ResolveStudioController;
 import com.jetbrains.resolve.psi.ResFile;
 import com.jetbrains.resolve.psi.ResPrecisModuleDecl;
 import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.control.WindowUserInterfaceControl;
 
 import javax.swing.*;
 
@@ -38,7 +39,6 @@ public class VerificationConditionDerivationAction
     ResolveStudioController controller = ResolveStudioController.getInstance(project);
     ResolveStudioController.showVerifierWindow(project);
 
-    Main.InitConfig env = new Main.InitConfig();
 
     //MainWindow actually instantiates control... which need
     //WindowUserInterfaceControl control = new WindowUserInterfaceControl(env, )

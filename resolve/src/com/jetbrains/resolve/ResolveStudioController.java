@@ -75,9 +75,6 @@ public class ResolveStudioController implements ProjectComponent {
     //installListeners();
   }
 
-  public static class Foo extends JBPanel {
-
-  }
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
@@ -94,7 +91,7 @@ public class ResolveStudioController implements ProjectComponent {
     //init verifier window
     verifierWindow = toolWindowManager.registerToolWindow(VERIFIER_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
     verifierWindow.getContentManager().addContent(contentFactory.createContent(verifierPanel, "", false));
-    //verifierWindow.setIcon(ResolveIcons.);
+    verifierWindow.setIcon(ResolveIcons.VCG);
 
     //init math symbol browser window
     //TODO: Left for now (at least until the verifier window is up
