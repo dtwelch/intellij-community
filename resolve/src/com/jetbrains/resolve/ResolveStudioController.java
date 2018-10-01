@@ -45,8 +45,9 @@ public class ResolveStudioController implements ProjectComponent {
   public ConsoleView console;
   public ToolWindow consoleWindow;
 
-  //public VerifierPanel verifierPanel;
+  public JPanel verifierPanel;
   public ToolWindow verifierWindow;
+  public MainWindow mainVerifierWindowFrame;
 
   public MathSymbolPanel mathSymbolPanel;
   public ToolWindow mathSymbolWindow;
@@ -80,10 +81,9 @@ public class ResolveStudioController implements ProjectComponent {
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
 
     Main.InitConfig env = new Main.InitConfig();
-    MainWindow mainVerifierWindowFrame = new MainWindow(env, false);
-    JPanel verifierPanel = mainVerifierWindowFrame.getContentsAsPanel();
+    mainVerifierWindowFrame = new MainWindow(env, false);
 
-    //verifierPanel = new VerifierPanel(project);
+    verifierPanel = mainVerifierWindowFrame.getContentsAsPanel();
     mathSymbolPanel = new MathSymbolPanel(project);
 
     ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -111,6 +111,10 @@ public class ResolveStudioController implements ProjectComponent {
     consoleWindow.setIcon(ResolveIcons.RESOLVE);
   }
 
+  public MainWindow getMainVerifierWindowFrame() {
+    return mainVerifierWindowFrame;
+  }
+
   @Override
   public void projectClosed() {
     LOG.info("projectClosed " + project.getName());
@@ -118,13 +122,15 @@ public class ResolveStudioController implements ProjectComponent {
     //uninstallListeners();
     Disposer.dispose(console);
 
-    //unregisterWindow(VERIFIER_WINDOW_ID);
+    unregisterWindow(VERIFIER_WINDOW_ID);
     unregisterWindow(SYMBOL_WINDOW_ID);
     unregisterWindow(CONSOLE_WINDOW_ID);
 
-    //verifierPanel = null;
+    mainVerifierWindowFrame = null;
+    verifierPanel = null;
     consoleWindow = null;
     verifierWindow = null;
+
     project = null;
   }
 
@@ -144,10 +150,6 @@ public class ResolveStudioController implements ProjectComponent {
   public ToolWindow getVerifierWindow() {
     return verifierWindow;
   }
-
-  /*public VerifierPanel getVerifierPanel() {
-    return verifierPanel;
-  }*/
 
   public static void showConsoleWindow(final Project project) {
     ApplicationManager.getApplication().invokeLater(() -> getInstance(project).getConsoleWindow().show(null));

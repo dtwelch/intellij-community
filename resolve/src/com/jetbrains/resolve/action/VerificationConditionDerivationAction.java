@@ -39,6 +39,8 @@ public class VerificationConditionDerivationAction
     ResolveStudioController controller = ResolveStudioController.getInstance(project);
     ResolveStudioController.showVerifierWindow(project);
 
+    //load all assertive code blocks into current session..
+
 
     //MainWindow actually instantiates control... which need
     //WindowUserInterfaceControl control = new WindowUserInterfaceControl(env, )
