@@ -3,6 +3,11 @@ package com.jetbrains.resolve.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -39,11 +44,10 @@ public class VerificationConditionDerivationAction
   public void actionPerformed(AnActionEvent e) {
     Project project = e.getData(CommonDataKeys.PROJECT);
     if (project == null) return;
-
+    Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     VirtualFile resolveFile = getRESOLVEFileFromEvent(e);
-    if (resolveFile == null) {
-      return;
-    }
+    if (resolveFile == null || editor == null) return;
+
 
     ResolveStudioController controller = ResolveStudioController.getInstance(project);
     ResolveStudioController.showVerifierWindow(project);
@@ -59,8 +63,20 @@ public class VerificationConditionDerivationAction
       }
     };
 
+
     ProgressManager.getInstance().run(task);
 
+    editor.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void beforeDocumentChange(DocumentEvent event) {
+      }
+      @Override
+      public void documentChanged(DocumentEvent event) {
+        //remove vc-related highlighters
+        controller.mainVerifierWindowFrame
+          .getClearSessionAction().actionPerformed(null);
+      }
+    });
 
 
 

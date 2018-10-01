@@ -34,6 +34,8 @@ import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
 import edu.clemson.resolve.core.control.UserInterfaceControl;
 import edu.clemson.resolve.util.Utils;
+import edu.clemson.resolve.verifier.gui.HTMLSyntaxHighlighter;
+import edu.clemson.resolve.verifier.prettyprint.LogicPrinter;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -89,6 +91,8 @@ public class ResolveValidateAction extends ResolveAction {
                                             @Nullable ResolveCompilerListener customListener) {
     Main.InitConfig env = new Main.InitConfig();
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    control.registerSupplementalASCIIAbbreviations();
+
     String[] argsArray = new String[args.size()];
     Main.evaluateArguments(env, args.toArray(argsArray));
 
@@ -125,6 +129,7 @@ public class ResolveValidateAction extends ResolveAction {
                          e.toString(),
                          NotificationType.INFORMATION);
       Notifications.Bus.notify(notification, project);
+
       console.print(timeStamp + ": resolve " + msg + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
       defaultListener.hasOutput = true; // show console below
     }
@@ -159,6 +164,7 @@ public class ResolveValidateAction extends ResolveAction {
         }
         String combinedErrorMsg = Utils.join(msgs, "\n");
 
+        HintManager.getInstance();
         showErrorToolTip(editor, offset, HintManager.getInstance(), combinedErrorMsg, e);
       }
 
@@ -209,6 +215,8 @@ public class ResolveValidateAction extends ResolveAction {
     int timeout = 0; // default?
     // UIManager.getFont("Label.font")
     Annotation annotation;
+
+    msg = "<html><p style=\"font-family:IsabelleText;\">" + LogicPrinter.escapeHTML(msg, true) + "</p></html>";
     hintMgr.showErrorHint(editor, msg, offset, offset + 1, HintManager.ABOVE, flags, timeout);
   }
   //for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
