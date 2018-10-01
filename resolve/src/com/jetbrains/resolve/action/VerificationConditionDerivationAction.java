@@ -51,12 +51,18 @@ public class VerificationConditionDerivationAction
     MainWindow mainWindow = controller.getMainVerifierWindowFrame();
     mainWindow.getUserInterface().registerSupplementalASCIIAbbreviations();
     mainWindow.getUserInterface().getEnvironment().vcs = true;
-    ProgressManager.getInstance().run(new Task.Backgroundable(project, "Running VCGen...", false) {
+
+    Task.Backgroundable task = new Task.Backgroundable(project, "Running VCGen...", true) {
       @Override
       public void run(@NotNull ProgressIndicator indicator) {
         mainWindow.loadProgram(new File(resolveFile.getPath()));
       }
-    });
+    };
+
+    ProgressManager.getInstance().run(task);
+
+
+
 
     //load all assertive code blocks into current session..
 
