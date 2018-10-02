@@ -1,6 +1,7 @@
 package com.jetbrains.resolve;
 
 import com.intellij.codeInsight.CodeInsightSettings;
+import com.intellij.codeInsight.daemon.impl.DaemonEditorPopup;
 import com.intellij.codeInsight.intention.IntentionActionBean;
 import com.intellij.codeInsight.intention.IntentionManager;
 import com.intellij.ide.AppLifecycleListener;
@@ -64,35 +65,32 @@ public class ResolveStudioInitialConfigurator {
   @NonNls private static final String CONFIGURED_V1 = "ResolveStudio.InitialConfiguration.V1";
   @NonNls private static final String CONFIGURED_V2 = "ResolveStudio.InitialConfiguration.V2";
 
-  private static final Set<String> HIDDEN_ACTIONS = ContainerUtil.newHashSet("CopyAsPlainText", "CopyAsRichText", "EditorPasteSimple",
-                                                                             "Folding", "Generate", "CompareClipboardWithSelection",
-                                                                             "ChangeFileEncodingAction", "CloseAllUnmodifiedEditors",
-                                                                             "CloseAllUnpinnedEditors", "CloseAllEditorsButActive",
-                                                                             "CopyReference", "MoveTabRight", "MoveTabDown",
-                                                                             "External Tools",
-                                                                             "MoveEditorToOppositeTabGroup", "OpenEditorInOppositeTabGroup",
-                                                                             "ChangeSplitOrientation", "PinActiveTab", "Tabs Placement",
-                                                                             "TabsAlphabeticalMode", "AddNewTabToTheEndMode", "NextTab",
-                                                                             "PreviousTab", "Add to Favorites", "Add All To Favorites",
-                                                                             "ValidateXml", "NewHtmlFile", "Images.ShowThumbnails",
-                                                                             "CompareFileWithEditor", "SynchronizeCurrentFile",
-                                                                             "Mark Directory As", "CompareTwoFiles", "ShowFilePath",
-                                                                             "ChangesView.ApplyPatch", "TemplateProjectProperties",
-                                                                             "ExportToHTML", "SaveAll", "Export/Import Actions",
-                                                                             "Synchronize",
-                                                                             "Line Separators", "ToggleReadOnlyAttribute",
-                                                                             "Macros", "EditorToggleCase", "EditorJoinLines",
-                                                                             "FillParagraph",
-                                                                             "Convert Indents", "TemplateParametersNavigation",
-                                                                             "EscapeEntities",
-                                                                             "QuickDefinition", "ExpressionTypeInfo", "EditorContextInfo",
-                                                                             "ShowErrorDescription", "RecentChanges", "CompareActions",
-                                                                             "GotoCustomRegion", "JumpToLastChange", "JumpToNextChange",
-                                                                             "SelectIn", "GotoTypeDeclaration", "QuickChangeScheme",
-                                                                             "GotoTest", "GotoRelated", "Hierarchy Actions", "Bookmarks",
-                                                                             "Goto Error/Bookmark Actions", "GoToEditPointGroup",
-                                                                             "Change Navigation Actions", "Method Navigation Actions",
-                                                                             "EvaluateExpression", "Pause", "ViewBreakpoints", "SaveAs");
+  private static final Set<String> HIDDEN_ACTIONS =
+    ContainerUtil.newHashSet("CopyAsPlainText", "CopyAsRichText", "EditorPasteSimple", "Local History", "Column Selection Mode",
+                             "Folding", "Generate", "CompareClipboardWithSelection", "ChangeFileEncodingAction",
+                             "CloseAllUnmodifiedEditors", "CloseAllUnpinnedEditors", "CloseAllEditorsButActive", "CopyReference",
+                             "MoveTabRight", "MoveTabDown", "External Tools", "MoveEditorToOppositeTabGroup",
+                             "OpenEditorInOppositeTabGroup", "ChangeSplitOrientation", "PinActiveTab", "Tabs Placement",
+                             "TabsAlphabeticalMode", "AddNewTabToTheEndMode", "NextTab", "PreviousTab", "Add to Favorites",
+                             "Add All To Favorites", "ValidateXml", "NewHtmlFile", "Images.ShowThumbnails",
+                             "CompareFileWithEditor", "SynchronizeCurrentFile", "EditorToggleColumnMode",
+                             "Mark Directory As", "CompareTwoFiles", "ShowFilePath",
+                             "ChangesView.ApplyPatch", "TemplateProjectProperties",
+                             "ExportToHTML", "SaveAll", "Export/Import Actions",
+                             "Synchronize",
+                             "Line Separators", "ToggleReadOnlyAttribute",
+                             "Macros", "EditorToggleCase", "EditorJoinLines",
+                             "FillParagraph",
+                             "Convert Indents", "TemplateParametersNavigation",
+                             "EscapeEntities", "Inspect Code",
+                             "QuickDefinition", "ExpressionTypeInfo", "EditorContextInfo",
+                             "ShowErrorDescription", "RecentChanges", "CompareActions",
+                             "GotoCustomRegion", "JumpToLastChange", "JumpToNextChange",
+                             "SelectIn", "GotoTypeDeclaration", "QuickChangeScheme",
+                             "GotoTest", "GotoRelated", "Hierarchy Actions", "Bookmarks",
+                             "Goto Error/Bookmark Actions", "GoToEditPointGroup",
+                             "Change Navigation Actions", "Method Navigation Actions",
+                             "EvaluateExpression", "Pause", "ViewBreakpoints", "SaveAs");
 
   public static class First {
     public First() {
@@ -110,17 +108,17 @@ public class ResolveStudioInitialConfigurator {
                                           final ProjectManagerEx projectManager) {
     final UISettings uiSettings = UISettings.getInstance();
 
-    if (!propertiesComponent.getBoolean(CONFIGURED_V2)) {
+    //if (!propertiesComponent.getBoolean(CONFIGURED_V2)) {
       EditorSettingsExternalizable editorSettings = EditorSettingsExternalizable.getInstance();
       editorSettings.setEnsureNewLineAtEOF(true);
       propertiesComponent.setValue(CONFIGURED_V2, true);
-    }
-    if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {
+    //}
+   // if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {
       patchMainMenu();
       uiSettings.setShowNavigationBar(false);
       propertiesComponent.setValue(CONFIGURED_V1, true);
       propertiesComponent.setValue("ShowDocumentationInToolWindow", true);
-    }
+    //}
 
     if (!propertiesComponent.getBoolean(CONFIGURED)) {
       propertiesComponent.setValue(CONFIGURED, "true");
@@ -199,12 +197,20 @@ public class ResolveStudioInitialConfigurator {
     hideActions(schema, root, mainMenu, menuItems);
   }
 
+  private static final Set<String> toHide =
+    ContainerUtil.newHashSet("Editor Popup Menu Actions (2)", "Editor Popup Menu Actions (1)");
+
   private static void hideActions(@NotNull CustomActionsSchema schema, @NotNull DefaultMutableTreeNode root,
                                   @NotNull final TreeNode actionGroup, Set<String> items) {
     for (int i = 0; i < actionGroup.getChildCount(); i++) {
       final DefaultMutableTreeNode child = (DefaultMutableTreeNode)actionGroup.getChildAt(i);
       final int childCount = child.getChildCount();
       final String childId = getItemId(child);
+      if (toHide.contains(root.toString()) && child.toString().equals("Separator (null)")) {
+        final TreePath treePath = TreeUtil.getPath(root, child);
+        final ActionUrl url = CustomizationUtil.getActionUrl(treePath, ActionUrl.DELETED);
+        schema.addAction(url);
+      }
       if (childId != null && items.contains(childId)) {
         final TreePath treePath = TreeUtil.getPath(root, child);
         final ActionUrl url = CustomizationUtil.getActionUrl(treePath, ActionUrl.DELETED);
