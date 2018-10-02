@@ -198,7 +198,8 @@ public class ResolveStudioInitialConfigurator {
   }
 
   private static final Set<String> toHide =
-    ContainerUtil.newHashSet("Editor Popup Menu Actions (2)", "Editor Popup Menu Actions (1)");
+    ContainerUtil.newHashSet("Editor Popup Menu Actions (2)", "Editor Popup Menu Actions (1)",
+                             "EditorPopupMenu1.FindRefactor", "XML Generate Actions", "Editor Popup Menu", "Debug Actions");
 
   private static void hideActions(@NotNull CustomActionsSchema schema, @NotNull DefaultMutableTreeNode root,
                                   @NotNull final TreeNode actionGroup, Set<String> items) {
