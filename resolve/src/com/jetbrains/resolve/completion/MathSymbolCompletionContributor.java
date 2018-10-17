@@ -99,8 +99,9 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
 
     return PrioritizedLookupElement.withPriority(builder, ResolveCompletionUtil.VAR_PRIORITY);
   }
-
+  
   private static void populateMap() {
+
     if (!SYMBOL_MAP.isEmpty()) return;
     //Arrows
     SYMBOL_MAP.put("longleftarrow", "⟵");

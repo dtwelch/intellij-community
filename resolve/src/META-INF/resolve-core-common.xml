@@ -35,13 +35,9 @@
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFileContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveConceptModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFacilityModuleContextType"/>
-
-    <!--  necessary because we have live templates for var decls, ops, facility decls, etc that can only go in certain contexts.. these are those contexts:
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEFacilityModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptExtModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEImplModuleContextType"/>
-    -->
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveConceptModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveEnhancementModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationModuleContextType"/>
   </extensions>
 
   <actions>
