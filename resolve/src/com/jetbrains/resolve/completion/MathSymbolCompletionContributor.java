@@ -138,8 +138,8 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("sum", "∑");
 
     //Operators
-    SYMBOL_MAP.put("wedge", "∧");
-    SYMBOL_MAP.put("vee", "∨");
+    SYMBOL_MAP.put("and", "∧");
+    SYMBOL_MAP.put("or", "∨");
     SYMBOL_MAP.put("neg", "¬");
     SYMBOL_MAP.put("cap", "∩");
     SYMBOL_MAP.put("cup", "∪");

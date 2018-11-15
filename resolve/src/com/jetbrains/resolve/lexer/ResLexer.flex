@@ -59,7 +59,7 @@ U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
 LAMBDA = "λ"
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"=>"|"->"|"~>")
+SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|">"|">="|"<="|"=>"|"->"|"~>")
 STR     = "\""
 BACKSLASH = "\\"
 STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
@@ -86,8 +86,6 @@ ESCAPES = [abfnrtv]
 ")"                                     { return RPAREN; }
 
 ":"                                     { return COLON; }
-"ː"                                     { return TRICOLON; }
-{BACKSLASH}"tricolon"                   { return ETRICOLON; }
 "::"                                    { return COLON_COLON; }
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }
@@ -119,24 +117,22 @@ ESCAPES = [abfnrtv]
 "∀"                                     { return FORALL; }
 {BACKSLASH}"forall"                     { return EFORALL; }
 {BACKSLASH}"exists"                     { return EEXISTS; }
-{BACKSLASH}"triangleq"                  { return ETRIANGLEQ; }
+{BACKSLASH}"and"                        { return AND; }
+{BACKSLASH}"or"                         { return OR; }
+{BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
+
 {BACKSLASH}{IDENT}                      { return CMD; }
+{BACKSLASH}"triangleq"                  { return TRIANGLEQ; }
+"≜"                                     { return TRIANGLEQ; }
 
 "="                                     { return EQUALS; }
-
-
-{BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
 "/="                                    { return NEQUALS; }  //builtin ascii abbrev
 "≠"                                     { return NEQUALS; }  //non-ascii variant
-
-{BACKSLASH}"and"                        { return AND; }
 //"and"                                    { return AND; }  //builtin ascii abbrev
 "∧"                                     { return AND;}
+//"or"                                    { return OR; }  //builtin ascii abbrev
+"∨"                                     { return OR;}
 
-{BACKSLASH}"or"                        { return OR; }
-"∨"                                    { return OR;}
-
-"≜"                                     { return TRIEQUALS; }
 ":="                                    { return COLON_EQUALS; }
 ":=:"                                   { return COLON_EQUALS_COLON; }
 

@@ -40,10 +40,14 @@ public interface ResTypes {
   IElementType MATH_ALTERNATIVES_LIST = new ResCompositeElementType("MATH_ALTERNATIVES_LIST");
   IElementType MATH_ALTERNATIVE_EXP = new ResCompositeElementType("MATH_ALTERNATIVE_EXP");
   IElementType MATH_ALTERNATIVE_ITEM_EXP = new ResCompositeElementType("MATH_ALTERNATIVE_ITEM_EXP");
+  IElementType MATH_AND_OR_APPLY_EXP = new ResCompositeElementType("MATH_AND_OR_APPLY_EXP");
+  IElementType MATH_AND_OR_OP_EXP = new ResCompositeElementType("MATH_AND_OR_OP_EXP");
   IElementType MATH_ASSERTION_EXP = new ResCompositeElementType("MATH_ASSERTION_EXP");
   IElementType MATH_BINDER_APP_EXP = new ResCompositeElementType("MATH_BINDER_APP_EXP");
   IElementType MATH_CART_PROD_EXP = new ResCompositeElementType("MATH_CART_PROD_EXP");
   IElementType MATH_CATEGORICAL_DEFN_DECL = new ResCompositeElementType("MATH_CATEGORICAL_DEFN_DECL");
+  IElementType MATH_EQUALS_APPLY_EXP = new ResCompositeElementType("MATH_EQUALS_APPLY_EXP");
+  IElementType MATH_EQUALS_NOT_EQUALS_OP_EXP = new ResCompositeElementType("MATH_EQUALS_NOT_EQUALS_OP_EXP");
   IElementType MATH_EXP = new ResCompositeElementType("MATH_EXP");
   IElementType MATH_FUNCTION_APP_LIST = new ResCompositeElementType("MATH_FUNCTION_APP_LIST");
   IElementType MATH_INCOMING_EXP = new ResCompositeElementType("MATH_INCOMING_EXP");
@@ -51,7 +55,6 @@ public interface ResTypes {
   IElementType MATH_INFIX_APPLY_EXP = new ResCompositeElementType("MATH_INFIX_APPLY_EXP");
   IElementType MATH_INFIX_DEFN_SIG = new ResCompositeElementType("MATH_INFIX_DEFN_SIG");
   IElementType MATH_LAMBDA_EXP = new ResCompositeElementType("MATH_LAMBDA_EXP");
-  IElementType MATH_MIXFIX_APPLY_EXP = new ResCompositeElementType("MATH_MIXFIX_APPLY_EXP");
   IElementType MATH_NESTED_EXP = new ResCompositeElementType("MATH_NESTED_EXP");
   IElementType MATH_OUTFIX_APPLY_EXP = new ResCompositeElementType("MATH_OUTFIX_APPLY_EXP");
   IElementType MATH_OUTFIX_DEFN_SIG = new ResCompositeElementType("MATH_OUTFIX_DEFN_SIG");
@@ -113,6 +116,7 @@ public interface ResTypes {
   IElementType WHILE_STATEMENT = new ResCompositeElementType("WHILE_STATEMENT");
 
   IElementType ALTERS = new ResTokenType("alters");
+  IElementType AND = new ResTokenType("∧");
   IElementType BAD_CHARACTER = new ResTokenType("\"\\\\\"");
   IElementType BAR = new ResTokenType("|");
   IElementType BY = new ResTokenType("by");
@@ -148,8 +152,7 @@ public interface ResTypes {
   IElementType ENHANCED = new ResTokenType("enhanced");
   IElementType ENHANCEMENT = new ResTokenType("Enhancement");
   IElementType ENSURES = new ResTokenType("ensures");
-  IElementType ETRIANGLEQ = new ResTokenType("ETRIANGLEQ");
-  IElementType ETRICOLON = new ResTokenType("ETRICOLON");
+  IElementType EQUALS = new ResTokenType("=");
   IElementType EVALUATES = new ResTokenType("evaluates");
   IElementType EXEMPLAR = new ResTokenType("exemplar");
   IElementType EXISTS = new ResTokenType("∃");
@@ -180,9 +183,11 @@ public interface ResTypes {
   IElementType MAINTAINING = new ResTokenType("maintaining");
   IElementType MATHSYMBOL = new ResTokenType("mathsymbol");
   IElementType MODELED = new ResTokenType("modeled");
+  IElementType NEQUALS = new ResTokenType("≠");
   IElementType NOTICE = new ResTokenType("Notice");
   IElementType OF = new ResTokenType("of");
   IElementType OPERATION = new ResTokenType("Operation");
+  IElementType OR = new ResTokenType("∨");
   IElementType OTHERWISE = new ResTokenType("otherwise");
   IElementType POUND = new ResTokenType("#");
   IElementType PRECIS = new ResTokenType("Precis");
@@ -207,8 +212,7 @@ public interface ResTypes {
   IElementType SYMBOL = new ResTokenType("symbol");
   IElementType THEN = new ResTokenType("then");
   IElementType THEOREM = new ResTokenType("Theorem");
-  IElementType TRICOLON = new ResTokenType("ː");
-  IElementType TRIEQUALS = new ResTokenType("≜");
+  IElementType TRIANGLEQ = new ResTokenType("≜");
   IElementType TRUE = new ResTokenType("true");
   IElementType TYPE_FAMILY = new ResTokenType("Type");
   IElementType TYPE_PARAM = new ResTokenType("type");
@@ -309,6 +313,12 @@ public interface ResTypes {
       else if (type == MATH_ALTERNATIVE_ITEM_EXP) {
         return new ResMathAlternativeItemExpImpl(node);
       }
+      else if (type == MATH_AND_OR_APPLY_EXP) {
+        return new ResMathAndOrApplyExpImpl(node);
+      }
+      else if (type == MATH_AND_OR_OP_EXP) {
+        return new ResMathAndOrOpExpImpl(node);
+      }
       else if (type == MATH_BINDER_APP_EXP) {
         return new ResMathBinderAppExpImpl(node);
       }
@@ -317,6 +327,12 @@ public interface ResTypes {
       }
       else if (type == MATH_CATEGORICAL_DEFN_DECL) {
         return new ResMathCategoricalDefnDeclImpl(node);
+      }
+      else if (type == MATH_EQUALS_APPLY_EXP) {
+        return new ResMathEqualsApplyExpImpl(node);
+      }
+      else if (type == MATH_EQUALS_NOT_EQUALS_OP_EXP) {
+        return new ResMathEqualsNotEqualsOpExpImpl(node);
       }
       else if (type == MATH_FUNCTION_APP_LIST) {
         return new ResMathFunctionAppListImpl(node);
@@ -335,9 +351,6 @@ public interface ResTypes {
       }
       else if (type == MATH_LAMBDA_EXP) {
         return new ResMathLambdaExpImpl(node);
-      }
-      else if (type == MATH_MIXFIX_APPLY_EXP) {
-        return new ResMathMixfixApplyExpImpl(node);
       }
       else if (type == MATH_NESTED_EXP) {
         return new ResMathNestedExpImpl(node);
