@@ -46,12 +46,12 @@ U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
 
 U_LETTER      = ("ℕ"|"ℤ"|"ℂ"|"𝔹"|"ℚ"|"ℝ"|"𝒫"|"℘")
 
-U_OPERATOR    = ("∧"|"∨"|"¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"|
+U_OPERATOR    = ("¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"|
                  "⋆"|"∙"|"∘"|"∼"|"⋈"|"⋉"|"⋊"|"∸")
 
 U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 
-U_RELATION    = ("≤"|"≥"|"≠"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
+U_RELATION    = ("≤"|"≥"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
 
 U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"|"ν"|"ξ"|
@@ -59,7 +59,7 @@ U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
 LAMBDA = "λ"
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"-->"|"->"|"~>")
+SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|"="|"/="|">"|">="|"<="|"=>"|"->"|"~>")
 STR     = "\""
 BACKSLASH = "\\"
 STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
@@ -121,6 +121,21 @@ ESCAPES = [abfnrtv]
 {BACKSLASH}"exists"                     { return EEXISTS; }
 {BACKSLASH}"triangleq"                  { return ETRIANGLEQ; }
 {BACKSLASH}{IDENT}                      { return CMD; }
+
+"="                                     { return EQUALS; }
+
+
+{BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
+"/="                                    { return NEQUALS; }  //builtin ascii abbrev
+"≠"                                     { return NEQUALS; }  //non-ascii variant
+
+{BACKSLASH}"and"                        { return AND; }
+//"and"                                    { return AND; }  //builtin ascii abbrev
+"∧"                                     { return AND;}
+
+{BACKSLASH}"or"                        { return OR; }
+"∨"                                    { return OR;}
+
 "≜"                                     { return TRIEQUALS; }
 ":="                                    { return COLON_EQUALS; }
 ":=:"                                   { return COLON_EQUALS_COLON; }
@@ -143,7 +158,6 @@ ESCAPES = [abfnrtv]
 "decreasing"                            { return DECREASING; }
 "Definition"                            { return DEFINITION; }
 "Def"                                   { return DEFINITION; }
-//"Defines"                               { return DEFINES; }
 
 "else"                                  { return ELSE; }
 "Enhancement"                           { return ENHANCEMENT; }
