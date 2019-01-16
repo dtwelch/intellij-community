@@ -219,7 +219,7 @@ private FacilityItem ::=
     | TypeReprDecl
     | MathStandardDefnDecl {pin=1 recoverWhile=FacilityItemRecover}
 
-private FacilityItemRecover ::= !('Facility'|'Definition'|'Generic'|'Literal'|'Operation'|'Type'|end)
+private FacilityItemRecover ::= !('Facility'|'Operation'|'Definition'|'Generic'|'Literal'|'Type'|end)
 
 // type refs & decls
 
@@ -305,7 +305,7 @@ OperationProcedureDecl ::= 'Operation' identifier OperationLikeParameters (':' T
 RequiresClause? EnsuresClause?
 OpProcBody
 end CloseIdentifier ';' {pin=2}
-private OpProcBody ::= ('Recursive')? 'Procedure' OpBlock {pin=2}
+private OpProcBody ::= ('Recursive')? 'Procedure' OpBlock {pin=2 }
 
 ProcedureDecl ::= ('Recursive')? 'Procedure' identifier OperationLikeParameters (':' Type)? ';'
 OpBlock

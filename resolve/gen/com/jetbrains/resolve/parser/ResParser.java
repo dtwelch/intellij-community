@@ -881,7 +881,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Facility'|'Definition'|'Generic'|'Literal'|'Operation'|'Type'|end)
+  // !('Facility'|'Operation'|'Definition'|'Generic'|'Literal'|'Type'|end)
   static boolean FacilityItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityItemRecover")) return false;
     boolean r;
@@ -891,16 +891,16 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Facility'|'Definition'|'Generic'|'Literal'|'Operation'|'Type'|end
+  // 'Facility'|'Operation'|'Definition'|'Generic'|'Literal'|'Type'|end
   private static boolean FacilityItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityItemRecover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, FACILITY);
+    if (!r) r = consumeToken(b, OPERATION);
     if (!r) r = consumeToken(b, DEFINITION);
     if (!r) r = consumeToken(b, GENERIC);
     if (!r) r = consumeToken(b, LITERAL);
-    if (!r) r = consumeToken(b, OPERATION);
     if (!r) r = consumeToken(b, TYPE_FAMILY);
     if (!r) r = consumeToken(b, END);
     exit_section_(b, m, null, r);

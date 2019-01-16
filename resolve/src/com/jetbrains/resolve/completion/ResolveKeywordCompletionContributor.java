@@ -4,8 +4,6 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.patterns.PatternCondition;
-import com.intellij.patterns.PlatformPatterns;
-import com.intellij.patterns.PsiElementPattern;
 import com.intellij.patterns.PsiElementPattern.Capture;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
@@ -72,6 +70,8 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     extend(CompletionType.BASIC, moduleRequiresPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
 
+    extend(CompletionType.BASIC, requireClausePatternOpProc(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
     extend(CompletionType.BASIC, modelInitialization(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "initialization"));
     extend(CompletionType.BASIC, initializationEnsures(),
@@ -115,6 +115,36 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
           return false;
         }
       }));
+  }
+
+  private static Capture<? extends PsiElement> requireClausePatternOpProc() {
+    return psiElement(ResTypes.IDENTIFIER).with(
+      new PatternCondition<PsiElement>("requiresKeyword") {
+        @Override
+        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+          PsiElement x = element.getParent();
+          if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
+              x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
+            return true;
+          }
+          return false;
+        }
+      });
+  }
+
+  private static Capture<PsiElement> onOpProcContracts(boolean forRequires) {
+    return psiElement(ResTypes.IDENTIFIER).with(
+      new PatternCondition<PsiElement>("requiresKeyword") {
+        @Override
+        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+          PsiElement x = element.getParent();
+          if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
+              x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
+            return true;
+          }
+          return false;
+        }
+      });
   }
 
   private static Capture<PsiElement> onKeywordStartWithParent(Class<? extends PsiElement> parentClass) {
