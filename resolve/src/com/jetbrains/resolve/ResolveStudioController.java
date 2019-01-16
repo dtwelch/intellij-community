@@ -81,7 +81,7 @@ public class ResolveStudioController implements ProjectComponent {
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
 
     Main.InitConfig env = new Main.InitConfig();
-    mainVerifierWindowFrame = new MainWindow(env, false);
+    mainVerifierWindowFrame = MainWindow.getInstance(env, false);
 
     verifierPanel = mainVerifierWindowFrame.getContentsAsPanel();
     mathSymbolPanel = new MathSymbolPanel(project);

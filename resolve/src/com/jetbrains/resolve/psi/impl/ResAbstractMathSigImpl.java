@@ -35,14 +35,6 @@ public abstract class ResAbstractMathSigImpl extends ResMathNamedElementImpl imp
       String placeholder = joinParams(o.getParameters());
       return l.get(0).getText() + placeholder + l.get(1).getText();
     }
-    else if (this instanceof ResMathPostfixDefnSig) {
-      ResMathPostfixDefnSig o = (ResMathPostfixDefnSig)this;
-      List<ResMathSymbolName> l = o.getMathSymbolNameList();
-      if (l.size() != 2) return null;
-      String outer = "∙ ";
-      String inner = joinParams(o.getParameters());
-      return outer + l.get(0).getText() + inner + l.get(1).getText();
-    }
     return super.getName();
   }
 

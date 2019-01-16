@@ -241,7 +241,6 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("exists", "∃");
     SYMBOL_MAP.put("lambda", "λ");
     SYMBOL_MAP.put("triangleq", "≜");
-    SYMBOL_MAP.put("tricolon", "ː");
   }
 
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {

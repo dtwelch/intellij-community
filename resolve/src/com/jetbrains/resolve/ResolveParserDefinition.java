@@ -43,7 +43,8 @@ public class ResolveParserDefinition implements ParserDefinition {
                     END, EXTENDS, USES,
 
                     THEOREM, COROLLARY, RECOGNITION, IMPLICIT, DEFINITION,
-                    CATEGORICAL, INDUCTIVE/*, DEFINES*/, CHAINABLE, VALUED, COERCER,
+                    CATEGORICAL, INDUCTIVE/*, DEFINES*/, VALUED, COERCER,
+                    LITERAL, GENERIC,
 
                     REQUIRES, ENSURES, WHICH_ENTAILS, CHANGING, MAINTAINING,
                     DECREASING, NOTICE, CORRESPONDENCE, TYPE_FAMILY,

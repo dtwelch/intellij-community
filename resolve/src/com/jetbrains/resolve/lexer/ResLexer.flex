@@ -142,7 +142,6 @@ ESCAPES = [abfnrtv]
 "Cart_Prod"                             { return CART_PROD; }
 "Categorical"                           { return CATEGORICAL; }
 "changing"                              { return CHANGING; }
-"Chainable"                             { return CHAINABLE; }
 "Concept"                               { return CONCEPT; }
 "constraints"                           { return CONSTRAINTS; }
 "conventions"                           { return CONVENTIONS; }
@@ -169,6 +168,7 @@ ESCAPES = [abfnrtv]
 "family"                                { return FAMILY; }
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
+"Generic"                               { return GENERIC; }
 
 "if"                                    { return IF; }
 "If"                                    { return IF_PROG; }
@@ -177,6 +177,7 @@ ESCAPES = [abfnrtv]
 "Inductive"                             { return INDUCTIVE; }
 "is"                                    { return IS; }
 
+"Literal"                               { return LITERAL; }
 "realized"                              { return REALIZED; }
 "Realization"                           { return REALIZATION; }
 

@@ -26,7 +26,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     extend(CompletionType.BASIC, modulePattern(ResPrecisModuleDecl.class, ResPrecisBlock.class),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
                                                 "Implicit", "Definition", "Def", "Theorem", "Corollary",
-                                                "Inductive", "Recognition", "Categorical"));
+                                                "Inductive", "Recognition", "Categorical", "Generic", "Literal"));
 
     extend(CompletionType.BASIC, precisHeaderExtendsPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "extends"));
@@ -35,13 +35,16 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "for"));
 
     extend(CompletionType.BASIC, modulePattern(ResRealizationModuleDecl.class, ResRealizBlock.class),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition"));
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition", "Def"));
 
     extend(CompletionType.BASIC, modulePattern(ResConceptModuleDecl.class, ResConceptBlock.class),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
                                                 "Definition", "Def", "Implicit", "constraints"));
 
     extend(CompletionType.BASIC, modulePattern(ResConceptEnhancementModuleDecl.class, ResConceptBlock.class),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition", "Def", "Implicit"));
+
+    extend(CompletionType.BASIC, modulePattern(ResFacilityModuleDecl.class, ResFacilityBlock.class),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Definition", "Def", "Implicit"));
 
     extend(CompletionType.BASIC, parameterModePattern(),

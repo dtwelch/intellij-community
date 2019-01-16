@@ -142,7 +142,6 @@ public class ResolveCompletionUtil {
         // p.setTailText(calcTailText(f), true);
         String name =
           signature instanceof ResMathOutfixDefnSig
-          || signature instanceof ResMathPostfixDefnSig
           ? signature.getCanonicalName()
           : element.getLookupString();
         p.setItemText(name + " : " + typeText);

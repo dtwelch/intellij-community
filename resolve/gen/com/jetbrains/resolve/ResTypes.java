@@ -59,7 +59,6 @@ public interface ResTypes {
   IElementType MATH_OUTFIX_APPLY_EXP = new ResCompositeElementType("MATH_OUTFIX_APPLY_EXP");
   IElementType MATH_OUTFIX_DEFN_SIG = new ResCompositeElementType("MATH_OUTFIX_DEFN_SIG");
   IElementType MATH_PARAMETER_DEFN_DECL = new ResCompositeElementType("MATH_PARAMETER_DEFN_DECL");
-  IElementType MATH_POSTFIX_DEFN_SIG = new ResCompositeElementType("MATH_POSTFIX_DEFN_SIG");
   IElementType MATH_PREFIX_APPLY_EXP = new ResCompositeElementType("MATH_PREFIX_APPLY_EXP");
   IElementType MATH_PREFIX_DEFN_SIG = new ResCompositeElementType("MATH_PREFIX_DEFN_SIG");
   IElementType MATH_QUANTIFIED_EXP = new ResCompositeElementType("MATH_QUANTIFIED_EXP");
@@ -164,6 +163,7 @@ public interface ResTypes {
   IElementType FOR = new ResTokenType("for");
   IElementType FORALL = new ResTokenType("∀");
   IElementType FROM = new ResTokenType("from");
+  IElementType GENERIC = new ResTokenType("Generic");
   IElementType IDENTIFIER = new ResTokenType("identifier");
   IElementType IF = new ResTokenType("if");
   IElementType IF_PROG = new ResTokenType("If");
@@ -179,8 +179,10 @@ public interface ResTypes {
   IElementType LBRACE = new ResTokenType("{");
   IElementType LBRACK = new ResTokenType("[");
   IElementType LCEIL = new ResTokenType("⌈");
+  IElementType LITERAL = new ResTokenType("Literal");
   IElementType LPAREN = new ResTokenType("(");
   IElementType MAINTAINING = new ResTokenType("maintaining");
+  IElementType MATHPOSTFIXDEFNSIG = new ResTokenType("MathPostfixDefnSig");
   IElementType MATHSYMBOL = new ResTokenType("mathsymbol");
   IElementType MODELED = new ResTokenType("modeled");
   IElementType NEQUALS = new ResTokenType("≠");
@@ -363,9 +365,6 @@ public interface ResTypes {
       }
       else if (type == MATH_PARAMETER_DEFN_DECL) {
         return new ResMathParameterDefnDeclImpl(node);
-      }
-      else if (type == MATH_POSTFIX_DEFN_SIG) {
-        return new ResMathPostfixDefnSigImpl(node);
       }
       else if (type == MATH_PREFIX_APPLY_EXP) {
         return new ResMathPrefixApplyExpImpl(node);

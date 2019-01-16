@@ -128,9 +128,6 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == MATH_PARAMETER_DEFN_DECL) {
       r = MathParameterDefnDecl(b, 0);
     }
-    else if (t == MATH_POSTFIX_DEFN_SIG) {
-      r = MathPostfixDefnSig(b, 0);
-    }
     else if (t == MATH_PREFIX_DEFN_SIG) {
       r = MathPrefixDefnSig(b, 0);
     }
@@ -452,7 +449,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Type'|'Operation'|'Definition'|'Valued'|constraints|end)
+  // !('Type'|'Operation'|'Definition'|'Valued'|'Literal'|'Generic'|constraints|end)
   static boolean ConceptItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ConceptItemRecover")) return false;
     boolean r;
@@ -462,7 +459,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Type'|'Operation'|'Definition'|'Valued'|constraints|end
+  // 'Type'|'Operation'|'Definition'|'Valued'|'Literal'|'Generic'|constraints|end
   private static boolean ConceptItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ConceptItemRecover_0")) return false;
     boolean r;
@@ -471,6 +468,8 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, OPERATION);
     if (!r) r = consumeToken(b, DEFINITION);
     if (!r) r = consumeToken(b, VALUED);
+    if (!r) r = consumeToken(b, LITERAL);
+    if (!r) r = consumeToken(b, GENERIC);
     if (!r) r = consumeToken(b, CONSTRAINTS);
     if (!r) r = consumeToken(b, END);
     exit_section_(b, m, null, r);
@@ -882,7 +881,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Facility'|'Definition'|'Operation'|'Type'|end)
+  // !('Facility'|'Definition'|'Generic'|'Literal'|'Operation'|'Type'|end)
   static boolean FacilityItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityItemRecover")) return false;
     boolean r;
@@ -892,13 +891,15 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Facility'|'Definition'|'Operation'|'Type'|end
+  // 'Facility'|'Definition'|'Generic'|'Literal'|'Operation'|'Type'|end
   private static boolean FacilityItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FacilityItemRecover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, FACILITY);
     if (!r) r = consumeToken(b, DEFINITION);
+    if (!r) r = consumeToken(b, GENERIC);
+    if (!r) r = consumeToken(b, LITERAL);
     if (!r) r = consumeToken(b, OPERATION);
     if (!r) r = consumeToken(b, TYPE_FAMILY);
     if (!r) r = consumeToken(b, END);
@@ -1375,7 +1376,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "MathDefnSig")) return false;
     boolean r;
     r = MathPrefixDefnSig(b, l + 1);
-    if (!r) r = MathPostfixDefnSig(b, l + 1);
+    if (!r) r = consumeToken(b, MATHPOSTFIXDEFNSIG);
     if (!r) r = MathOutfixDefnSig(b, l + 1);
     if (!r) r = MathInfixDefnSig(b, l + 1);
     return r;
@@ -1534,27 +1535,6 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = r && MathDefnSig(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
-  }
-
-  /* ********************************************************** */
-  // '(' MathVarDecl ')' MathBracketName '(' MathVarDecl ')' MathBracketName ':' MathExp
-  public static boolean MathPostfixDefnSig(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathPostfixDefnSig")) return false;
-    if (!nextTokenIs(b, LPAREN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LPAREN);
-    r = r && MathVarDecl(b, l + 1);
-    r = r && consumeToken(b, RPAREN);
-    r = r && MathBracketName(b, l + 1);
-    r = r && consumeToken(b, LPAREN);
-    r = r && MathVarDecl(b, l + 1);
-    r = r && consumeToken(b, RPAREN);
-    r = r && MathBracketName(b, l + 1);
-    r = r && consumeToken(b, COLON);
-    r = r && MathExp(b, l + 1, -1);
-    exit_section_(b, m, MATH_POSTFIX_DEFN_SIG, r);
-    return r;
   }
 
   /* ********************************************************** */
@@ -1740,7 +1720,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
+  // ('Literal')? ('Generic')? ('Coercer')? ('Valued')? ('Implicit')?
   // 'Definition'  MathDefnSig (TRIANGLEQ MathAssertionExp)? ';'
   public static boolean MathStandardDefnDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl")) return false;
@@ -1750,53 +1730,61 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = r && MathStandardDefnDecl_1(b, l + 1);
     r = r && MathStandardDefnDecl_2(b, l + 1);
     r = r && MathStandardDefnDecl_3(b, l + 1);
+    r = r && MathStandardDefnDecl_4(b, l + 1);
     r = r && consumeToken(b, DEFINITION);
-    p = r; // pin = 5
+    p = r; // pin = 6
     r = r && report_error_(b, MathDefnSig(b, l + 1));
-    r = p && report_error_(b, MathStandardDefnDecl_6(b, l + 1)) && r;
+    r = p && report_error_(b, MathStandardDefnDecl_7(b, l + 1)) && r;
     r = p && consumeToken(b, SEMICOLON) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // ('Chainable')?
+  // ('Literal')?
   private static boolean MathStandardDefnDecl_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_0")) return false;
-    consumeToken(b, CHAINABLE);
+    consumeToken(b, LITERAL);
+    return true;
+  }
+
+  // ('Generic')?
+  private static boolean MathStandardDefnDecl_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_1")) return false;
+    consumeToken(b, GENERIC);
+    return true;
+  }
+
+  // ('Coercer')?
+  private static boolean MathStandardDefnDecl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_2")) return false;
+    consumeToken(b, COERCER);
     return true;
   }
 
   // ('Valued')?
-  private static boolean MathStandardDefnDecl_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_1")) return false;
+  private static boolean MathStandardDefnDecl_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_3")) return false;
     consumeToken(b, VALUED);
     return true;
   }
 
   // ('Implicit')?
-  private static boolean MathStandardDefnDecl_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_2")) return false;
+  private static boolean MathStandardDefnDecl_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_4")) return false;
     consumeToken(b, IMPLICIT);
     return true;
   }
 
-  // ('Coercer')?
-  private static boolean MathStandardDefnDecl_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_3")) return false;
-    consumeToken(b, COERCER);
-    return true;
-  }
-
   // (TRIANGLEQ MathAssertionExp)?
-  private static boolean MathStandardDefnDecl_6(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6")) return false;
-    MathStandardDefnDecl_6_0(b, l + 1);
+  private static boolean MathStandardDefnDecl_7(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_7")) return false;
+    MathStandardDefnDecl_7_0(b, l + 1);
     return true;
   }
 
   // TRIANGLEQ MathAssertionExp
-  private static boolean MathStandardDefnDecl_6_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0")) return false;
+  private static boolean MathStandardDefnDecl_7_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_7_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, TRIANGLEQ);
@@ -2481,7 +2469,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end)
+  // !('Definition'|'Implicit'|'Generic'|'Literal'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Coercer'|'Valued'|end)
   static boolean PrecisItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisItemRecover")) return false;
     boolean r;
@@ -2491,19 +2479,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end
+  // 'Definition'|'Implicit'|'Generic'|'Literal'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Coercer'|'Valued'|end
   private static boolean PrecisItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrecisItemRecover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, DEFINITION);
     if (!r) r = consumeToken(b, IMPLICIT);
+    if (!r) r = consumeToken(b, GENERIC);
+    if (!r) r = consumeToken(b, LITERAL);
     if (!r) r = consumeToken(b, THEOREM);
     if (!r) r = consumeToken(b, COROLLARY);
     if (!r) r = consumeToken(b, CATEGORICAL);
     if (!r) r = consumeToken(b, INDUCTIVE);
     if (!r) r = consumeToken(b, RECOGNITION);
-    if (!r) r = consumeToken(b, CHAINABLE);
     if (!r) r = consumeToken(b, COERCER);
     if (!r) r = consumeToken(b, VALUED);
     if (!r) r = consumeToken(b, END);
@@ -2676,7 +2665,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Procedure'|end)
+  // !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Generic'|'Literal'|'Procedure'|end)
   static boolean RealizItemRecover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "RealizItemRecover")) return false;
     boolean r;
@@ -2686,7 +2675,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // 'Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Procedure'|end
+  // 'Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Generic'|'Literal'|'Procedure'|end
   private static boolean RealizItemRecover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "RealizItemRecover_0")) return false;
     boolean r;
@@ -2696,6 +2685,8 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, FACILITY);
     if (!r) r = consumeToken(b, RECURSIVE);
     if (!r) r = consumeToken(b, DEFINITION);
+    if (!r) r = consumeToken(b, GENERIC);
+    if (!r) r = consumeToken(b, LITERAL);
     if (!r) r = consumeToken(b, PROCEDURE);
     if (!r) r = consumeToken(b, END);
     exit_section_(b, m, null, r);
