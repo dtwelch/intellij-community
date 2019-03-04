@@ -70,8 +70,10 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     extend(CompletionType.BASIC, moduleRequiresPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
 
-    extend(CompletionType.BASIC, requireClausePatternOpProc(),
+    extend(CompletionType.BASIC, contractPatternOpProc(true),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
+    extend(CompletionType.BASIC, contractPatternOpProc(false),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
     extend(CompletionType.BASIC, modelInitialization(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "initialization"));
     extend(CompletionType.BASIC, initializationEnsures(),
@@ -117,15 +119,24 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
       }));
   }
 
-  private static Capture<? extends PsiElement> requireClausePatternOpProc() {
+  private static Capture<? extends PsiElement> contractPatternOpProc(boolean forRequires) {
     return psiElement(ResTypes.IDENTIFIER).with(
       new PatternCondition<PsiElement>("requiresKeyword") {
         @Override
         public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
           PsiElement x = element.getParent();
+
           if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
               x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
-            return true;
+            ResOperationProcedureDecl opProc =
+              (ResOperationProcedureDecl) x.getParent().getNode().getPsi();
+            if (opProc.getRequiresClause() == null && forRequires) {
+              return true;
+            }
+            if (opProc.getEnsuresClause() == null && !forRequires) {
+              return true;
+            }
+
           }
           return false;
         }
