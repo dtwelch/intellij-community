@@ -40,6 +40,17 @@ public class ResPsiImplUtil {
     return moduleIdentifierSpec.getModuleLibraryIdentifier();
   }
 
+  //Precondition: ModuleIdentifierList should be length at least one... (this is guaranteed by the grammar at the moment)
+  @NotNull
+  public static ResModuleIdentifier getModuleIdentifier(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
+    return moduleIdentifierSpec.getModuleIdentifierList().get(0);
+  }
+
+  @Nullable
+  public static ResModuleIdentifier getWithModuleIdentifier(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
+    return moduleIdentifierSpec.getModuleIdentifierList().get(1);
+  }
+
   @Nullable
   private static PsiElement resolveModuleOrLibraryIdentifier(@NotNull PsiReference[] references,
                                                              @NotNull Predicate<PsiElement> p) {
@@ -120,12 +131,18 @@ public class ResPsiImplUtil {
 
   @NotNull
   public static String getName(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
-    return moduleIdentifierSpec.getModuleIdentifier().getText();
+    List<ResModuleIdentifier> s = moduleIdentifierSpec.getModuleIdentifierList();
+    return s.get(0).getText();
   }
 
   //TODO: This will come up when aliases get introduced
   @Nullable
   public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
+    return null;
+  }
+
+  @Nullable
+  public static PsiElement getWithIdentifier(@NotNull ResModuleIdentifierSpec o) {
     return null;
   }
 

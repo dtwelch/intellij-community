@@ -32,13 +32,13 @@ WS = [ \t\f]        //whitespaces
 LINE_COMMENT      = "//" [^\r\n]*
 MULTILINE_COMMENT = "/*" ( ([^"*"]|[\r\n])* ("*"+ [^"*""/"] )? )* ("*" | "*"+"/")?
 
-LETTER  = [:letter:] | "_"
+LETTER  = [:jletter:] | "_"
 DIGIT   =  [:digit:]
 
 INT_DIGIT     = [0-9]
 NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
 
-IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
+IDENTIFIER   = {LETTER} ({LETTER} | {DIGIT} )*
 MSYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
@@ -54,10 +54,11 @@ U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 U_RELATION    = ("≤"|"≥"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
 
-U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|{LAMBDA}|"μ"|"ν"|"ξ"|
+U_GREEK       = ("α"|"β"|"γ"|"δ"|"λ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν"|"ξ"|
                  "ο"|"π"|"ρ"|"ς"|"σ"|"τ"|"υ"|"φ"|"χ"|"ψ"|"ω"|"Γ"|"Δ"|"Θ"|"Λ"|
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
-LAMBDA = "λ"
+//PIECEWISE = "|{"
+
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
 SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|">"|">="|"<="|"=>"|"->"|"~>")
 STR     = "\""
@@ -87,6 +88,8 @@ ESCAPES = [abfnrtv]
 
 ":"                                     { return COLON; }
 "::"                                    { return COLON_COLON; }
+":::"                                   { return COLON_COLON_COLON; }
+
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }
 "(i.)"                                  { return IND_BASE; }
@@ -104,8 +107,7 @@ ESCAPES = [abfnrtv]
 "["                                     { return LBRACK; }
 "]"                                     { return RBRACK; }
 
-"{{"                                    { return DBL_LBRACE; }
-"}}"                                    { return DBL_RBRACE; }
+"|{"                                    { return PIECEWISE; }
 
 "{"                                     { return LBRACE; }
 "}"                                     { return RBRACE; }
@@ -121,7 +123,7 @@ ESCAPES = [abfnrtv]
 {BACKSLASH}"or"                         { return OR; }
 {BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
 
-{BACKSLASH}{IDENT}                      { return CMD; }
+{BACKSLASH}{IDENTIFIER}                      { return CMD; }
 {BACKSLASH}"triangleq"                  { return TRIANGLEQ; }
 "≜"                                     { return TRIANGLEQ; }
 
@@ -207,6 +209,7 @@ ESCAPES = [abfnrtv]
 "Var"                                   { return VAR; }
 "While"                                 { return WHILE; }
 "which_entails"                         { return WHICH_ENTAILS; }
+"with"                                  { return WITH; }
 
 // Parameter modes
 
@@ -220,7 +223,7 @@ ESCAPES = [abfnrtv]
 
 {MSYM}                                  { return MATHSYMBOL; }
 {SYM}                                   { return SYMBOL; }
-{IDENT}                                 { return IDENTIFIER; }
+{IDENTIFIER}                            { return IDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
 }

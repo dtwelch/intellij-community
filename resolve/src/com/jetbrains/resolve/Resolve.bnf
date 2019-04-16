@@ -23,8 +23,11 @@
 
         COLON       = ':'
         COLON_COLON = '::'
+        COLON_COLON_COLON = ':::'
+
         SEMICOLON   = ';'
         COMMA       = ','
+        BULLET2       = '∙∙'
         IND_BASE    = '(i.)'
         IND_HYPO    = '(ii.)'
 
@@ -38,15 +41,14 @@
 
         LBRACK = '['
         RBRACK = ']'
-
-        DBL_LBRACE = '{{'
-        DBL_RBRACE = '}}'
+        PIECEWISE = '|{'
 
         LBRACE  = '{'
         RBRACE  = '}'
         BAR     = '|'
 
         // Builtin
+        LAMBDA = 'λ'
         EXISTS = '∃'
         FORALL = '∀'
         AND = '∧'
@@ -172,7 +174,10 @@ private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*"
 //there was an issue where qualifiers on math syms in say, global requires clauses, would resolve to a
 //ModuleIdentifierSpec during the delegate's "treeWalkUp" phase -- leaving us with a ModuleIdentifierSpec, not a file..
 //We don't want to resolve these until we're good and ready (i.e.: in {@link ResReference#processUsesImports})
-ModuleIdentifierSpec ::= ModuleIdentifier [FromClause] {pin=1 methods=[getFromLibraryIdentifier getName getIdentifier shouldGoDeeper]}
+ModuleIdentifierSpec ::= ModuleIdentifier [WithClause] [FromClause]
+        {pin=1 methods=[getFromLibraryIdentifier getName getIdentifier getModuleIdentifier getWithModuleIdentifier shouldGoDeeper]}
+
+private WithClause ::= with ModuleIdentifier {pin=1}
 private FromClause ::= from ModuleLibraryIdentifier {pin=1}
 
 ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}
@@ -265,7 +270,7 @@ private ParamDefinitionListNoPin ::= ParamDef &(!(';'|')')) (',' ParamDef)* {pin
 ParamDef ::= identifier
 
 TypeParamDecl ::= 'type' identifier {pin=2}
-ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|identifier)
+ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|ident)
 
 // program variable decls
 
@@ -367,7 +372,7 @@ MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'
 '(ii.)' MathAssertionExp ';' {pin=2}
 
-private MathDefnSig ::= MathPrefixDefnSig | MathPostfixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
+private MathDefnSig ::= MathPrefixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
 MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? ':' MathExp {pin=1}
 
 private MathPrefixNameList ::= MathSymbolName (',' MathSymbolName)* {recoverWhile=MathPrefixListRec}
@@ -409,8 +414,9 @@ MathAssertionExp ::= MathQuantifiedExp | MathExp
 MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-          MathAndOrApplyExp
-        |  MathEqualsApplyExp
+         MathBinderAppExp
+        |  MathAndOrApplyExp
+        | MathEqualsApplyExp
         | MathInfixApplyExp
         | MathPrefixApplyExp
         | MathNestedExp
@@ -426,6 +432,7 @@ MathAndOrApplyExp ::= MathExp MathAndOrName MathExp {pin=2}
 
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
 MathTypeAssertionExp ::= MathExp ':' MathExp
+
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 
 MathFunctionAppList ::= '(' MathArgList ')'
@@ -434,14 +441,17 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | MathLambdaExp
+MathBinderAppExp ::= SimpName MathVarDecl ',' MathExp //{recoverWhile=BinderRecover}
+//private BinderRecover ::= !(','|';'|':'|identifier)
+SimpName ::= (mathsymbol|CMD|identifier)
+
+private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
         | MathEqualsNotEqualsOpExp
         | MathAndOrOpExp
-        | MathTypeAssertionExp
+        | MathTypeAssertionExp//TODO: IDea, make this part ot he mathAssertinoExp rule
         | MathOutfixApplyExp
         | MathCartProdExp
-        | MathBinderAppExp
      //   | MathSetRestrictionExp
 
 MathEqualsNotEqualsOpExp ::= MathEqualsNotEqualsName {extends=MathExp}
@@ -451,7 +461,7 @@ MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
 MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (CMD|identifier|int|symbol|mathsymbol|true|false)
+MathSymbolName  ::= (CMD|identifier|int|/*symbol|*/mathsymbol|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}
@@ -459,9 +469,26 @@ MathReferenceExp ::= MathSymbolName {methods=[getReference getQualifier getIdent
 
 MathCartProdExp ::= 'Cart_Prod' ResMathCartVarGroup+  end {pin=1}
 private ResMathCartVarGroup ::= MathVarDeclGroup ';' {pin=1}
-MathLambdaExp ::= LAMBDA MathVarDecl ','  MathExp {pin=1}
-MathAlternativeExp ::= '{{' MathAlternativesList '}}' {pin=1}
+
+/*
+mathAlternativesExp
+    :   mathAltItemExp+
+        mathAltItemConclusionExp
+    ;
+
+mathAltItemExp
+    :   PIECEWISECURLY result=mathExp
+        ('if' condition=mathExp)
+    ;
+
+mathAltItemConclusionExp
+    :     PIECEWISECURLY result=mathExp 'otherwise'
+    ;
+*/
+MathAlternativeExp ::= MathAlternativesList MathAlternativeItemConclusionExp
 MathAlternativesList ::= MathAlternativeItemExp+
-MathAlternativeItemExp ::= MathExp (if MathExp ';' | otherwise ';')
+MathAlternativeItemExp ::= PIECEWISE if MathExp  {pin=1}
+MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
+
 //MathSetRestrictionExp ::= '{' MathVarDecl '|' MathExp '}' {pin=1}
-MathBinderAppExp ::= MathSymbolExp MathVarDecl ',' MathExp
+

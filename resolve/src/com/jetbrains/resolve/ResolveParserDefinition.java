@@ -53,7 +53,7 @@ public class ResolveParserDefinition implements ParserDefinition {
                     EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED,
                     OPERATION, PROCEDURE, OTHERWISE, RECORD, THEN, WHILE);
 
-  public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, MATHSYMBOL, COLON_EQUALS,
+  public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, /*MATHSYMBOL,*/ COLON_EQUALS,
                                                            LBRACK, RBRACK, LANGLE, RANGLE, /*LCUP, RCUP,*/ LCEIL, RCEIL,
                                                            DBL_BAR, BAR, COLON_EQUALS_COLON);
   public static final TokenSet PARAMETER_MODES = TokenSet.create(ALTERS, UPDATES, CLEARS, RESTORES, PRESERVES, REPLACES, EVALUATES);

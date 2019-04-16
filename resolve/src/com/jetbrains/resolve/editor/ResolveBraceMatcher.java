@@ -14,7 +14,6 @@ public class ResolveBraceMatcher implements PairedBraceMatcher {
   private static final BracePair[] PAIRS = new BracePair[]{
     new BracePair(ResTypes.LPAREN, ResTypes.RPAREN, false),
     new BracePair(ResTypes.LBRACE, ResTypes.RBRACE, false),
-    new BracePair(ResTypes.DBL_LBRACE, ResTypes.DBL_RBRACE, false),
   };
 
   @Override
