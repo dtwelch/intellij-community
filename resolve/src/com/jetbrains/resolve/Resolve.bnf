@@ -441,9 +441,9 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-MathBinderAppExp ::= SimpName MathVarDecl ',' MathExp //{recoverWhile=BinderRecover}
+MathBinderAppExp ::= SimpBinderName MathVarDecl ',' MathExp //{recoverWhile=BinderRecover}
 //private BinderRecover ::= !(','|';'|':'|identifier)
-SimpName ::= (mathsymbol|CMD|identifier)
+SimpBinderName ::= (mathsymbol|CMD|identifier)
 
 private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
