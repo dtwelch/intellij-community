@@ -461,7 +461,7 @@ MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
 MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (CMD|identifier|int|/*symbol|*/mathsymbol|true|false)
+MathSymbolName  ::= (CMD|identifier|int|symbol|mathsymbol|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}
