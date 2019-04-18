@@ -37,9 +37,13 @@ DIGIT   =  [:digit:]
 
 INT_DIGIT     = [0-9]
 NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
+CMD           = {BACKSLASH}{IDENT}
 
-IDENTIFIER   = {LETTER} ({LETTER} | {DIGIT} )*
-MSYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
+MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
+
+ASCII         = ("+" | "-" | "*" | "=" | "<" | ">" | "=" | "!" | "~")
+MATHIDENT = ( {IDENT} | ({CMD} | {ASCII} | {MATH_NON_IDENTIFIER_SYM})+) ("'")* ("`")*
+IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
                  "⇁"|"↼"|"⇀"|"⇃"|"⇂"|"↿"|"↾"|"↑"|"⇑"|"↓"|"⇓"|"↕"|"⇕")
@@ -60,7 +64,6 @@ U_GREEK       = ("α"|"β"|"γ"|"δ"|"λ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν
 //PIECEWISE = "|{"
 
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-SYM     = ("!"|"*"|"+"|"-"|"/"|"~"|"<"|">"|">="|"<="|"=>"|"->"|"~>")
 STR     = "\""
 BACKSLASH = "\\"
 STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
@@ -123,9 +126,9 @@ ESCAPES = [abfnrtv]
 {BACKSLASH}"or"                         { return OR; }
 {BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
 
-{BACKSLASH}{IDENTIFIER}                      { return CMD; }
+//{BACKSLASH}{IDENT}                     { return CMD; }
 {BACKSLASH}"triangleq"                  { return TRIANGLEQ; }
-"≜"                                     { return TRIANGLEQ; }
+"≜"                                    { return TRIANGLEQ; }
 
 "="                                     { return EQUALS; }
 "/="                                    { return NEQUALS; }  //builtin ascii abbrev
@@ -221,9 +224,8 @@ ESCAPES = [abfnrtv]
 "replaces"                              { return REPLACES; }
 "evaluates"                             { return EVALUATES; }
 
-{MSYM}                                  { return MATHSYMBOL; }
-{SYM}                                   { return SYMBOL; }
-{IDENTIFIER}                            { return IDENTIFIER; }
+{IDENT}                                 { return IDENTIFIER; }
+{MATHIDENT}                              { return MATHIDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
 }

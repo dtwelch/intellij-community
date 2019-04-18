@@ -414,8 +414,8 @@ MathAssertionExp ::= MathQuantifiedExp | MathExp
 MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-         MathBinderAppExp
-        |  MathAndOrApplyExp
+          MathBinderAppExp
+        | MathAndOrApplyExp
         | MathEqualsApplyExp
         | MathInfixApplyExp
         | MathPrefixApplyExp
@@ -441,9 +441,9 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-MathBinderAppExp ::= SimpBinderName MathVarDecl ',' MathExp //{recoverWhile=BinderRecover}
+MathBinderAppExp ::= SimpBinderName MathVarDecl ',' MathExp //{pin=1}
 //private BinderRecover ::= !(','|';'|':'|identifier)
-SimpBinderName ::= (mathsymbol|CMD|identifier)
+private SimpBinderName ::= mathidentifier
 
 private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
@@ -461,7 +461,7 @@ MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
 MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (CMD|identifier|int|symbol|mathsymbol|true|false)
+MathSymbolName  ::= (identifier|symbol|mathidentifier|int|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}
