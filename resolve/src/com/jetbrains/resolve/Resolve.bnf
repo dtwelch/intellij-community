@@ -27,7 +27,6 @@
 
         SEMICOLON   = ';'
         COMMA       = ','
-        BULLET2       = '∙∙'
         IND_BASE    = '(i.)'
         IND_HYPO    = '(ii.)'
 
@@ -460,7 +459,7 @@ MathEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
 MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
-MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
+MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}'|ELANGLE|ERANGLE) {elementType=MathSymbolName}
 MathSymbolName  ::= (identifier|symbol|mathidentifier|int|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}

@@ -41,8 +41,12 @@ CMD           = {BACKSLASH}{IDENT}
 
 MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
 
-ASCII         = ("+" | "-" | "*" | "=" | "<" | ">" | "=" | "!" | "~")
-MATHIDENT = ( {IDENT} | ({CMD} | {ASCII} | {MATH_NON_IDENTIFIER_SYM})+) ("'")* ("`")*
+ASCII         = ("+" | "-" | "*" | "<" | ">" | "!" | "~")
+
+PRIMED_MATH_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )* ("`")+ ("'")+
+MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
+MATHIDENT = ({PRIMED_MATH_ID} | {MATH_ID})
+
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
@@ -120,6 +124,8 @@ ESCAPES = [abfnrtv]
 // Builtin
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
+{BACKSLASH}"langle"                     { return ELANGLE; }
+{BACKSLASH}"rangle"                     { return ERANGLE; }
 {BACKSLASH}"forall"                     { return EFORALL; }
 {BACKSLASH}"exists"                     { return EEXISTS; }
 {BACKSLASH}"and"                        { return AND; }
@@ -225,7 +231,8 @@ ESCAPES = [abfnrtv]
 "evaluates"                             { return EVALUATES; }
 
 {IDENT}                                 { return IDENTIFIER; }
-{MATHIDENT}                              { return MATHIDENTIFIER; }
+{MATHIDENT}                             { return MATHIDENTIFIER; }
+
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
 }
