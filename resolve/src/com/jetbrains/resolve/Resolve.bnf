@@ -46,7 +46,7 @@
         LBRACE  = '{'
         RBRACE  = '}'
         BAR     = '|'
-        BULLET  = '∙'
+
         // Builtin
         LAMBDA = 'λ'
         EXISTS = '∃'
@@ -92,6 +92,7 @@
         WHILE         = 'While'
         GENERIC       = 'Generic'
         LITERAL       = 'Literal'
+        IS            = 'is'
 
         //these two are so grammarkit's live preview feature will work right,
         //disregard them otherwise
@@ -366,7 +367,7 @@ MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathPrefixDefnSigs is MathExp ';' {pin=2}
 
 MathStandardDefnDecl ::= ('Literal')? ('Generic')? ('Coercer')? ('Valued')? ('Implicit')?
-'Definition'  MathDefnSig (TRIANGLEQ MathAssertionExp)? ';' {pin=6}
+'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';' {pin=6}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'
