@@ -46,7 +46,7 @@
         LBRACE  = '{'
         RBRACE  = '}'
         BAR     = '|'
-
+        BULLET  = '∙'
         // Builtin
         LAMBDA = 'λ'
         EXISTS = '∃'
@@ -389,7 +389,7 @@ private MathDefnParamList ::= MathVarDeclGroup (',' MathVarDeclGroup)* {pin=1 re
 
 // mathematical variables
 
-MathVarDeclGroup ::= MathVarDeclList ':' MathExp {pin=1}
+MathVarDeclGroup ::= MathVarDeclList ':' MathExp {pin=2}
 
 MathVarDecl ::= MathVarDef ':' MathExp {pin=2 extends=MathVarDeclGroup}
 private MathVarDeclList ::= MathVarDef &(!(')')) (',' MathVarDef)* {pin=1}
@@ -414,8 +414,8 @@ MathAssertionExp ::= MathQuantifiedExp | MathExp
 MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-          MathBinderAppExp
-        | MathAndOrApplyExp
+          MathBinderAppExp |
+          MathAndOrApplyExp
         | MathEqualsApplyExp
         | MathInfixApplyExp
         | MathPrefixApplyExp
@@ -431,6 +431,11 @@ MathEqualsApplyExp ::= MathExp MathEqualsNotEqualsName MathExp {pin=2}
 MathAndOrApplyExp ::= MathExp MathAndOrName MathExp {pin=2}
 
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
+
+MathBinderAppExp ::= mathbinderidentifier MathVarDeclGroup ',' (MathFunctionAppList|MathExp) {pin=1} //recoverWhile=Rec
+//&(!(';'|')'))
+//SimpBinderName ::=  mathidentifier
+
 MathTypeAssertionExp ::= MathExp ':' MathExp
 
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
@@ -441,11 +446,7 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-MathBinderAppExp ::= SimpBinderName MathVarDecl ',' MathExp //{pin=1}
-//private BinderRecover ::= !(','|';'|':'|identifier)
-private SimpBinderName ::= mathidentifier
-
-private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
+private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp |MathSelectorExp
         | MathAlternativeExp
         | MathEqualsNotEqualsOpExp
         | MathAndOrOpExp
