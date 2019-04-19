@@ -20,10 +20,11 @@
         DOT     = '.'
         LPAREN  = '('
         RPAREN  = ')'
+        TICK    = '`'
+        PRIME    = "'"
 
         COLON       = ':'
         COLON_COLON = '::'
-        COLON_COLON_COLON = ':::'
 
         SEMICOLON   = ';'
         COMMA       = ','
@@ -57,7 +58,7 @@
         COLON_EQUALS = ':='
         TRIANGLEQ = '≜'
         COLON_EQUALS_COLON = ':=:'
-        BAD_CHARACTER = '"\\"'
+        //BAD_CHARACTER = '"\\"'
 
         // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
         // this in grammarkit's issue section. But for now this is just the way it is.

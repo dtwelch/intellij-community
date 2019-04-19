@@ -43,9 +43,9 @@ MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPER
 
 ASCII         = ("+" | "-" | "*" | "<" | ">" | "!" | "~")
 
-PRIMED_MATH_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )* ("`")+ ("'")+
+PRIMED_MATH_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )* ("`"+|"'")+
 MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
-MATHIDENT = ({PRIMED_MATH_ID} | {MATH_ID})
+MATHIDENT = ({PRIMED_MATH_ID} | {MATH_ID} | {IDENT})
 
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
@@ -83,9 +83,9 @@ ESCAPES = [abfnrtv]
 {STRING}                                { return STRING; }
 
 "'\\'"                                  { return BAD_CHARACTER; }
-"'" [^\\] "'"                           { return CHAR; }
-"'" \n "'"                              { return CHAR; }
-"'\\" [abfnrtv\\\'] "'"                 { return CHAR; }
+//"'" [^\\] "'"                           { return CHAR; }
+//"'" \n "'"                              { return CHAR; }
+//"'\\" [abfnrtv\\\'] "'"                 { return CHAR; }
 
 // Punctuation
 "#"                                     { return POUND; }
@@ -95,7 +95,6 @@ ESCAPES = [abfnrtv]
 
 ":"                                     { return COLON; }
 "::"                                    { return COLON_COLON; }
-":::"                                   { return COLON_COLON_COLON; }
 
 ";"                                     { return SEMICOLON; }
 ","                                     { return COMMA; }
