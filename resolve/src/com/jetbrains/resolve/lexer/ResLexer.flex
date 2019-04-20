@@ -41,6 +41,7 @@ CMD           = {BACKSLASH}{IDENT}
 
 MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
 
+
 ASCII         = ("+" | "-" | "*" | "<" | ">" | "!" | "~")
 
 MATH_PRIMED_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )+ ("`"+|"'")+

@@ -347,7 +347,7 @@ NestedExp ::= '(' Exp ')'   {pin=1 extends=Exp}
 SelectorExp ::= Exp '.' Exp {extends=BinaryExp}
 InfixExp ::= Exp ProgSymbolName Exp {extends=BinaryExp}
 ParamExp ::= NameExp ArgumentList {extends=Exp}
-ProgSymbolName ::= (identifier|symbol)
+ProgSymbolName ::= (mathidentifier)
 
 NameExp ::= ReferenceExp QualifiedReferenceExp? {elementType=ReferenceExp}
 left QualifiedReferenceExp ::= '::' identifier {elementType=ReferenceExp}
@@ -415,8 +415,8 @@ MathAssertionExp ::= MathQuantifiedExp | MathExp
 MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-          MathBinderAppExp |
-          MathAndOrApplyExp
+          MathBinderAppExp
+        | MathAndOrApplyExp
         | MathEqualsApplyExp
         | MathInfixApplyExp
         | MathPrefixApplyExp
