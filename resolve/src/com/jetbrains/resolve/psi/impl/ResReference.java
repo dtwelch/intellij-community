@@ -403,8 +403,18 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
         //searching a super module (even it is mentioned explicitly in the uses list) is considered a "localSearch"
         boolean searchingLocally = forSuperModule(module, o.getName());
-        if (!processModuleLevelEntities((ResFile)resolve, processor, state, searchingLocally)) return false;
+        processModuleLevelEntities((ResFile)resolve, processor, state, searchingLocally);
       }
+
+      //now try the 'with' part.
+      PsiElement resolveWith = (o.getWithModuleIdentifier() != null) ? o.getWithModuleIdentifier().resolve() : null;
+      if (resolveWith == null && resolve instanceof ResFile) {
+        processor.execute(resolve, state.put(ACTUAL_NAME, o.getWithModuleIdentifier().getText()));
+
+        //see above case if the local processing is causing problems
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, false)) return false;
+      }
+
     }
 
     //now search through module-identifier-specs in the current module's header

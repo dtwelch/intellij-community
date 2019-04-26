@@ -78,7 +78,22 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "initialization"));
     extend(CompletionType.BASIC, initializationEnsures(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
+    extend(CompletionType.BASIC, withPattern(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "with"));
+  }
 
+  private static Capture<PsiElement> withPattern() {
+    return psiElement(ResTypes.IDENTIFIER).with(
+      new PatternCondition<PsiElement>("withKeyword") {
+        @Override
+        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+          if (element.getParent() != null && element.getParent() instanceof PsiErrorElement) {
+            PsiErrorElement v = (PsiErrorElement)element.getParent();
+            return v.getErrorDescription().contains("from or with expected");
+          }
+          return false;
+        }
+      });
   }
 
   //TODO: Redo this eventually, it doesn't work quite right yet.
@@ -185,7 +200,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
   }
 
   private static Capture<PsiElement> typeParamPattern() {
-    return psiElement(ResTypes.IDENTIFIER).withParent(ResParameterMode.class).inside(ResSpecModuleParameters.class);
+    return psiElement(ResTypes.IDENTIFIER).inside(ResSpecModuleParameters.class);
   }
 
   private static Capture<PsiElement> initializationEnsures() {

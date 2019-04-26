@@ -50,7 +50,7 @@ public class ResolveParserDefinition implements ParserDefinition {
                     DECREASING, NOTICE, CORRESPONDENCE, TYPE_FAMILY,
                     EXEMPLAR, CONSTRAINTS, CONVENTIONS, INITIALIZATION,
                     VAR, TYPE_PARAM, FAMILY, DO, IF, ELSE, ENHANCED, BY, CART_PROD,
-                    EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED,
+                    EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED, WITH,
                     OPERATION, PROCEDURE, OTHERWISE, RECORD, THEN, WHILE);
 
   public static final TokenSet OPERATORS = TokenSet.create(POUND, SYMBOL, /*MATHSYMBOL,*/ COLON_EQUALS,

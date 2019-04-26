@@ -73,6 +73,8 @@ public class ResolveStudioController implements ProjectComponent {
     LOG.info("ResolveStudio running on Java version " + SystemInfo.JAVA_VERSION);
     // make sure the tool windows are created early
     createToolWindows();
+    System.setProperty("apple.laf.useScreenMenuBar", "true");
+
     //installListeners();
   }
 

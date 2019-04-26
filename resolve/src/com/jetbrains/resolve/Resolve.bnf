@@ -168,9 +168,9 @@ end identifier ';' {pin(".*")=3}
 
 // uses, imports
 
-UsesList ::= uses UsesSpecs ';'  {pin(".*")=1}
-private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*")=1}
-
+UsesList ::= uses UsesSpecs ';'  {pin(".*")=1 }
+private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*")=1 recoverWhile=UsesRec}
+private UsesRec ::= !(';'|end|',')
 //shouldGoDeeper (impl sets to false) here allows us to avoid adding completions for ResModuleIdentifierSpec's
 //there was an issue where qualifiers on math syms in say, global requires clauses, would resolve to a
 //ModuleIdentifierSpec during the delegate's "treeWalkUp" phase -- leaving us with a ModuleIdentifierSpec, not a file..
@@ -271,7 +271,7 @@ private ParamDefinitionListNoPin ::= ParamDef &(!(';'|')')) (',' ParamDef)* {pin
 ParamDef ::= identifier
 
 TypeParamDecl ::= 'type' identifier {pin=2}
-ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|ident)
+ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|identifier)
 
 // program variable decls
 
