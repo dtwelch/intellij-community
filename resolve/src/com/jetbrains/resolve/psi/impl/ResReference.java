@@ -402,17 +402,23 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (resolve != null && resolve instanceof ResFile) {
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
         //searching a super module (even it is mentioned explicitly in the uses list) is considered a "localSearch"
-        boolean searchingLocally = forSuperModule(module, o.getName());
+        boolean searchingLocally = forSuperModule(module, o.getModuleIdentifier().getText());
         processModuleLevelEntities((ResFile)resolve, processor, state, searchingLocally);
       }
 
+      //List<ResModuleIdentifierSpec> x = o.
+      //List<ResModuleIdentifierSpec> x = o.
       //now try the 'with' part.
-      PsiElement resolveWith = (o.getWithModuleIdentifier() != null) ? o.getWithModuleIdentifier().resolve() : null;
-      if (resolveWith == null && resolve instanceof ResFile) {
-        processor.execute(resolve, state.put(ACTUAL_NAME, o.getWithModuleIdentifier().getText()));
+      if (o.getWithClause() == null || o.getWithClause().getModuleIdentifier() == null) {
+        return false;
+      }
+
+      PsiElement resolveWith = o.getWithClause().getModuleIdentifier().resolve();
+      if (resolveWith instanceof ResFile) {
+        processor.execute(resolveWith, state.put(ACTUAL_NAME, resolveWith.getText()));
 
         //see above case if the local processing is causing problems
-        if (!processModuleLevelEntities((ResFile)resolve, processor, state, false)) return false;
+        if (!processModuleLevelEntities((ResFile)resolveWith, processor, state, false)) return false;
       }
 
     }

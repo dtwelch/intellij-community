@@ -176,9 +176,9 @@ private UsesRec ::= !(';'|end|',')
 //ModuleIdentifierSpec during the delegate's "treeWalkUp" phase -- leaving us with a ModuleIdentifierSpec, not a file..
 //We don't want to resolve these until we're good and ready (i.e.: in {@link ResReference#processUsesImports})
 ModuleIdentifierSpec ::= ModuleIdentifier [WithClause] [FromClause]
-        {pin=1 methods=[getFromLibraryIdentifier getName getIdentifier getModuleIdentifier getWithModuleIdentifier shouldGoDeeper]}
+        {pin=1 methods=[getIdentifier getFromLibraryIdentifier shouldGoDeeper]}
 
-private WithClause ::= with ModuleIdentifier {pin=1}
+WithClause ::= with ModuleIdentifier {pin=1}
 private FromClause ::= from ModuleLibraryIdentifier {pin=1}
 
 ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}

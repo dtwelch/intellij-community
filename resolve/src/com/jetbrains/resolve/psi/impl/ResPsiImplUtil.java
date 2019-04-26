@@ -22,6 +22,7 @@ import com.jetbrains.resolve.psi.impl.imports.ResModuleReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,16 +41,16 @@ public class ResPsiImplUtil {
     return moduleIdentifierSpec.getModuleLibraryIdentifier();
   }
 
-  //Precondition: ModuleIdentifierList should be length at least one... (this is guaranteed by the grammar at the moment)
-  @NotNull
-  public static ResModuleIdentifier getModuleIdentifier(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
-    return moduleIdentifierSpec.getModuleIdentifierList().get(0);
+  @Nullable
+  public static PsiElement getIdentifier(ResModuleIdentifierSpec o ) {
+    return null;
   }
 
-  @Nullable
-  public static ResModuleIdentifier getWithModuleIdentifier(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
-    return moduleIdentifierSpec.getModuleIdentifierList().get(1);
-  }
+  //Precondition: ModuleIdentifierList should be length at least one... (this is guaranteed by the grammar at the moment)
+  /*@NotNull
+  public static ResModuleIdentifier getModuleIdentifier(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
+    return moduleIdentifierSpec.getModuleIdentifierList().get(0);
+  }*/
 
   @Nullable
   private static PsiElement resolveModuleOrLibraryIdentifier(@NotNull PsiReference[] references,
@@ -127,18 +128,6 @@ public class ResPsiImplUtil {
     return PsiTreeUtil.getParentOfType(o, ResFacilityDecl.class) != null &&
            PsiTreeUtil.getParentOfType(o, ResModuleSpecArgList.class) == null &&
            PsiTreeUtil.getParentOfType(o, ResModuleRealizArgList.class) == null;
-  }
-
-  @NotNull
-  public static String getName(@NotNull ResModuleIdentifierSpec moduleIdentifierSpec) {
-    List<ResModuleIdentifier> s = moduleIdentifierSpec.getModuleIdentifierList();
-    return s.get(0).getText();
-  }
-
-  //TODO: This will come up when aliases get introduced
-  @Nullable
-  public static PsiElement getIdentifier(@NotNull ResModuleIdentifierSpec o) {
-    return null;
   }
 
   @Nullable
