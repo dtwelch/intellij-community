@@ -339,15 +339,18 @@ ElseStatement ::= else Statements {pin=1}
 
 // program expressions
 
-Exp ::= InfixExp | ParamExp | NestedExp | PrimeExp
+Exp ::= /*ProgAndOrInfixExp |*/ ProgEqualsInfixExp | InfixExp | ParamExp | NestedExp | PrimeExp
 {methods=[getResType] implements="com.jetbrains.resolve.psi.ResTypeOwner"}
 fake BinaryExp ::= Exp+ { methods=[left="Exp[0]" right="Exp[1]"] extends=Exp}
+
+ProgEqualsInfixExp ::= Exp ProgEqualsNotEqualsName Exp {extends=BinaryExp}
+ProgEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
 
 NestedExp ::= '(' Exp ')'   {pin=1 extends=Exp}
 SelectorExp ::= Exp '.' Exp {extends=BinaryExp}
 InfixExp ::= Exp ProgSymbolName Exp {extends=BinaryExp}
 ParamExp ::= NameExp ArgumentList {extends=Exp}
-ProgSymbolName ::= (mathidentifier)
+ProgSymbolName ::= (mathidentifier|identifier)
 
 NameExp ::= ReferenceExp QualifiedReferenceExp? {elementType=ReferenceExp}
 left QualifiedReferenceExp ::= '::' identifier {elementType=ReferenceExp}

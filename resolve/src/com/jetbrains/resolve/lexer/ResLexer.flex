@@ -41,17 +41,18 @@ CMD           = {BACKSLASH}{IDENT}
 
 MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
 
-
-ASCII         = ("+" | "-" | "*" | "<" | ">" | "!" | "~")
+/*EQ          = "=" ;
+NEQ         = "≠" ;
+NEQ_CMD     = "\\neq" ;
+NEQ_ABBREV  = "/=" ;*/
+ASCII       = ("+" | "-" | "*" | "<" | ">" | "!" | "~" | "=" | "/")
 
 MATH_PRIMED_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )+ ("`"+|"'")+
+
 MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
 
 MATHBINDERIDENT = "`"({IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM})
-
 MATHIDENT = ({MATH_PRIMED_ID} | {MATH_ID} | {IDENT})
-
-
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
@@ -143,9 +144,10 @@ ESCAPES = [abfnrtv]
 "="                                     { return EQUALS; }
 "/="                                    { return NEQUALS; }  //builtin ascii abbrev
 "≠"                                     { return NEQUALS; }  //non-ascii variant
-//"and"                                    { return AND; }  //builtin ascii abbrev
+{BACKSLASH}"neq"                         { return NEQUALS; }  //builtin ascii abbrev
+{BACKSLASH}"and"                         { return AND; }  //builtin ascii abbrev
 "∧"                                     { return AND;}
-//"or"                                    { return OR; }  //builtin ascii abbrev
+{BACKSLASH}"or"                         { return OR; }  //builtin ascii abbrev
 "∨"                                     { return OR;}
 
 ":="                                    { return COLON_EQUALS; }

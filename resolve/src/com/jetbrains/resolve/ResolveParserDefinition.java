@@ -49,7 +49,7 @@ public class ResolveParserDefinition implements ParserDefinition {
                     REQUIRES, ENSURES, WHICH_ENTAILS, CHANGING, MAINTAINING,
                     DECREASING, NOTICE, CORRESPONDENCE, TYPE_FAMILY,
                     EXEMPLAR, CONSTRAINTS, CONVENTIONS, INITIALIZATION,
-                    VAR, TYPE_PARAM, FAMILY, DO, IF, ELSE, ENHANCED, BY, CART_PROD,
+                    VAR, TYPE_PARAM, FAMILY, DO, IF, IF_PROG, ELSE, ENHANCED, BY, CART_PROD,
                     EXTERNALLY, FOR, FROM, IS, REALIZED, MODELED, WITH,
                     OPERATION, PROCEDURE, OTHERWISE, RECORD, THEN, WHILE);
 
