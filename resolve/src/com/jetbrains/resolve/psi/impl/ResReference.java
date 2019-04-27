@@ -292,7 +292,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
           }
         }
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
-        boolean forSuperModule = forSuperModule(moduleDecl, o.getName());
+        boolean forSuperModule = forSuperModule(moduleDecl, o.getModuleIdentifier().getText());
         if (!processModuleLevelEntities((ResFile) resolve, processor, state, forSuperModule)) return false;
       }
       //}
