@@ -13,11 +13,16 @@ public interface ResModuleDecl extends ResNamedElement {
 
   boolean shouldAutoSearchUses();
 
+  @Nullable
+  public ResRequiresClause getRequiresClause();
+
   @NotNull
   public List<ResModuleIdentifierSpec> getStandardModulesToSearch();
 
   @NotNull
   public ResBlock getBlock();
+
+  ResUsesList getUsesList();
 
   /**
    * Returns all {@link ResModuleIdentifierSpec}s identifying modules that this module happens to extend. For example,

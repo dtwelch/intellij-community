@@ -32,6 +32,11 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
     super(node);
   }
 
+  @Nullable
+  public ResRequiresClause getRequiresClause() {
+    return findChildByClass(ResRequiresClause.class);
+  }
+
   @NotNull
   public ResBlock getBlock() {
     return findNotNullChildByClass(ResBlock.class);

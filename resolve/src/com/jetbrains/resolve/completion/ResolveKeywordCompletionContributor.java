@@ -7,7 +7,9 @@ import com.intellij.patterns.PatternCondition;
 import com.intellij.patterns.PsiElementPattern.Capture;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.psi.*;
@@ -80,7 +82,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     extend(CompletionType.BASIC, initializationEnsures(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
     extend(CompletionType.BASIC, withPattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "with"));
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "with"));*/
   }
 
   private static Capture<PsiElement> withPattern() {
@@ -97,12 +99,45 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
       });
   }
 
-  //TODO: Redo this eventually, it doesn't work quite right yet.
   private static Capture<PsiElement> usesPattern() {
-    return onKeywordStartWithParent(psiElement(ResBlock.class)
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(PsiErrorElement.class)
+                    .withParent(ResBlock.class)
+                    .atStartOf(psiElement(ResBlock.class))).with(
+        new PatternCondition<PsiElement>("usesPattern") {
+          @Override
+          public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+            PsiFile f = element.getContainingFile();
+            if (f == null || !(f instanceof ResFile)) {
+              return false;
+            }
+            ResFile resFile = (ResFile)f;
+            ResModuleDecl module = resFile.getEnclosedModule();
+            if (module == null) {
+              return false;
+            }
+            //should only suggest a uses list if there isn't already one present
+            boolean result = module.getUsesList() == null;
+            return result;
+          }
+        });
+    /*return onKeywordStartWithParent(psiElement(ResBlock.class).with(
+      new PatternCondition<PsiElement>("usesKeyword") {
+        @Override
+        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+          PsiElement e = element.getParent();
+          if (e != null && e instanceof ResModuleDecl && element instanceof ResBlock) {
+            e.get
+            int i;
+            i=0;
+          }
+          return false;
+        }
+      }));*/
+    /*return onKeywordStartWithParent(psiElement(ResBlock.class)
                                       .withParent(ResModuleDecl.class)
                                       .andOr(psiElement().withFirstNonWhitespaceChild(psiElement()),
-                                             psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));
+                                             psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));*/
   }
 
   private static Capture<PsiElement> recordTypePattern() {
@@ -135,30 +170,6 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
       }));
   }
 
-  private static Capture<? extends PsiElement> contractPatternOpSignature(boolean forRequires) {
-    return psiElement(ResTypes.IDENTIFIER).with(
-      new PatternCondition<PsiElement>("requiresKeyword") {
-        @Override
-        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-          PsiElement x = element.getParent();
-
-          if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
-              x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
-            ResOperationProcedureDecl opProc =
-              (ResOperationProcedureDecl) x.getParent().getNode().getPsi();
-            if (opProc.getRequiresClause() == null && forRequires) {
-              return true;
-            }
-            if (opProc.getEnsuresClause() == null && !forRequires) {
-              return true;
-            }
-
-          }
-          return false;
-        }
-      });
-  }
-
   private static Capture<? extends PsiElement> contractPattern(boolean forRequires) {
     return psiElement(ResTypes.IDENTIFIER).with(
       new PatternCondition<PsiElement>("requiresKeyword") {
@@ -166,10 +177,11 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
         public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
           PsiElement x = element.getParent();
 
+          //this handles contract completion for a local operation w/ a body
           if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
               x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
             ResOperationProcedureDecl opProc =
-              (ResOperationProcedureDecl) x.getParent().getNode().getPsi();
+              (ResOperationProcedureDecl)x.getParent().getNode().getPsi();
             if (opProc.getRequiresClause() == null && forRequires) {
               return true;
             }
@@ -177,35 +189,29 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
               return true;
             }
           }
-          else if (element.getNode() instanceof PsiErrorElement ) {
-            int i;
-            i=0;
-          }
-
-         // else if ()
-
-          return false;
-        }
-      });
-  }
-
-  private static Capture<PsiElement> onOpProcContracts(boolean forRequires) {
-    return psiElement(ResTypes.IDENTIFIER).with(
-      new PatternCondition<PsiElement>("requiresKeyword") {
-        @Override
-        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-          PsiElement x = element.getParent();
-          if (x.getNode().getElementType() == ResTypes.CLOSE_IDENTIFIER &&
-              x.getParent().getNode().getElementType() == ResTypes.OPERATION_PROCEDURE_DECL) {
-            return true;
+          //this handles contract completions in interfaces
+          else if (x instanceof PsiErrorElement) {
+            if (x.getContainingFile() instanceof ResFile) {
+              ResFile f = (ResFile) x.getContainingFile();
+              ResModuleDecl module = f.getEnclosedModule();
+              if (module != null && (module instanceof ResConceptModuleDecl ||
+                                     module instanceof ResConceptEnhancementModuleDecl)) {
+                PsiElement v = PsiTreeUtil.getPrevSiblingOfType(x, ResOperationDecl.class);
+                if (v != null) {
+                  ResOperationDecl op = (ResOperationDecl) v;
+                  if (op.getRequiresClause() == null && forRequires) {
+                    return true;
+                  }
+                  if (op.getEnsuresClause() == null && !forRequires) {
+                    return true;
+                  }
+                }
+              }
+            }
           }
           return false;
         }
       });
-  }
-
-  private static Capture<PsiElement> onKeywordStartWithParent(Class<? extends PsiElement> parentClass) {
-    return onKeywordStartWithParent(psiElement(parentClass));
   }
 
   private static Capture<PsiElement> onKeywordStartWithParent(Capture<? extends PsiElement> parentPattern) {
@@ -227,7 +233,24 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     return psiElement(ResTypes.IDENTIFIER)
       .withParent(psiElement(PsiErrorElement.class)
                     .withParent(ResBlock.class)
-                    .atStartOf(psiElement(ResBlock.class)));
+                    .atStartOf(psiElement(ResBlock.class))).with(
+        new PatternCondition<PsiElement>("moduleRequires") {
+          @Override
+          public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+            PsiFile f = element.getContainingFile();
+            if (f == null || !(f instanceof ResFile)) {
+              return false;
+            }
+            ResFile resFile = (ResFile)f;
+            ResModuleDecl module = resFile.getEnclosedModule();
+            if (module == null) {
+              return false;
+            }
+            //should only suggest a module level requires clause if there is not already one present.
+            boolean result = module.getRequiresClause() == null;
+            return result;
+          }
+        });
   }
 
   private static Capture<PsiElement> typeParamPattern() {
