@@ -82,7 +82,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     extend(CompletionType.BASIC, initializationEnsures(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
     extend(CompletionType.BASIC, withPattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "with"));*/
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "with"));
   }
 
   private static Capture<PsiElement> withPattern() {
@@ -121,23 +121,6 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
             return result;
           }
         });
-    /*return onKeywordStartWithParent(psiElement(ResBlock.class).with(
-      new PatternCondition<PsiElement>("usesKeyword") {
-        @Override
-        public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-          PsiElement e = element.getParent();
-          if (e != null && e instanceof ResModuleDecl && element instanceof ResBlock) {
-            e.get
-            int i;
-            i=0;
-          }
-          return false;
-        }
-      }));*/
-    /*return onKeywordStartWithParent(psiElement(ResBlock.class)
-                                      .withParent(ResModuleDecl.class)
-                                      .andOr(psiElement().withFirstNonWhitespaceChild(psiElement()),
-                                             psiElement().afterSibling(psiElement(ResModuleIdentifier.class))));*/
   }
 
   private static Capture<PsiElement> recordTypePattern() {
@@ -192,19 +175,23 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
           //this handles contract completions in interfaces
           else if (x instanceof PsiErrorElement) {
             if (x.getContainingFile() instanceof ResFile) {
-              ResFile f = (ResFile) x.getContainingFile();
+              ResFile f = (ResFile)x.getContainingFile();
               ResModuleDecl module = f.getEnclosedModule();
               if (module != null && (module instanceof ResConceptModuleDecl ||
                                      module instanceof ResConceptEnhancementModuleDecl)) {
+
+                //returns the first operationDecl sibling (moving backwards)
                 PsiElement v = PsiTreeUtil.getPrevSiblingOfType(x, ResOperationDecl.class);
-                if (v != null) {
-                  ResOperationDecl op = (ResOperationDecl) v;
-                  if (op.getRequiresClause() == null && forRequires) {
-                    return true;
-                  }
-                  if (op.getEnsuresClause() == null && !forRequires) {
-                    return true;
-                  }
+                if (v == null) return false;
+
+                //PsiElement constraint = PsiTreeUtil.findElementOfClassAtRange(f, )
+
+                ResOperationDecl op = (ResOperationDecl)v;
+                if (op.getRequiresClause() == null && forRequires) {
+                  return true;
+                }
+                if (op.getEnsuresClause() == null && !forRequires) {
+                  return true;
                 }
               }
             }
