@@ -90,7 +90,6 @@
         VAR           = 'Var'
         NOTICE        = 'Notice'
         WHILE         = 'While'
-        GENERIC       = 'Generic'
         LITERAL       = 'Literal'
         IS            = 'is'
 
@@ -200,7 +199,7 @@ private PrecisItem ::=
           | MathCategoricalDefnDecl
           | MathInductiveDefnDecl {pin=1 recoverWhile=PrecisItemRecover}
 
-private PrecisItemRecover ::= !('Definition'|'Implicit'|'Generic'|'Literal'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Coercer'|'Valued'|end)
+private PrecisItemRecover ::= !('Definition'|'Implicit'|'Literal'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Coercer'|'Valued'|end)
 
 private ConceptItem ::=
       TypeModelDecl
@@ -208,7 +207,7 @@ private ConceptItem ::=
     | MathStandardDefnDecl
     | ConstraintsClause {pin=1 recoverWhile=ConceptItemRecover}
 
-private ConceptItemRecover ::= !('Type'|'Operation'|'Definition'|'Valued'|'Literal'|'Generic'|constraints|end)
+private ConceptItemRecover ::= !('Type'|'Operation'|'Definition'|'Valued'|'Literal'|constraints|end)
 
 private RealizItem ::=
       TypeReprDecl
@@ -217,7 +216,7 @@ private RealizItem ::=
     | ProcedureDecl
     | MathStandardDefnDecl {pin=1 recoverWhile=RealizItemRecover}
 
-private RealizItemRecover ::= !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Generic'|'Literal'|'Procedure'|end)
+private RealizItemRecover ::= !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Literal'|'Procedure'|end)
 
 private FacilityItem ::=
       FacilityDecl
@@ -225,7 +224,7 @@ private FacilityItem ::=
     | TypeReprDecl
     | MathStandardDefnDecl {pin=1 recoverWhile=FacilityItemRecover}
 
-private FacilityItemRecover ::= !('Facility'|'Operation'|'Definition'|'Generic'|'Literal'|'Type'|end)
+private FacilityItemRecover ::= !('Facility'|'Operation'|'Definition'|'Literal'|'Type'|end)
 
 // type refs & decls
 
@@ -369,7 +368,7 @@ MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
 MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathPrefixDefnSigs is MathExp ';' {pin=2}
 
-MathStandardDefnDecl ::= ('Literal')? ('Generic')? ('Coercer')? ('Valued')? ('Implicit')?
+MathStandardDefnDecl ::= ('Literal')? ('Coercer')? ('Valued')? ('Implicit')?
 'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';' {pin=6}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
@@ -379,7 +378,8 @@ MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 private MathDefnSig ::= MathPrefixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
 MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? ':' MathExp {pin=1}
 
-private MathPrefixNameList ::= MathSymbolName (',' MathSymbolName)* {recoverWhile=MathPrefixListRec}
+private MathPrefixNameList ::= MSymName (',' MSymName)* {recoverWhile=MathPrefixListRec}
+private MSymName ::= (MathAndOrName|MathSymbolName)
 private MathPrefixListRec ::= !(':'|';'|'(')
 private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
 private CategoricalSigListRec ::= !(is)

@@ -399,6 +399,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       //}
       //else {
       PsiElement resolve = o.getModuleIdentifier().resolve();
+      String name = o.getModuleIdentifier().getText();
       if (resolve != null && resolve instanceof ResFile) {
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
         //searching a super module (even it is mentioned explicitly in the uses list) is considered a "localSearch"
@@ -410,7 +411,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       //List<ResModuleIdentifierSpec> x = o.
       //now try the 'with' part.
       if (o.getWithClause() == null || o.getWithClause().getModuleIdentifier() == null) {
-        return false;
+        continue; //skip the remaining code if either of these things are null
       }
 
       PsiElement resolveWith = o.getWithClause().getModuleIdentifier().resolve();

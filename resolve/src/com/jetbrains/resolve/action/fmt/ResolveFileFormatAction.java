@@ -16,8 +16,7 @@ import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
-import edu.clemson.resolve.semantics.SyntaxAwareMathFormatter;
-import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
+import edu.clemson.resolve.verifier.settings.GlobalViewSettings;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,9 +57,9 @@ public class ResolveFileFormatAction extends AbstractFormatAction {
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
     control.registerSupplementalASCIIAbbreviations();
 
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseUnicodeNotFontAware(ideSettings.isUseMathUnicodeSymbols());
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseAsciiAbbreviations(ideSettings.isUseMathAsciiAbbreviations());
     doFormat(editor, project, file, control);
   }

@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
-import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
+import edu.clemson.resolve.verifier.settings.GlobalViewSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class ResolveLaTeXFormatAction extends AbstractFormatAction {
@@ -27,9 +27,9 @@ public class ResolveLaTeXFormatAction extends AbstractFormatAction {
     Main.InitConfig env = new Main.InitConfig();
 
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseUnicodeNotFontAware(false);
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseAsciiAbbreviations(true);
     doFormat(editor, project, file, control);
   }

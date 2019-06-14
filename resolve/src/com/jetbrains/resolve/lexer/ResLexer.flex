@@ -185,7 +185,6 @@ ESCAPES = [abfnrtv]
 "family"                                { return FAMILY; }
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
-"Generic"                               { return GENERIC; }
 
 "if"                                    { return IF; }
 "If"                                    { return IF_PROG; }

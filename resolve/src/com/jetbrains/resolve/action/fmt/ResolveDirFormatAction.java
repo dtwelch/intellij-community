@@ -11,7 +11,7 @@ import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
-import edu.clemson.resolve.verifier.settings.VerifierIndependentSettings;
+import edu.clemson.resolve.verifier.settings.GlobalViewSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class ResolveDirFormatAction extends AbstractFormatAction {
@@ -52,9 +52,9 @@ public class ResolveDirFormatAction extends AbstractFormatAction {
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
     control.registerSupplementalASCIIAbbreviations();
 
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseUnicodeNotFontAware(ideSettings.isUseMathUnicodeSymbols());
-    VerifierIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+    GlobalViewSettings.DEFAULT_INSTANCE.getViewSettings()
       .setUseAsciiAbbreviations(ideSettings.isUseMathAsciiAbbreviations());
     doFormat(null, project, directory, control);
 

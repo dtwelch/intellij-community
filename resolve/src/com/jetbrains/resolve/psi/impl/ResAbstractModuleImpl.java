@@ -214,7 +214,8 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   @Override
   public List<ResMathDefnSig> getMathDefnSigs() {
     List<ResMathDefnSig> signatures = new ArrayList<>();
-    for (ResMathDefnDecl def : getMathDefinitionDecls()) {
+    List<ResMathDefnDecl> defns = getMathDefinitionDecls();
+    for (ResMathDefnDecl def : defns) {
       List<ResMathDefnSig> sigs = def.getSignatures();
       signatures.addAll(sigs);
     }

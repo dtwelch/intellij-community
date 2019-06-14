@@ -70,6 +70,17 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
   // Modules
 
+  public static class ResolvePrecisModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolvePrecisModuleContextType() {
+      super("RESOLVE_PRECIS_MODULE", "RESOLVE Precis module", ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return element.getParent().getParent() instanceof ResPrecisModuleDecl;
+    }
+  }
+
   public static class ResolveFacilityModuleContextType extends ResolveLiveTemplateContextType {
     protected ResolveFacilityModuleContextType() {
       super("RESOLVE_FACILITY_MODULE", "RESOLVE Facility module", ResolveEverywhereContextType.class);

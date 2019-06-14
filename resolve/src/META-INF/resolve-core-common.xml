@@ -33,9 +33,9 @@
     <defaultLiveTemplatesProvider implementation="com.jetbrains.resolve.template.ResolveLiveTemplatesProvider"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveEverywhereContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFileContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolvePrecisModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveConceptModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFacilityModuleContextType"/>
-    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveConceptModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveEnhancementModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationModuleContextType"/>
   </extensions>
