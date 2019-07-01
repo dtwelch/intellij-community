@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.impl.source.tree.TreeUtil;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiUtilCore;
 import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.ResolveLanguage;
@@ -121,7 +123,39 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return element.getParent().getParent() instanceof ResConceptEnhancementModuleDecl;
+      return element.getParent().getParent() instanceof ResRealizationModuleDecl;
     }
   }
+
+  public static class ResolveCodeBlockContextType extends ResolveLiveTemplateContextType {
+    protected ResolveCodeBlockContextType() {
+      super("RESOLVE_CODE", "RESOLVE executable code block",
+            ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(),
+                          TokenSet.create(ResTypes.PROCEDURE_DECL,
+                                          ResTypes.OPERATION_PROCEDURE_DECL),
+                          TokenSet.create(ResTypes.REALIZ_BLOCK)) != null;
+    }
+  }
+
+  public static class ResolveReprContextType extends ResolveLiveTemplateContextType {
+    protected ResolveReprContextType() {
+      super("RESOLVE_REPR", "RESOLVE representation type",
+            ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(),
+                                 TokenSet.create(ResTypes.TYPE_REPR_DECL)) != null;
+    }
+  }
+
+
+
+
 }

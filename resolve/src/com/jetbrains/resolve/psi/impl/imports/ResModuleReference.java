@@ -11,6 +11,7 @@ import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferen
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceCompletionImpl;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet;
 import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.ResolveFileType;
 import com.jetbrains.resolve.completion.ResolveCompletionUtil;
 import com.jetbrains.resolve.psi.ResFile;
@@ -105,7 +106,7 @@ public class ResModuleReference extends FileReference {
      * Turns out you need to override {@link #getReferenceCompletionFilter()}, returning the {@link Condition} instance
      * declared below.
      */
-    private static final Condition<PsiFileSystemItem> RES_FILE_FILTER = e -> e instanceof ResFile;
+    private Condition<PsiFileSystemItem> RES_FILE_FILTER = e -> e instanceof ResFile;
 
     public ResModuleReferenceSet(@NotNull ResModuleIdentifier moduleIdentifier) {
       super(moduleIdentifier.getText(), moduleIdentifier,
@@ -131,9 +132,17 @@ public class ResModuleReference extends FileReference {
 
       ResModuleLibraryIdentifier desiredLib = null;
       //TODO: technically parent can also now be a facility
+
+
       if (e.getParent() instanceof ResModuleIdentifierSpec &&
           ((ResModuleIdentifierSpec)e.getParent()).getFromLibraryIdentifier() != null) {
         desiredLib = ((ResModuleIdentifierSpec)e.getParent()).getModuleLibraryIdentifier();
+      }
+      else if (e.getParent().getNode().getElementType() == ResTypes.WITH_CLAUSE) {
+        //TODO: Really we need to find to look in x and see if it's super module is the same as e's...
+        //this is just a hack for now. But this is the idea at least (report only precis that extend another)
+        RES_FILE_FILTER = x -> x instanceof ResFile && ((ResFile)x).getEnclosedModule() != null &&
+                               ((ResFile)x).getEnclosedModule().getName().endsWith("_Ext");
       }
       /*else if (e.getParent() instanceof ResFacilityDecl &&
                PsiTreeUtil.getNextSiblingOfType(e, ResModuleLibraryIdentifier.class) != null) {
@@ -142,7 +151,11 @@ public class ResModuleReference extends FileReference {
       else if (e.getParent() instanceof ResExtensionPairing &&
                PsiTreeUtil.getNextSiblingOfType(e, ResModuleLibraryIdentifier.class) != null) {
         desiredLib = PsiTreeUtil.getNextSiblingOfType(e, ResModuleLibraryIdentifier.class);
-      }*/
+      }
+              ensures Q = #Q ∘ ⟨#e⟩;
+
+
+      */
 
       if (desiredLib != null) {
         PsiElement ele = desiredLib.resolve();

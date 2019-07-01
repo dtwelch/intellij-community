@@ -55,16 +55,19 @@
       <option name='RESOLVE_REALIZ_MODULE' value='true'/>
     </context>
   </template>
+
   <template description='Type representation declaration' name='Type representation' toReformat='true' toShortenFQNames='true'
-            value='Type $NAME$ is $END$;'>
+            value='Type $NAME$ is $TYPE$;&#10;    exemplar e;&#10;$END$'>
     <variable alwaysStopAt='true' defaultValue='&quot;name&quot;' expression='' name='NAME'/>
+    <variable alwaysStopAt='true' defaultValue='&quot;ty&quot;' expression='' name='TYPE'/>
     <context>
       <option name='RESOLVE_FACILITY_MODULE' value='true'/>
       <option name='RESOLVE_REALIZ_MODULE' value='true'/>
     </context>
   </template>
+
   <template description='Facility declaration' name='Facility (factory)' toReformat='true' toShortenFQNames='true'
-            value='Facility $NAME$ is $CONCEPT$&#10;    implemented by $IMPL$;&#10;$END$'>
+            value='Facility $NAME$ is $CONCEPT$&#10;    realized by $IMPL$;&#10;$END$'>
     <variable alwaysStopAt='true' defaultValue='&quot;name&quot;' expression='' name='NAME'/>
     <variable alwaysStopAt='true' defaultValue='&quot;concept&quot;' expression='' name='CONCEPT'/>
     <variable alwaysStopAt='true' defaultValue='&quot;impl&quot;' expression='' name='IMPL'/>
@@ -94,6 +97,22 @@
     <variable alwaysStopAt='true' defaultValue='&quot;InductiveStep&quot;' expression='' name='INDHYPO'/>
     <context>
       <option name='RESOLVE_PRECIS_MODULE' value='true'/>
+    </context>
+  </template>
+
+  <template description='While loop' name='While stat' toReformat='true' toShortenFQNames='true'
+            value='While $COND$&#10;    maintaining true;&#10;do&#10;    $END$&#10;end;&#10;'>
+    <variable alwaysStopAt='true' defaultValue='&quot;Condition&quot;' expression='' name='COND'/>
+    <context>
+      <option name='RESOLVE_CODE' value='true'/>
+    </context>
+  </template>
+
+  <template description='Record' name='Record block' toReformat='true' toShortenFQNames='true'
+            value='Record&#10;        $FIELD$&#10;    end$END$'>
+    <variable alwaysStopAt='true' defaultValue='&quot;fields&quot;' expression='' name='FIELD'/>
+    <context>
+      <option name='RESOLVE_REPR' value='true'/>
     </context>
   </template>
   <!--<template description='Cart prod type' id='Cart_Prod' name='Cart_Prod' toReformat='true' toShortenFQNames='true'

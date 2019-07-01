@@ -38,6 +38,8 @@
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFacilityModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveEnhancementModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveCodeBlockContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveReprContextType"/>
   </extensions>
 
   <actions>

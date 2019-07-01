@@ -51,24 +51,25 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY,
                                                 "evaluates", "updates", "alters", "clears", "preserves", "restores", "replaces"));
 
-    extend(CompletionType.BASIC, recordTypePattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Record"));
+    //use a live template context for this so we can automatically insert the "end;"
+    // and reposition the cursor
+    //extend(CompletionType.BASIC, recordTypePattern(),
+    //       new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Record"));
 
     extend(CompletionType.BASIC, typeParamPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "type"));
 
-    extend(CompletionType.BASIC, statementPattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
+    //use templates for the big statement types. (maybe we can do else though, nah, just have a
+    // separate template if-then-else and if-then without the else.)
+    //extend(CompletionType.BASIC, statementPattern(),
+    //       new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
 
     extend(CompletionType.BASIC, mathCartProdPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Cart_Prod"));
 
     extend(CompletionType.BASIC, variablePattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Var"));
-
-    extend(CompletionType.BASIC, statementPattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
-
+    
     extend(CompletionType.BASIC, moduleRequiresPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
 
