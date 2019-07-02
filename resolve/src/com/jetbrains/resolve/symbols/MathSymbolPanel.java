@@ -276,8 +276,8 @@ public class MathSymbolPanel extends JBPanel {
 
   private void addOperatorsSection(@NotNull DefaultMutableTreeNode e) {
     DefaultMutableTreeNode category = new DefaultMutableTreeNode("Operators");
-    category.add(new DefaultMutableTreeNode(new SymbolInfo("∧", "wedge")));
-    category.add(new DefaultMutableTreeNode(new SymbolInfo("∨", "vee")));
+    category.add(new DefaultMutableTreeNode(new SymbolInfo("∧", "and")));
+    category.add(new DefaultMutableTreeNode(new SymbolInfo("∨", "or")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("¬", "neg")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("∩", "cap")));
     category.add(new DefaultMutableTreeNode(new SymbolInfo("∪", "cup")));

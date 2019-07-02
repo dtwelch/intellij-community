@@ -69,7 +69,7 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
 
     extend(CompletionType.BASIC, variablePattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Var"));
-    
+
     extend(CompletionType.BASIC, moduleRequiresPattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "requires"));
 
