@@ -494,7 +494,7 @@ mathAltItemConclusionExp
 MathAlternativeExp ::= MathAlternativesList MathAlternativeItemConclusionExp
 MathAlternativesList ::= MathAlternativeItemExp+
 MathAlternativeItemExp ::= PIECEWISE MathExp IF_MATH MathExp  {pin=3}
-MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
+private MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
 
 //MathSetRestrictionExp ::= '{' MathVarDecl '|' MathExp '}' {pin=1}
 
