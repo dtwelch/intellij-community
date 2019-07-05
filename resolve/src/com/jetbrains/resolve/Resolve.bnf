@@ -73,6 +73,7 @@
         DEFINITION    = 'Definition'
         ENHANCEMENT   = 'Enhancement'
         FACILITY      = 'Facility'
+        IF_MATH       = 'if'
         IF_PROG       = 'If'
         IMPLICIT      = 'Implicit'
         INDUCTIVE     = 'Inductive'
@@ -418,8 +419,7 @@ MathAssertionExp ::= MathQuantifiedExp | MathExp
 MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-          MathBinderAppExp
-        | MathAndOrApplyExp
+          MathAndOrApplyExp
         | MathEqualsApplyExp
         | MathInfixApplyExp
         | MathPrefixApplyExp
@@ -436,7 +436,7 @@ MathAndOrApplyExp ::= MathExp MathAndOrName MathExp {pin=2}
 
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
 
-MathBinderAppExp ::= mathbinderidentifier MathVarDeclGroup ',' (MathFunctionAppList|MathExp) {pin=1} //recoverWhile=Rec
+//MathBinderAppExp ::= mathbinderidentifier MathVarDeclGroup ',' (MathFunctionAppList|MathExp) {pin=1} //recoverWhile=Rec
 //&(!(';'|')'))
 //SimpBinderName ::=  mathidentifier
 
@@ -450,11 +450,12 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp |MathSelectorExp
+//TODO: LAMBDAsss.
+private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
         | MathEqualsNotEqualsOpExp
         | MathAndOrOpExp
-        | MathTypeAssertionExp//TODO: IDea, make this part ot he mathAssertinoExp rule
+        | MathTypeAssertionExp
         | MathOutfixApplyExp
         | MathCartProdExp
      //   | MathSetRestrictionExp
@@ -492,7 +493,7 @@ mathAltItemConclusionExp
 */
 MathAlternativeExp ::= MathAlternativesList MathAlternativeItemConclusionExp
 MathAlternativesList ::= MathAlternativeItemExp+
-MathAlternativeItemExp ::= PIECEWISE if MathExp  {pin=1}
+MathAlternativeItemExp ::= PIECEWISE MathExp IF_MATH MathExp  {pin=3}
 MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
 
 //MathSetRestrictionExp ::= '{' MathVarDecl '|' MathExp '}' {pin=1}

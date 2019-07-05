@@ -20,6 +20,7 @@ public class ResolveFileIconPatcher implements FileIconPatcher {
     if (project == null) {
       return baseIcon;
     }
+
     return replaceIcon(file, flags, project, baseIcon);
   }
 

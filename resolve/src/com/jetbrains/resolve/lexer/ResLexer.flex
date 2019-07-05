@@ -39,20 +39,12 @@ INT_DIGIT     = [0-9]
 NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
 CMD           = {BACKSLASH}{IDENT}
 
-MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_BIGOPERATOR} | {U_RELATION} | {U_GREEK})
+MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_RELATION} | {U_GREEK})
 
 /*EQ          = "=" ;
 NEQ         = "≠" ;
 NEQ_CMD     = "\\neq" ;
 NEQ_ABBREV  = "/=" ;*/
-ASCII       = ("+" | "-" | "*" | "<" | ">" | "!" | "~" | "=" | "/")
-
-MATH_PRIMED_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )+ ("`"+|"'")+
-
-MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
-
-MATHBINDERIDENT = "`"({IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM})
-MATHIDENT = ({MATH_PRIMED_ID} | {MATH_ID} | {IDENT})
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
@@ -63,7 +55,7 @@ U_LETTER      = ("ℕ"|"ℤ"|"ℂ"|"𝔹"|"ℚ"|"ℝ"|"𝒫"|"℘")
 U_OPERATOR    = ("¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"|
                  "⋆"|"∙"|"∘"|"∼"|"⋈"|"⋉"|"⋊"|"∸")
 
-U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
+//U_BIGOPERATOR = ("⋀"|"⋁"|"⋂"|"⋃"|"⨄"|"⨁"|"⨂"|"⨀"|"∑"|"∏")
 
 U_RELATION    = ("≤"|"≥"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
@@ -71,12 +63,20 @@ U_RELATION    = ("≤"|"≥"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"�
 U_GREEK       = ("α"|"β"|"γ"|"δ"|"λ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν"|"ξ"|
                  "ο"|"π"|"ρ"|"ς"|"σ"|"τ"|"υ"|"φ"|"χ"|"ψ"|"ω"|"Γ"|"Δ"|"Θ"|"Λ"|
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
-//PIECEWISE = "|{"
+
+STR     = "\""
+STRING = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
+//STRING = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 
 //if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-STR     = "\""
+ASCII       = ("+" | "-" | "*" | "<" | ">" | "!" | "=" | "/" | "~")
+
+MATH_PRIMED_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )+ ("`"+|"'")+
+
+MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
+
+MATHIDENT = ({MATH_PRIMED_ID} | {MATH_ID} | {IDENT})
 BACKSLASH = "\\"
-STRING  = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 ESCAPES = [abfnrtv]
 
 %%
@@ -186,7 +186,7 @@ ESCAPES = [abfnrtv]
 "for"                                   { return FOR; }
 "from"                                  { return FROM; }
 
-"if"                                    { return IF; }
+"if"                                    { return IF_MATH; }
 "If"                                    { return IF_PROG; }
 "Implicit"                              { return IMPLICIT; }
 "initialization"                        { return INITIALIZATION; }
@@ -237,8 +237,6 @@ ESCAPES = [abfnrtv]
 
 {IDENT}                                 { return IDENTIFIER; }
 {MATHIDENT}                             { return MATHIDENTIFIER; }
-{MATHBINDERIDENT}                       { return MATHBINDERIDENTIFIER; }
-
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
 }
