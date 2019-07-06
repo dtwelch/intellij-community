@@ -1,18 +1,12 @@
 package com.jetbrains.resolve.action.fmt;
 
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.jetbrains.resolve.ResolveStudioController;
-import com.jetbrains.resolve.action.ResolveValidateAction;
-import com.jetbrains.resolve.action.RunResolveListener;
-import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
+import com.jetbrains.resolve.ResolveCompilerSettings;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;

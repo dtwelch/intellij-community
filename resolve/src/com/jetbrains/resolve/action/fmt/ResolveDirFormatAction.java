@@ -6,7 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
+import com.jetbrains.resolve.ResolveCompilerSettings;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;

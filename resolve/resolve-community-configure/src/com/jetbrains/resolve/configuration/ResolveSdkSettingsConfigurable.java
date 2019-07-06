@@ -10,6 +10,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import com.jetbrains.resolve.ResolveBundle;
+import com.jetbrains.resolve.ResolveCompilerSettings;
 import com.jetbrains.resolve.library.ResolveApplicationLibrariesService;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import org.jetbrains.annotations.Nls;

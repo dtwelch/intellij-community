@@ -1,10 +1,8 @@
-package com.jetbrains.resolve.configuration;
+package com.jetbrains.resolve;
 
 import com.intellij.openapi.components.*;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 @State(
   name = "RESOLVE",

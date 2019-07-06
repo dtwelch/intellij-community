@@ -5,28 +5,23 @@ import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.HashSet;
 import com.jetbrains.resolve.ResTypes;
-import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
+import com.jetbrains.resolve.ResolveCompilerSettings;
 import com.jetbrains.resolve.psi.*;
-import com.jetbrains.resolve.sdk.ResolveSdkUtil;
 import edu.clemson.resolve.semantics.DependencyResolvingListener;
 import edu.clemson.resolve.semantics.ModuleIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implements ResModuleDecl {
 
