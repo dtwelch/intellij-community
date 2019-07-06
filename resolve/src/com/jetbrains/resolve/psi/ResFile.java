@@ -4,6 +4,8 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.resolve.ResolveFileType;
 import com.jetbrains.resolve.ResolveIcons;
@@ -49,6 +51,25 @@ public class ResFile extends PsiFileBase {
     ResModuleDecl enclosedModule = getEnclosedModule();
     return enclosedModule != null ? enclosedModule.getModuleIdentifierSpecs() :
            new ArrayList<ResModuleIdentifierSpec>();
+  }
+
+  @NotNull
+  public List<ResModuleIdentifierSpec> getStandardFacilities() {
+    return CachedValuesManager.getCachedValue(this, () -> {
+      ResModuleDecl enclosedModule = getEnclosedModule();
+      List<ResModuleIdentifierSpec> result = new ArrayList<>();
+      if (enclosedModule != null) {
+        for (ResModuleIdentifierSpec m : enclosedModule.getStandardModulesToSearch()) {
+          PsiElement resolved = m.getModuleIdentifier().resolve();
+          if (resolved != null && resolved instanceof ResFile &&
+              ((ResFile)resolved).getEnclosedModule() != null &&
+              ((ResFile)resolved).getEnclosedModule() instanceof ResFacilityModuleDecl) {
+            result.add(m);
+          }
+        }
+      }
+      return CachedValueProvider.Result.create(result, this);
+    });
   }
 
    /* @NotNull

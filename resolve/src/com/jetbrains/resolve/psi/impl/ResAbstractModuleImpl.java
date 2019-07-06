@@ -20,6 +20,8 @@ import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
 import com.jetbrains.resolve.psi.*;
 import com.jetbrains.resolve.sdk.ResolveSdkUtil;
+import edu.clemson.resolve.semantics.DependencyResolvingListener;
+import edu.clemson.resolve.semantics.ModuleIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,9 +70,14 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   @Override
   public List<ResModuleIdentifierSpec> getStandardModulesToSearch() {
     return CachedValuesManager.getCachedValue(this, () -> {
+
       List<String> toConvert = ContainerUtil.newArrayList();
-      toConvert.add("Class_Theory");
-      toConvert.add("Boolean_Theory");
+      //toConvert.add("Class_Theory");
+      //toConvert.add("Boolean_Theory");
+      for (ModuleIdentifier m : DependencyResolvingListener.STANDARD_USES ) {
+        toConvert.add(m.getNameString());
+      }
+
       return CachedValueProvider.Result.create(
         ResElementFactory.createUsesSpecList(getProject(), toConvert), this);
     });

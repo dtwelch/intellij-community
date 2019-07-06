@@ -282,26 +282,40 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (resolve != null && resolve instanceof ResFile) {
         for (ResModuleIdentifierSpec e : headerModules) {
           //process the super module's uses clauses
-          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile) resolve).getModuleIdentifierSpecs();
+          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
 
           for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();
             if (eRes != null) {
-              if (!processModuleLevelEntities((ResFile) eRes, processor, state, false)) return false;
+              if (!processModuleLevelEntities((ResFile)eRes, processor, state, false)) return false;
             }
           }
         }
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
         boolean forSuperModule = forSuperModule(moduleDecl, o.getModuleIdentifier().getText());
-        if (!processModuleLevelEntities((ResFile) resolve, processor, state, forSuperModule)) return false;
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, forSuperModule)) return false;
       }
       //}
+    }
+
+    //finally, search any invisibly imported modules (i.e. Class_Theory, Boolean_Theory, etc)
+    boolean shouldAutoSearchUses = moduleDecl.shouldAutoSearchUses();
+    List<ResModuleIdentifierSpec> standardModuleSpecs = moduleDecl.getStandardModulesToSearch();
+    if (shouldAutoSearchUses) {
+      for (ResModuleIdentifierSpec e : standardModuleSpecs) {
+        PsiElement resolve = e.getModuleIdentifier().resolve();
+        if (!(resolve instanceof ResFile)) continue;
+        processor.execute(resolve, state.put(ACTUAL_NAME, e.getModuleIdentifier().getText()));
+        processModuleLevelEntities((ResFile)resolve, processor, state, false);
+        //if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+      }
     }
     return true;
   }
 
 
   // TODO: Not sure why the logic here needs to be so complicated.. clean it up.
+
   /**
    * Searches the specifications of any facility modules accessible from {@code file}.
    */
@@ -311,14 +325,28 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     List<ResModuleIdentifierSpec> usesItems = file.getModuleIdentifierSpecs();
     Set<ResModuleIdentifier> v = new LinkedHashSet<>();
     List<String> superModuleRefs = new ArrayList<>();
-    if (file.getEnclosedModule() != null) {
-      for (ResModuleIdentifierSpec e : file.getEnclosedModule().getModuleIdentifierSpecs()) {
-        superModuleRefs.add(e.getModuleIdentifier().getText());
-      }
+    ResModuleDecl module = file.getEnclosedModule();
+    if (module == null) {
+      return true;
     }
+    for (ResModuleIdentifierSpec e : file.getEnclosedModule().getModuleIdentifierSpecs()) {
+      superModuleRefs.add(e.getModuleIdentifier().getText());
+    }
+
     List<ResModuleDecl> superModuleDecls = new ArrayList<>();
     //get ModuleIdentifiers from facilities visible through any named uses items (remember: uses items currently
     //explicitly include header modules)
+
+    //Here I want to add std_Facilities to the usesItems list...
+    //TODO: write a method getStandardImportedFacilities() that basically iterates over the results of
+    // file.getModuleIdentifierSpecs() and plucks out any imported facilities and adds them to "usesItems"
+    //file.getStandardFacilities();
+    boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
+    if (shouldAutoSearchUses) {
+      List<ResModuleIdentifierSpec> stdFacs = module.getStandardModulesToSearch();
+      usesItems.addAll(stdFacs);
+    }
+
     for (ResModuleIdentifierSpec usesItem : usesItems) {
       PsiElement resolve = usesItem.getModuleIdentifier().resolve();
 
@@ -421,7 +449,6 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
         //see above case if the local processing is causing problems
         if (!processModuleLevelEntities((ResFile)resolveWith, processor, state, false)) return false;
       }
-
     }
 
     //now search through module-identifier-specs in the current module's header
