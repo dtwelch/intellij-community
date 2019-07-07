@@ -21,6 +21,10 @@ public class ResolveRunConfiguration extends RunConfigurationBase
     super(project, factory, name);
   }
 
+  //TODO: In the form, taken from the tutorial:
+  //https://www.jetbrains.org/intellij/sdk/docs/tutorials/run_configurations.html
+  //rename "script" to "client facility"
+
   @NotNull
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {

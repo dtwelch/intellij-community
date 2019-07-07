@@ -35,6 +35,6 @@ public class ResolveRunConfigurationType implements ConfigurationType {
 
   @Override
   public ConfigurationFactory[] getConfigurationFactories() {
-    return new ConfigurationFactory[0];
+    return new ConfigurationFactory[]{new ResolveConfigurationFactory(this)};
   }
 }
