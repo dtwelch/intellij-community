@@ -17,7 +17,7 @@ public class ResolveConfigurationFactory extends ConfigurationFactory {
   @NotNull
   @Override
   public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-    return null;
+    return new ResolveRunConfiguration(project, this, "RESOLVE Facility");
   }
 
   @Override

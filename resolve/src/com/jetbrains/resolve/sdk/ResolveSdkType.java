@@ -25,7 +25,6 @@ public class ResolveSdkType extends SdkType {
   }
 
   public static ResolveSdkType getInstance() {
-
     return SdkType.findInstance(ResolveSdkType.class);
   }
 
