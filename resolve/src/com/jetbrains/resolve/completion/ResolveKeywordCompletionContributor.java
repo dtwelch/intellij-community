@@ -80,6 +80,8 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
 
     extend(CompletionType.BASIC, modelInitialization(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "initialization"));
+    extend(CompletionType.BASIC, reprConventions(),
+           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "conventions"));
     extend(CompletionType.BASIC, initializationEnsures(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "ensures"));
     extend(CompletionType.BASIC, withPattern(),
@@ -248,6 +250,13 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
   private static Capture<PsiElement> initializationEnsures() {
     return psiElement(ResTypes.IDENTIFIER)
       .withParent(psiElement(PsiErrorElement.class).afterLeaf(psiElement(ResTypes.INITIALIZATION)));
+  }
+
+  private static Capture<PsiElement> reprConventions() {
+    return psiElement(ResTypes.IDENTIFIER)
+      .withParent(psiElement(PsiErrorElement.class)
+                    .afterSibling(psiElement(ResTypeReprDecl.class)
+                                    .withLastChild(psiElement(ResExemplarDecl.class))));
   }
 
   private static Capture<PsiElement> modelInitialization() {

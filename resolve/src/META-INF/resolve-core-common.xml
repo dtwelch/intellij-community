@@ -40,6 +40,11 @@
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationModuleContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveCodeBlockContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveReprContextType"/>
+
+    <!-- run single file (prog) -->
+    <configurationType implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationType"/>
+    <!--TODO:<runConfigurationProducer implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationProducer"/>-->
+    <programRunner id="resolveRunner" implementation="com.jetbrains.resolve.runconfig.ResolveRunner"/>
   </extensions>
 
   <actions>
