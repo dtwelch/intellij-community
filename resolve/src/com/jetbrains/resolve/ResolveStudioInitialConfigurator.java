@@ -127,7 +127,7 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMainToolbar(false);
-      //uiSettings.setShowNavigationBar(false);
+      uiSettings.setShowNavigationBar(false);
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);
@@ -137,6 +137,7 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMemoryIndicator(false);
     }
+    //TODO: Maybe move the next 5 lines into the !CONFIGURED if stmt above.
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
     editorColorsScheme.setEditorFontSize(16);
     editorColorsScheme.setEditorFontName("IsabelleText");

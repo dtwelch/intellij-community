@@ -54,7 +54,8 @@ class ResolveStudioProperties extends ProductProperties {
 
   @Override
   LinuxDistributionCustomizer createLinuxCustomizer(String projectHome) {
-    return new LinuxDistributionCustomizer() {
+    return null;
+    /*return new LinuxDistributionCustomizer() {
       {
         iconPngPath = "$projectHome/resolve/resources/ResolveStudioCore128.png"
         snapName = "resolvestudio"
@@ -66,7 +67,7 @@ class ResolveStudioProperties extends ProductProperties {
         //"resolve-community-${applicationInfo.isEAP ? buildNumber : applicationInfo.fullVersion}"
         "resolvestudio"
       }
-    }
+    }*/
   }
 
   @Override
