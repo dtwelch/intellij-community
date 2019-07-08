@@ -115,7 +115,6 @@ public class ResolveStudioInitialConfigurator {
     //}
    // if (!propertiesComponent.getBoolean(CONFIGURED_V1)) {
       patchMainMenu();
-      uiSettings.setShowNavigationBar(false);
       propertiesComponent.setValue(CONFIGURED_V1, true);
       propertiesComponent.setValue("ShowDocumentationInToolWindow", true);
     //}
@@ -128,7 +127,7 @@ public class ResolveStudioInitialConfigurator {
       uiSettings.setShowMemoryIndicator(false);
       uiSettings.setShowDirectoryForNonUniqueFilenames(true);
       uiSettings.setShowMainToolbar(false);
-      uiSettings.setShowNavigationBar(false);
+      //uiSettings.setShowNavigationBar(false);
       codeInsightSettings.REFORMAT_ON_PASTE = CodeInsightSettings.NO_REFORMAT;
 
       GeneralSettings.getInstance().setShowTipsOnStartup(false);

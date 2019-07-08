@@ -42,7 +42,7 @@ public class ResolveDirFormatAction extends AbstractFormatAction {
     }
 
     VirtualFile sdkResolveRootDir = ResolveSdkUtil.getSdkSrcDir(project);
-    VirtualFile sdkResolvePathDir = ResolveSdkUtil.getResolvePathRoot(project);
+    VirtualFile sdkResolvePathDir = ResolveSdkUtil.getSrcDirRootForResolvePath(project);
     if (sdkResolveRootDir == null || sdkResolvePathDir == null) return; //houston we've got a problem
 
     ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
@@ -64,7 +64,7 @@ public class ResolveDirFormatAction extends AbstractFormatAction {
 
   private boolean isDirectoryWithinResolvePath(@NotNull Project p, @NotNull VirtualFile directory) {
     boolean result = true;
-    VirtualFile sdkResolvePathDir = ResolveSdkUtil.getResolvePathRoot(p);
+    VirtualFile sdkResolvePathDir = ResolveSdkUtil.getSrcDirRootForResolvePath(p);
     if (sdkResolvePathDir == null) return false;
     for (VirtualFile vf : ResolveSdkUtil.getSourcesPathsToLookup(p)) {
       String vfp = vf.getPath();

@@ -88,10 +88,16 @@ public class ResolveSdkUtil {
     return true;
   }
 
+  @NotNull
+  public static String getResolveCompilerJarNameWithExt() {
+    return "resolve.jar";
+  }
+
   @Nullable
-  public static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
+  protected static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
     if (sdkHomePath != null) {
-      File compiler = new File(sdkHomePath + File.separator + "compiler" + File.separator + "resolve.jar");
+      File compiler = new File(sdkHomePath + File.separator + "compiler" +
+                               File.separator + getResolveCompilerJarNameWithExt());
       if (compiler.exists()) {
         return compiler.getAbsolutePath();
       }
@@ -203,7 +209,13 @@ public class ResolveSdkUtil {
   }
 
   @Nullable
-  public static VirtualFile getResolvePathRoot(@NotNull final Project project) {
+  public static VirtualFile getResolveRootDir(@NotNull final Project project) {
+    List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
+    return (x.size() == 2) ? x.get(1) : null;
+  }
+
+  @Nullable
+  public static VirtualFile getSrcDirRootForResolvePath(@NotNull final Project project) {
     List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
     return x.get(0);
   }

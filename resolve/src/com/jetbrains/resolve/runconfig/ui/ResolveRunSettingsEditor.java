@@ -20,6 +20,7 @@ public class ResolveRunSettingsEditor extends SettingsEditor<ResolveRunConfigura
 
   @Override
   protected void resetEditorFrom(@NotNull ResolveRunConfiguration s) {
+    mainFacility.setText(s.getFilePath());
   }
 
   @Override
