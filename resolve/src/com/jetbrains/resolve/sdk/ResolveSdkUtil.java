@@ -209,12 +209,6 @@ public class ResolveSdkUtil {
   }
 
   @Nullable
-  public static VirtualFile getResolveRootDir(@NotNull final Project project) {
-    List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
-    return (x.size() == 2) ? x.get(1) : null;
-  }
-
-  @Nullable
   public static VirtualFile getSrcDirRootForResolvePath(@NotNull final Project project) {
     List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
     return x.get(0);
