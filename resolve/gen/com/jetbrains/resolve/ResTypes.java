@@ -53,6 +53,7 @@ public interface ResTypes {
   IElementType MATH_INDUCTIVE_DEFN_DECL = new ResCompositeElementType("MATH_INDUCTIVE_DEFN_DECL");
   IElementType MATH_INFIX_APPLY_EXP = new ResCompositeElementType("MATH_INFIX_APPLY_EXP");
   IElementType MATH_INFIX_DEFN_SIG = new ResCompositeElementType("MATH_INFIX_DEFN_SIG");
+  IElementType MATH_LAMBDA_EXP = new ResCompositeElementType("MATH_LAMBDA_EXP");
   IElementType MATH_NESTED_EXP = new ResCompositeElementType("MATH_NESTED_EXP");
   IElementType MATH_OUTFIX_APPLY_EXP = new ResCompositeElementType("MATH_OUTFIX_APPLY_EXP");
   IElementType MATH_OUTFIX_DEFN_SIG = new ResCompositeElementType("MATH_OUTFIX_DEFN_SIG");
@@ -347,6 +348,9 @@ public interface ResTypes {
       }
       else if (type == MATH_INFIX_DEFN_SIG) {
         return new ResMathInfixDefnSigImpl(node);
+      }
+      else if (type == MATH_LAMBDA_EXP) {
+        return new ResMathLambdaExpImpl(node);
       }
       else if (type == MATH_NESTED_EXP) {
         return new ResMathNestedExpImpl(node);

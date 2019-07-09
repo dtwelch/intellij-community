@@ -450,15 +450,20 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
+
 //TODO: LAMBDAsss.
 private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
         | MathEqualsNotEqualsOpExp
         | MathAndOrOpExp
         | MathTypeAssertionExp
+        | MathLambdaExp
         | MathOutfixApplyExp
         | MathCartProdExp
      //   | MathSetRestrictionExp
+
+private LamPart ::= LAMBDA MathVarDeclGroup ',' {pin=3}
+MathLambdaExp ::= LamPart MathExp {pin=1 extends=MathExp}
 
 MathEqualsNotEqualsOpExp ::= MathEqualsNotEqualsName {extends=MathExp}
 MathAndOrOpExp ::= MathAndOrName {extends=MathExp}

@@ -59,8 +59,7 @@ U_OPERATOR    = ("¬"|"∩"|"∪"|"⊎"|"⊕"|"⊗"|"⊙"|"∅"|"⊖"|"∝"|"×"
 
 U_RELATION    = ("≤"|"≥"|"≪"|"≫"|"≲"|"≳"|"∈"|"∉"|"⊂"|"⊃"|"⊆"|
                  "⊇"|"≐"|"≃"|"≈"|"≡"|"≼"|"≽"|"⊲"|"⊳"|"⊴"|"⊵")
-
-U_GREEK       = ("α"|"β"|"γ"|"δ"|"λ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν"|"ξ"|
+U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν"|"ξ"|
                  "ο"|"π"|"ρ"|"ς"|"σ"|"τ"|"υ"|"φ"|"χ"|"ψ"|"ω"|"Γ"|"Δ"|"Θ"|"Λ"|
                  "Ξ"|"Σ"|"Φ"|"Ψ"|"Ω")
 
@@ -129,10 +128,12 @@ ESCAPES = [abfnrtv]
 // Builtin
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
+"λ"                                     { return LAMBDA; }
 {BACKSLASH}"langle"                     { return ELANGLE; }
 {BACKSLASH}"rangle"                     { return ERANGLE; }
 {BACKSLASH}"forall"                     { return EFORALL; }
 {BACKSLASH}"exists"                     { return EEXISTS; }
+{BACKSLASH}"lambda"                     { return LAMBDA; }
 {BACKSLASH}"and"                        { return AND; }
 {BACKSLASH}"or"                         { return OR; }
 {BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant

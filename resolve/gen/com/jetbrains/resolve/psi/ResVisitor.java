@@ -182,6 +182,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathDefnSig(o);
   }
 
+  public void visitMathLambdaExp(@NotNull ResMathLambdaExp o) {
+    visitMathExp(o);
+  }
+
   public void visitMathNestedExp(@NotNull ResMathNestedExp o) {
     visitMathExp(o);
   }
