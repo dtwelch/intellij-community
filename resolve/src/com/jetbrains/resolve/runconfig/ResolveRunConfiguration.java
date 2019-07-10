@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class ResolveRunConfiguration extends RunConfigurationBase
+public class ResolveRunConfiguration extends LocatableConfigurationBase
     implements
       RunConfigurationWithSuppressedDefaultDebugAction,
       RunConfigurationWithSuppressedDefaultRunAction {

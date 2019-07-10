@@ -43,8 +43,10 @@
 
     <!-- run single file (prog) -->
     <configurationType implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationType"/>
-    <!--TODO:<runConfigurationProducer implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationProducer"/>-->
+    <runConfigurationProducer implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationProducer"/>
     <programRunner id="resolveRunner" implementation="com.jetbrains.resolve.runconfig.ResolveRunner"/>
+    <runLineMarkerContributor language="Resolve" implementationClass="com.jetbrains.resolve.runconfig.ResolveRunLineMarkerProvider"/>
+
   </extensions>
 
   <actions>
