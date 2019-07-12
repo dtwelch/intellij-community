@@ -15,3 +15,7 @@ resolve/doc/*.aux
 resolve/doc/*.log
 resolve/doc/*.out
 resolve/doc/*.synctex.gz
+
+# Dan (9-12-19)
+*.iml
+.idea/libraries/*.xml
