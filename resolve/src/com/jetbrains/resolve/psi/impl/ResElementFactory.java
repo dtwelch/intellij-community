@@ -9,7 +9,6 @@ import com.jetbrains.resolve.psi.ResFile;
 import com.jetbrains.resolve.psi.ResModuleIdentifierSpec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
@@ -34,7 +33,7 @@ public class ResElementFactory {
   public static List<ResModuleIdentifierSpec> createUsesSpecList(@NotNull Project project, List<String> imports) {
     String joinedList = StringUtil.join(imports, e -> e, ", ");
     ResFile file = createFileFromText(project, "Precis T; uses "  + joinedList + "; end T;");
-    return file.getEnclosedModule().getModuleIdentifierSpecs();
+    return file.getEnclosedModule().getUsesModuleIdentifierSpecs();
   }
 
   //TODO: I don't want this to be navigatble.. Figure out how to accomplish this. (or at least make the module

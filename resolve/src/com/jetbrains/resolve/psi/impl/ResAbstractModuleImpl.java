@@ -105,7 +105,7 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
                 Map<String, ResModuleIdentifierSpec> map = new LinkedHashMap<>();
                 List<Object> dependencies = ContainerUtil.newArrayList(GoFile.this);
                 Module module = ModuleUtilCore.findModuleForPsiElement(GoFile.this);
-                for (ResModuleIdentifierSpec spec : getModuleIdentifierSpecs()) {
+                for (ResModuleIdentifierSpec spec : getUsesModuleIdentifierSpecs()) {
                     if (spec.getAlias() != )
                     String alias = spec.getAlias();
                     ..
@@ -152,9 +152,15 @@ public abstract class ResAbstractModuleImpl extends ResNamedElementImpl implemen
   @NotNull
   @Override
   @Deprecated
-  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
+  public List<ResModuleIdentifierSpec> getUsesModuleIdentifierSpecs() {
     return getUsesList() != null ? getUsesList().getModuleIdentifierSpecList() :
            ContainerUtil.<ResModuleIdentifierSpec>newArrayList();
+  }
+
+  @NotNull
+  @Override
+  public List<ResModuleIdentifierSpec> getHeaderModuleIdentifierSpecs() {
+    return this.findChildrenByType(ResTypes.MODULE_IDENTIFIER_SPEC);
   }
 
   @Nullable

@@ -270,9 +270,9 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
   private static boolean processUsesImports(@NotNull ResModuleDecl moduleDecl,
                                             @NotNull ResScopeProcessor processor,
                                             @NotNull ResolveState state) {
-    List<ResModuleIdentifierSpec> usesItems = moduleDecl.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> usesItems = moduleDecl.getUsesModuleIdentifierSpecs();
 
-    List<ResModuleIdentifierSpec> headerModules = moduleDecl.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> headerModules = moduleDecl.getUsesModuleIdentifierSpecs();
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
       //    if (!processor.execute(o, state.put(ACTUAL_NAME, o.getAlias().getText()))) return false;
@@ -329,7 +329,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (module == null) {
       return true;
     }
-    for (ResModuleIdentifierSpec e : file.getEnclosedModule().getModuleIdentifierSpecs()) {
+    for (ResModuleIdentifierSpec e : file.getEnclosedModule().getUsesModuleIdentifierSpecs()) {
       superModuleRefs.add(e.getModuleIdentifier().getText());
     }
 
@@ -339,7 +339,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
 
     //Here I want to add std_Facilities to the usesItems list...
     //TODO: write a method getStandardImportedFacilities() that basically iterates over the results of
-    // file.getModuleIdentifierSpecs() and plucks out any imported facilities and adds them to "usesItems"
+    // file.getUsesModuleIdentifierSpecs() and plucks out any imported facilities and adds them to "usesItems"
     //file.getStandardFacilities();
     boolean shouldAutoSearchUses = module.shouldAutoSearchUses();
     if (shouldAutoSearchUses) {
@@ -366,7 +366,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
 
     //resolve into the ModuleIdentifiers named in each of the super modules' useslists looking for facilities.
     for (ResModuleDecl superModule : superModuleDecls) {
-      for (ResModuleIdentifierSpec usesItem : superModule.getModuleIdentifierSpecs()) {
+      for (ResModuleIdentifierSpec usesItem : superModule.getUsesModuleIdentifierSpecs()) {
         PsiElement resolve = usesItem.getModuleIdentifier().resolve();
         if (resolve != null && resolve instanceof ResFile) {
 
@@ -399,7 +399,11 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     for (ResModuleIdentifier identifier : v) {
       PsiElement resolve = identifier.resolve();
       if (resolve == null || !(resolve instanceof ResFile)) continue;
-      if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
+
+      processModuleLevelEntities((ResFile)resolve, processor, state,
+                                 true, true);
+      /*if (!processModuleLevelEntities((ResFile)resolve, processor, state,
+                                      false)) return false;*/
     }
     return true;
   }
@@ -419,7 +423,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
                                                                    @NotNull ResScopeProcessor processor,
                                                                    @NotNull ResolveState state) {
     //first search any explicitly mentioned uses specs
-    List<ResModuleIdentifierSpec> usesItems = module.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> usesItems = module.getUsesModuleIdentifierSpecs();
 
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
@@ -452,7 +456,8 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     }
 
     //now search through module-identifier-specs in the current module's header
-    List<ResModuleIdentifierSpec> superModuleSpecs = module.getModuleIdentifierSpecs();
+    //TODO: Changed this 7-12-19
+    List<ResModuleIdentifierSpec> superModuleSpecs = module.getHeaderModuleIdentifierSpecs();
     for (ResModuleIdentifierSpec e : superModuleSpecs) {
       PsiElement resolve = e.getModuleIdentifier().resolve();
       if (!(resolve instanceof ResFile)) continue;
@@ -480,7 +485,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
    * Returns true if {@code currentUsesName} is named in a module's first line as a spec being implemented.
    */
   private static boolean forSuperModule(@NotNull ResModuleDecl module, @NotNull String currentUsesName) {
-    for (ResModuleIdentifierSpec e : module.getModuleIdentifierSpecs()) {
+    for (ResModuleIdentifierSpec e : module.getUsesModuleIdentifierSpecs()) {
       if (e.getIdentifier() != null && e.getIdentifier().getText().equals(currentUsesName)) return true;
     }
     return false;
@@ -514,10 +519,12 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
     if (!processNamedElements(processor, state, module.getFacilities(), localProcessing, fromFacility)) return false;
     if (!processNamedElements(processor, state, module.getTypes(), localProcessing, fromFacility)) return false;
 
-    //module parameter-like-things
-    if (!processNamedElements(processor, state, module.getGenericTypeParams(), localProcessing, fromFacility)) return false;
-    if (!processNamedElements(processor, state, module.getConstantParamDefs(), localProcessing, fromFacility)) return false;
-    if (!processNamedElements(processor, state, module.getDefinitionParamSigs(), localProcessing, fromFacility)) return false;
+    if (!fromFacility) {
+      //module parameter-like-things
+      if (!processNamedElements(processor, state, module.getGenericTypeParams(), localProcessing, false)) return false;
+      if (!processNamedElements(processor, state, module.getConstantParamDefs(), localProcessing, false)) return false;
+      if (!processNamedElements(processor, state, module.getDefinitionParamSigs(), localProcessing, false)) return false;
+    }
 
     //TODO: Math defns, opers
     if (!processNamedElements(processor, state, module.getMathDefnSigs(), localProcessing, fromFacility)) return false;

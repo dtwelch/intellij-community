@@ -102,7 +102,7 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     ResTypeReprDecl repr = (ResTypeReprDecl) rep;
     ResRealizationModuleDecl implModule = (ResRealizationModuleDecl) module;
     List<ResTypeModelDecl> models = new ArrayList<>();
-    for (ResModuleIdentifierSpec moduleRef : implModule.getModuleIdentifierSpecs()) {
+    for (ResModuleIdentifierSpec moduleRef : implModule.getUsesModuleIdentifierSpecs()) {
       PsiElement resolvedModule = moduleRef.getModuleIdentifier().resolve();
       if (resolvedModule == null) continue;
       ResConceptBlock block = PsiTreeUtil.findChildOfType(resolvedModule, ResConceptBlock.class);

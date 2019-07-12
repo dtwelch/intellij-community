@@ -25,6 +25,12 @@ public interface ResModuleDecl extends ResNamedElement {
   ResUsesList getUsesList();
 
   /**
+   * Returns any uses module identifier specs present in the module's header.
+   */
+  @NotNull
+  public List<ResModuleIdentifierSpec> getUsesModuleIdentifierSpecs();
+
+  /**
    * Returns all {@link ResModuleIdentifierSpec}s identifying modules that this module happens to extend. For example,
    * if a particular instance of this class represents is an (enhancement) realization module named {@code T_Realiz},
    * i.e.:
@@ -38,7 +44,7 @@ public interface ResModuleDecl extends ResNamedElement {
    * @return The list of module identifiers referenced in the module's header.
    */
   @NotNull
-  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs();
+  public List<ResModuleIdentifierSpec> getHeaderModuleIdentifierSpecs();
 
   @NotNull
   public Map<String, ResModuleIdentifierSpec> getModuleIdentifierSpecMap();

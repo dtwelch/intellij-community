@@ -64,8 +64,8 @@ public class ResolveKeywordCompletionContributor extends CompletionContributor i
     //extend(CompletionType.BASIC, statementPattern(),
     //       new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "While", "If"));
 
-    extend(CompletionType.BASIC, mathCartProdPattern(),
-           new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Cart_Prod"));
+    //extend(CompletionType.BASIC, mathCartProdPattern(),
+    //       new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Cart_Prod"));
 
     extend(CompletionType.BASIC, variablePattern(),
            new ResolveKeywordCompletionProvider(ResolveCompletionUtil.KEYWORD_PRIORITY, "Var"));
