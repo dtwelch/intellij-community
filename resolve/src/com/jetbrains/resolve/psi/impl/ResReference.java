@@ -272,7 +272,25 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
                                             @NotNull ResolveState state) {
     List<ResModuleIdentifierSpec> usesItems = moduleDecl.getUsesModuleIdentifierSpecs();
 
-    List<ResModuleIdentifierSpec> headerModules = moduleDecl.getUsesModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> headerModules = moduleDecl.getHeaderModuleIdentifierSpecs();
+    for (ResModuleIdentifierSpec e : headerModules) {
+      PsiElement resolve = e.getModuleIdentifier().resolve();
+
+      if (resolve == null || !(resolve instanceof ResFile)) continue;
+      //process the super module's uses clauses
+      List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getUsesModuleIdentifierSpecs();
+
+      for (ResModuleIdentifierSpec e1 : superModuleUses) {
+        PsiElement eRes = e1.getModuleIdentifier().resolve();
+        if (eRes != null) {
+          if (!processModuleLevelEntities((ResFile)eRes, processor, state, false)) return false;
+        }
+      }
+      processor.execute(resolve, state.put(ACTUAL_NAME, e.getModuleIdentifier().getText()));
+      boolean forSuperModule = forSuperModule(moduleDecl, e.getModuleIdentifier().getText());
+      processModuleLevelEntities((ResFile)resolve, processor, state, forSuperModule);
+    }
+
     for (ResModuleIdentifierSpec o : usesItems) {
       //if (o.getAlias() != null) {
       //    if (!processor.execute(o, state.put(ACTUAL_NAME, o.getAlias().getText()))) return false;
@@ -280,9 +298,9 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       //else {
       PsiElement resolve = o.getModuleIdentifier().resolve();
       if (resolve != null && resolve instanceof ResFile) {
-        for (ResModuleIdentifierSpec e : headerModules) {
+        /*for (ResModuleIdentifierSpec e : headerModules) {
           //process the super module's uses clauses
-          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getModuleIdentifierSpecs();
+          List<ResModuleIdentifierSpec> superModuleUses = ((ResFile)resolve).getUsesModuleIdentifierSpecs();
 
           for (ResModuleIdentifierSpec e1 : superModuleUses) {
             PsiElement eRes = e1.getModuleIdentifier().resolve();
@@ -290,10 +308,10 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
               if (!processModuleLevelEntities((ResFile)eRes, processor, state, false)) return false;
             }
           }
-        }
+        }*/
         processor.execute(resolve, state.put(ACTUAL_NAME, o.getModuleIdentifier().getText()));
-        boolean forSuperModule = forSuperModule(moduleDecl, o.getModuleIdentifier().getText());
-        if (!processModuleLevelEntities((ResFile)resolve, processor, state, forSuperModule)) return false;
+        //boolean forSuperModule = forSuperModule(moduleDecl, o.getModuleIdentifier().getText());
+        if (!processModuleLevelEntities((ResFile)resolve, processor, state, /*forSuperModule*/false)) return false;
       }
       //}
     }
@@ -322,7 +340,7 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
   public static boolean processFacilityImports(@NotNull ResFile file,
                                                @NotNull ResScopeProcessor processor,
                                                @NotNull ResolveState state) {
-    List<ResModuleIdentifierSpec> usesItems = file.getModuleIdentifierSpecs();
+    List<ResModuleIdentifierSpec> usesItems = file.getUsesModuleIdentifierSpecs();
     Set<ResModuleIdentifier> v = new LinkedHashSet<>();
     List<String> superModuleRefs = new ArrayList<>();
     ResModuleDecl module = file.getEnclosedModule();
@@ -463,6 +481,23 @@ public class ResReference extends PsiPolyVariantReferenceBase<ResReferenceExpBas
       if (!(resolve instanceof ResFile)) continue;
       processor.execute(resolve, state.put(ACTUAL_NAME, e.getModuleIdentifier().getText()));
       processModuleLevelEntities((ResFile)resolve, processor, state, true);
+      ResFile resolveAsResFile = (ResFile) resolve;
+      //now such the super module uses items
+      for (ResModuleIdentifierSpec s : resolveAsResFile.getUsesModuleIdentifierSpecs()) {
+        PsiElement resolved = s.getModuleIdentifier().resolve();
+        if (!(resolved instanceof ResFile)) continue;
+        processor.execute(resolved, state.put(ACTUAL_NAME, s.getModuleIdentifier().getText()));
+        processModuleLevelEntities((ResFile)resolved, processor, state, true);
+
+        //now handle with clauses on super module uses.
+        if (s.getWithClause() != null &&
+            s.getWithClause().getModuleIdentifier() != null) {
+           PsiElement resolvedWith = (ResFile) s.getWithClause().getModuleIdentifier().resolve();
+          if (!(resolvedWith instanceof ResFile)) continue;
+          processor.execute(resolvedWith, state.put(ACTUAL_NAME, s.getWithClause().getModuleIdentifier().getText()));
+          processModuleLevelEntities((ResFile)resolvedWith, processor, state, true);
+        }
+      }
       //if (!processModuleLevelEntities((ResFile)resolve, processor, state, true)) return false;
     }
 

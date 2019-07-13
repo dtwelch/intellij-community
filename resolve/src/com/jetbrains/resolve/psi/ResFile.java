@@ -47,7 +47,7 @@ public class ResFile extends PsiFileBase {
   }
 
   @NotNull
-  public List<ResModuleIdentifierSpec> getModuleIdentifierSpecs() {
+  public List<ResModuleIdentifierSpec> getUsesModuleIdentifierSpecs() {
     ResModuleDecl enclosedModule = getEnclosedModule();
     return enclosedModule != null ? enclosedModule.getUsesModuleIdentifierSpecs() :
            new ArrayList<ResModuleIdentifierSpec>();

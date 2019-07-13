@@ -20,6 +20,14 @@
       <option name='RESOLVE_FILE' value='true'/>
     </context>
   </template>
+  <template description='Enhancement module declaration' name='Enhancement' toReformat='true' toShortenFQNames='true'
+            value='Enhancement $NAME$ for $CONCEPT$;&#10;    $END$&#10;end $NAME$;'>
+    <variable alwaysStopAt='true' defaultValue='&quot;name&quot;' expression='' name='NAME'/>
+    <variable alwaysStopAt='true' defaultValue='&quot;concept&quot;' expression='' name='CONCEPT'/>
+    <context>
+      <option name='RESOLVE_FILE' value='true'/>
+    </context>
+  </template>
   <template description='Concept realization declaration' name='Realization' toReformat='true' toShortenFQNames='true'
             value='Realization $NAME$ for $CON$;&#10;    $END$&#10;end $NAME$;'>
     <variable alwaysStopAt='true' defaultValue='&quot;name&quot;' expression='' name='NAME'/>
@@ -35,6 +43,7 @@
     <context>
       <option name='RESOLVE_CONCEPT_MODULE' value='true'/>
       <option name='RESOLVE_ENHANCEMENT_MODULE' value='true'/>
+      <option name='RESOLVE_REALIZ_PARAM_LIST' value='true'/>
     </context>
   </template>
   <template description='Operation procedure declaration' name='Operation with body' toReformat='true' toShortenFQNames='true'

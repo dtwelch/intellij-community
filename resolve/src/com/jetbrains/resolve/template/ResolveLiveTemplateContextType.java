@@ -123,7 +123,20 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return element.getParent().getParent() instanceof ResRealizationModuleDecl;
+      return TreeUtil.findParent(element.getNode(), ResTypes.REALIZ_MODULE_PARAMETERS) == null &&
+             element.getParent().getParent() instanceof ResRealizationModuleDecl;
+    }
+  }
+
+  public static class ResolveRealizationParameterList extends ResolveLiveTemplateContextType {
+    protected ResolveRealizationParameterList() {
+      super("RESOLVE_REALIZ_PARAM_LIST", "RESOLVE realization parameters", ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(), ResTypes.REALIZ_MODULE_PARAMETERS) != null &&
+             element.getParent().getParent() instanceof ResRealizationModuleDecl;
     }
   }
 
@@ -136,9 +149,9 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
       return TreeUtil.findParent(element.getNode(),
-                          TokenSet.create(ResTypes.PROCEDURE_DECL,
-                                          ResTypes.OPERATION_PROCEDURE_DECL),
-                          TokenSet.create(ResTypes.REALIZ_BLOCK)) != null;
+                                 TokenSet.create(ResTypes.PROCEDURE_DECL,
+                                                 ResTypes.OPERATION_PROCEDURE_DECL),
+                                 TokenSet.create(ResTypes.REALIZ_BLOCK)) != null;
     }
   }
 
@@ -154,8 +167,4 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
                                  TokenSet.create(ResTypes.TYPE_REPR_DECL)) != null;
     }
   }
-
-
-
-
 }
