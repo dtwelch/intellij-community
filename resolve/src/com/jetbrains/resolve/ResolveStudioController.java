@@ -178,7 +178,7 @@ public class ResolveStudioController implements ProjectComponent {
         VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
         if (f == null) return;
         List<RangeHighlighter> highlighters = new ArrayList<>();
-        annotateVCInEditor(f, highlighters, editor, vc);
+        //annotateVCInEditor(f, highlighters, editor, vc);
 
       }
     });
@@ -195,18 +195,21 @@ public class ResolveStudioController implements ProjectComponent {
       public void autoModeStopped(ProofEvent event) {
         Derivation closedDerivation = event.getSource();
 
+        WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
+        uiControl.resetVCcount();
+
         ImmutableList<VerificationCondition> finalVCs =
-              mainVerifierWindowFrame.getMediator()
-                .getUIControl()
-                .convertToVcs(closedDerivation);
+            uiControl.convertToVcs(closedDerivation);
 
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (editor == null) return;
-        addVCGutterIcons(finalVCs, editor, project,
+
+        List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
+        addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
                          mainVerifierWindowFrame.getUserInterface());
+
       }
     });
-
 
 
   }
@@ -230,7 +233,7 @@ public class ResolveStudioController implements ProjectComponent {
   }
 
   private void addVCGutterIcons(@NotNull ImmutableList<VerificationCondition> vcs,
-                                Editor editor, Project project,
+                                Editor editor, List<RangeHighlighter> activeVcMarkers,
                                 WindowUserInterfaceControl control) {
     if (!editor.isDisposed()) {
       MarkupModel markup = editor.getMarkupModel();
@@ -242,7 +245,7 @@ public class ResolveStudioController implements ProjectComponent {
       Map<Integer, List<VerificationCondition>> byLine = getVCsGroupedByLineNumber(vcs);
       List<RangeHighlighter> vcRelatedHighlighters = new ArrayList<>();
 
-      /*for (Map.Entry<Integer, List<VerificationCondition>> vcsByLine : byLine.entrySet()) {
+      for (Map.Entry<Integer, List<VerificationCondition>> vcsByLine : byLine.entrySet()) {
         List<AnAction> actionsPerVC = new ArrayList<>();
         //create clickable actions for each vc
         for (VerificationCondition vc : vcsByLine.getValue()) {
@@ -250,7 +253,8 @@ public class ResolveStudioController implements ProjectComponent {
         }
 
         RangeHighlighter highlighter =
-          markup.addLineHighlighter(vcsByLine.getKey() - 1, HighlighterLayer.ELEMENT_UNDER_CARET, null);
+          markup.addLineHighlighter(vcsByLine.getKey() - 1,
+                                    HighlighterLayer.ELEMENT_UNDER_CARET, null);
         highlighter.setGutterIconRenderer(new GutterIconRenderer() {
           @NotNull
           @Override
@@ -273,7 +277,6 @@ public class ResolveStudioController implements ProjectComponent {
             return true;
           }
 
-          @Nullable
           public ActionGroup getPopupMenuActions() {
             DefaultActionGroup g = new DefaultActionGroup();
             g.addAll(actionsPerVC);
@@ -286,8 +289,8 @@ public class ResolveStudioController implements ProjectComponent {
           }
 
         });
-        vcRelatedHighlighters.add(highlighter);
-        highlighters.add(highlighter);
+        //vcRelatedHighlighters.add(highlighter);
+        activeVcMarkers.add(highlighter);
       }
 
       editor.getDocument().addDocumentListener(new DocumentListener() {
@@ -297,14 +300,11 @@ public class ResolveStudioController implements ProjectComponent {
         @Override
         public void documentChanged(DocumentEvent event) {
           //remove vc-related highlighters
-          for (RangeHighlighter h : vcRelatedHighlighters) {
+          for (RangeHighlighter h : activeVcMarkers) {
             markup.removeHighlighter(h);
           }
-          VerifierPanel verifierPanel = controller.getVerifierPanel();
-          //controller.getVerifierWindow().hide(null);
-          verifierPanel.revertToBaseGUI();
         }
-      });*/
+      });
     }
   }
 
