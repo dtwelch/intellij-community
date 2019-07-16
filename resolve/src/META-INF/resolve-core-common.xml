@@ -54,16 +54,17 @@
     <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
-    <action id="resolve.GenVCs" class="com.jetbrains.resolve.action.VerificationConditionDerivationAction"
-            text="RESOLVE Derive VCs">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift V"/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ResolveUtils"/>
-      <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="ResolveUtils"/>
-    </action>
+
     <group id="ResolveUtils" text="RESOLVE Utils" description="General RESOLVE Utilities" icon="ResolveIcons.RESOLVE" popup="true">
       <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
-              text="Resolve Validate">
+              text="Validate Current File">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      </action>
+      <action id="resolve.GenVCs" class="com.jetbrains.resolve.action.VerificationConditionDerivationAction"
+              text="Derive VCs">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift V"/>
+        <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ResolveUtils"/>
+        <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="ResolveUtils"/>-->
       </action>
       <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.fmt.ResolveFileFormatAction"
               text="Format Math in File by Settings">

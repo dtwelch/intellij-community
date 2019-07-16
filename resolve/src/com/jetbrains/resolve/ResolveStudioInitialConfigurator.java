@@ -139,7 +139,7 @@ public class ResolveStudioInitialConfigurator {
     }
     //TODO: Maybe move the next 5 lines into the !CONFIGURED if stmt above.
     final EditorColorsScheme editorColorsScheme = EditorColorsManager.getInstance().getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME);
-    editorColorsScheme.setEditorFontSize(16);
+    editorColorsScheme.setEditorFontSize(12);
     editorColorsScheme.setEditorFontName("IsabelleText");
     editorColorsScheme.setLineSpacing(1);
 

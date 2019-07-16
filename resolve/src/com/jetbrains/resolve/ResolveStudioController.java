@@ -155,6 +155,34 @@ public class ResolveStudioController implements ProjectComponent {
     consoleWindow.getContentManager().addContent(contentFactory.createContent(consoleComponent, "", false));
     consoleWindow.setIcon(ResolveIcons.RESOLVE);
 
+    //TODO: rename this addInteractiveDerivationTreeListener(...)
+    //this one will work if ppl try to manually derive stuff. The other "auto" one will be
+    // when ppl click the play button.
+    mainVerifierWindowFrame.getMediator().addDerivationTreeListener(new DerivationTreeAdaptor() {
+      @Override
+      public void derivationClosed(ProofTreeEvent e) {
+        ApplicationManager.getApplication().invokeLater(
+          new Runnable() {
+            public void run() {
+              Derivation closedDerivation = e.getSource();
+              WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
+              uiControl.resetVCcount();
+
+              ImmutableList<VerificationCondition> finalVCs =
+                uiControl.convertToVcs(closedDerivation);
+
+              Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+              if (editor == null) return;
+
+              List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
+              addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
+                               mainVerifierWindowFrame.getUserInterface());
+            }
+          });
+
+      }
+    });
+
     mainVerifierWindowFrame.getMediator().addResolveSelectionListener(new ResolveSelectionListener() {
 
       /** focused node has changed */
@@ -183,35 +211,35 @@ public class ResolveStudioController implements ProjectComponent {
       }
     });
 
+    final int CURRENT_VC_NUM = 1;
+
     //install gutter icon capability + navigation
+    //mainVerifierWindowFrame.getUserInterface().getProofControl().getDefaultProverTaskListener()
     mainVerifierWindowFrame.getUserInterface().getProofControl()
       .addAutoDerivationModeListener(new AutoModeListener() {
-      @Override
-      public void autoModeStarted(ProofEvent event) {
-        //clear existing gutter icons
-      }
+        @Override
+        public void autoModeStarted(ProofEvent event) {
+          //clear existing gutter icons
+        }
 
-      @Override
-      public void autoModeStopped(ProofEvent event) {
-        Derivation closedDerivation = event.getSource();
+        @Override
+        public void autoModeStopped(ProofEvent event) {
+          Derivation closedDerivation = event.getSource();
 
-        WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
-        uiControl.resetVCcount();
+          WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
+          //uiControl.resetVCcount();
 
-        ImmutableList<VerificationCondition> finalVCs =
-            uiControl.convertToVcs(closedDerivation);
+          ImmutableList<VerificationCondition> finalVCs =
+            uiControl.convertToVcs(closedDerivation, CURRENT_VC_NUM);
 
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) return;
+          Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+          if (editor == null) return;
+          final List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
 
-        List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
-        addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
-                         mainVerifierWindowFrame.getUserInterface());
-
-      }
-    });
-
-
+          addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
+                           mainVerifierWindowFrame.getUserInterface());
+        }
+      });
   }
 
   private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
@@ -239,7 +267,7 @@ public class ResolveStudioController implements ProjectComponent {
       MarkupModel markup = editor.getMarkupModel();
 
       //RESOLVEPluginController controller = RESOLVEPluginController.getInstance(project);
-      markup.removeAllHighlighters();
+      //markup.removeAllHighlighters();
 
       //A mapping from [line number] -> [vc_1, .., vc_j]
       Map<Integer, List<VerificationCondition>> byLine = getVCsGroupedByLineNumber(vcs);
@@ -249,7 +277,7 @@ public class ResolveStudioController implements ProjectComponent {
         List<AnAction> actionsPerVC = new ArrayList<>();
         //create clickable actions for each vc
         for (VerificationCondition vc : vcsByLine.getValue()) {
-          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), "hmmm", vc, control));
+          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), vc.getSourceInfo().getExplanation(), vc, control));
         }
 
         RangeHighlighter highlighter =
@@ -287,7 +315,6 @@ public class ResolveStudioController implements ProjectComponent {
           public AnAction getClickAction() {
             return null;
           }
-
         });
         //vcRelatedHighlighters.add(highlighter);
         activeVcMarkers.add(highlighter);
@@ -297,11 +324,13 @@ public class ResolveStudioController implements ProjectComponent {
         @Override
         public void beforeDocumentChange(DocumentEvent event) {
         }
+
         @Override
         public void documentChanged(DocumentEvent event) {
           //remove vc-related highlighters
           for (RangeHighlighter h : activeVcMarkers) {
-            markup.removeHighlighter(h);
+            markup.removeAllHighlighters();
+            //markup.removeHighlighter(h);
           }
         }
       });
@@ -332,44 +361,6 @@ public class ResolveStudioController implements ProjectComponent {
       h.putUserData(VC_ANNOTATION, vc);
     }
   }
-
-  /*
-  public static void annotateIssueInEditor(@NotNull VirtualFile file,
-                                           @NotNull List<RangeHighlighter> highlighters,
-                                           @NotNull Editor editor,
-                                           @NotNull ResolveValidateAction.Issue issue) {
-    MarkupModel markupModel = editor.getMarkupModel();  //ref to the current editor's markup model...
-    final TextAttributes attr = new TextAttributes();
-
-    Token offendingToken = issue.msg.offendingToken;
-    int a = offendingToken.getStartIndex();
-    int b = offendingToken.getStopIndex() + 1;
-
-    if (issue.msg instanceof ResolveMessage.LanguageSemanticsMessage) {
-      if (issue.msg.getErrorType().severity == ResolveMessage.ErrorSeverity.ERROR) {
-        attr.setForegroundColor(JBColor.RED);
-        attr.setEffectColor(JBColor.RED);
-        attr.setEffectType(EffectType.WAVE_UNDERSCORE);
-      }
-      else {  //warning (should be yellowish or something)
-        attr.setBackgroundColor(new JBColor(new Color(246, 235, 188),
-                                            new Color(246, 235, 188)));
-        attr.setEffectType(EffectType.BOXED);
-      }
-    }
-    String sourceName = offendingToken.getTokenSource().getSourceName();
-    String vFilePath = file.getPath();
-    if (vFilePath.equals(sourceName)) { //only want highlights in the doc the user is looking at.
-      RangeHighlighter highlighter = markupModel.addRangeHighlighter(a,
-                                                                     b,
-                                                                     HighlighterLayer.ERROR, // layer
-                                                                     attr,
-                                                                     HighlighterTargetArea.EXACT_RANGE);
-      highlighters.add(highlighter);
-      highlighter.putUserData(ISSUE_ANNOTATION, issue);
-    }
-  }
-  */
 
   public MainWindow getMainVerifierWindowFrame() {
     return mainVerifierWindowFrame;
@@ -472,5 +463,4 @@ public class ResolveStudioController implements ProjectComponent {
       //vcselector.scrollRectToVisible(details.get);
     }
   }
-
 }
