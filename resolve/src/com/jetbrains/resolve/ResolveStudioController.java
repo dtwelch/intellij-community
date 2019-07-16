@@ -6,10 +6,14 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.ide.IdeAboutInfoUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.SystemInfo;
@@ -20,6 +24,9 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.content.ContentFactory;
 import com.jetbrains.resolve.symbols.MathSymbolPanel;
 import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.ResolveSelectionEvent;
+import edu.clemson.resolve.verifier.ResolveSelectionListener;
+import edu.clemson.resolve.verifier.VerificationCondition;
 import edu.clemson.resolve.verifier.gui.MainWindow;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,6 +118,30 @@ public class ResolveStudioController implements ProjectComponent {
     consoleWindow = toolWindowManager.registerToolWindow(CONSOLE_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
     consoleWindow.getContentManager().addContent(contentFactory.createContent(consoleComponent, "", false));
     consoleWindow.setIcon(ResolveIcons.RESOLVE);
+
+    mainVerifierWindowFrame.getMediator().addResolveSelectionListener(new ResolveSelectionListener() {
+
+      /** focused node has changed */
+      @Override
+      public void selectedNodeChanged(ResolveSelectionEvent e) {
+      }
+
+      @Override
+      public void selectedProofChanged(ResolveSelectionEvent e) {
+      }
+
+      @Override
+      public void selectedVCChanged(ResolveSelectionEvent e) {
+        if (e.getSource() == null) return;
+        if (e.getSource().getSelectedVC() == null) return;
+
+        VerificationCondition vc = e.getSource().getSelectedVC();
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if (editor == null) return;
+
+        editor.
+      }
+    });
   }
 
   public MainWindow getMainVerifierWindowFrame() {
