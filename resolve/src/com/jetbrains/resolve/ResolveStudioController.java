@@ -50,6 +50,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -179,7 +181,6 @@ public class ResolveStudioController implements ProjectComponent {
                                mainVerifierWindowFrame.getUserInterface());
             }
           });
-
       }
     });
 
@@ -211,8 +212,6 @@ public class ResolveStudioController implements ProjectComponent {
       }
     });
 
-    final int CURRENT_VC_NUM = 1;
-
     //install gutter icon capability + navigation
     //mainVerifierWindowFrame.getUserInterface().getProofControl().getDefaultProverTaskListener()
     mainVerifierWindowFrame.getUserInterface().getProofControl()
@@ -230,7 +229,8 @@ public class ResolveStudioController implements ProjectComponent {
           //uiControl.resetVCcount();
 
           ImmutableList<VerificationCondition> finalVCs =
-            uiControl.convertToVcs(closedDerivation, CURRENT_VC_NUM);
+            uiControl.convertToVcs(closedDerivation);
+          //CURRENT_VC_NUM = finalVCs.size() + 1;
 
           Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
           if (editor == null) return;
