@@ -3,9 +3,6 @@ package com.jetbrains.resolve;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
-import com.intellij.ide.IdeAboutInfoUtil;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
@@ -14,29 +11,21 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.*;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.psi.impl.file.impl.FileManager;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.content.ContentFactory;
-import com.jetbrains.resolve.action.ResolveValidateAction;
 import com.jetbrains.resolve.symbols.MathSymbolPanel;
 import edu.clemson.resolve.core.Main;
-import edu.clemson.resolve.core.ResolveMessage;
 import edu.clemson.resolve.core.ResolveSelectionEvent;
-import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
 import edu.clemson.resolve.core.control.WindowUserInterfaceControl;
 import edu.clemson.resolve.util.immutableadts.ImmutableList;
 import edu.clemson.resolve.verifier.ResolveSelectionListener;
@@ -44,14 +33,11 @@ import edu.clemson.resolve.verifier.VerificationCondition;
 import edu.clemson.resolve.verifier.derivation.Derivation;
 import edu.clemson.resolve.verifier.gui.MainWindow;
 import edu.clemson.resolve.verifier.proof.*;
-import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -123,6 +109,7 @@ public class ResolveStudioController implements ProjectComponent {
     }
   };
 
+  private static Map<String, Derivation> alreadyHandledInCurrSession = new HashMap<>();
 
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
@@ -163,30 +150,15 @@ public class ResolveStudioController implements ProjectComponent {
     mainVerifierWindowFrame.getMediator().addDerivationTreeListener(new DerivationTreeAdaptor() {
       @Override
       public void derivationClosed(ProofTreeEvent e) {
-        ApplicationManager.getApplication().invokeLater(
-          new Runnable() {
-            public void run() {
-              Derivation closedDerivation = e.getSource();
-              WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
-              uiControl.resetVCcount();
-
-              ImmutableList<VerificationCondition> finalVCs =
-                uiControl.convertToVcs(closedDerivation);
-
-              Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-              if (editor == null) return;
-
-              List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
-              addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
-                               mainVerifierWindowFrame.getUserInterface());
-            }
-          });
+        annotateVcsInGutter(e.getSource());
       }
     });
 
     mainVerifierWindowFrame.getMediator().addResolveSelectionListener(new ResolveSelectionListener() {
 
-      /** focused node has changed */
+      /**
+       * focused node has changed
+       */
       @Override
       public void selectedNodeChanged(ResolveSelectionEvent e) {
       }
@@ -208,7 +180,6 @@ public class ResolveStudioController implements ProjectComponent {
         if (f == null) return;
         List<RangeHighlighter> highlighters = new ArrayList<>();
         //annotateVCInEditor(f, highlighters, editor, vc);
-
       }
     });
 
@@ -223,14 +194,20 @@ public class ResolveStudioController implements ProjectComponent {
 
         @Override
         public void autoModeStopped(ProofEvent event) {
-          Derivation closedDerivation = event.getSource();
+          annotateVcsInGutter(event.getSource());
+        }
+      });
+  }
 
+  private void annotateVcsInGutter(@NotNull Derivation closedDerivation) {
+    ApplicationManager.getApplication().invokeLater(
+      new Runnable() {
+        public void run() {
           WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
-          //uiControl.resetVCcount();
+          if (alreadyHandledInCurrSession.get(closedDerivation.getName()) != null) return;
 
           ImmutableList<VerificationCondition> finalVCs =
             uiControl.convertToVcs(closedDerivation);
-          //CURRENT_VC_NUM = finalVCs.size() + 1;
 
           Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
           if (editor == null) return;
@@ -238,26 +215,9 @@ public class ResolveStudioController implements ProjectComponent {
 
           addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
                            mainVerifierWindowFrame.getUserInterface());
+          alreadyHandledInCurrSession.put(closedDerivation.getName(), closedDerivation);
         }
       });
-  }
-
-  private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
-    Iterable<VerificationCondition> vcs) {
-    Map<Integer, List<VerificationCondition>> result = new HashMap<>();
-
-    for (VerificationCondition vc : vcs) {
-      int currentLineNum = vc.getSourceInfo().getReportableLoc().getLineNumber();
-      if (result.get(currentLineNum) == null) {
-        List<VerificationCondition> vcsForThisLine = new ArrayList<>();
-        vcsForThisLine.add(vc);
-        result.put(currentLineNum, vcsForThisLine);
-      }
-      else {
-        result.get(currentLineNum).add(vc);
-      }
-    }
-    return result;
   }
 
   private void addVCGutterIcons(@NotNull ImmutableList<VerificationCondition> vcs,
@@ -332,9 +292,37 @@ public class ResolveStudioController implements ProjectComponent {
             markup.removeAllHighlighters();
             //markup.removeHighlighter(h);
           }
+
+          VirtualFile vf = FileDocumentManager.getInstance().getFile(event.getDocument());
+
+          //these lines should reset all important state for the verifiergui...
+
+          Main.InitConfig env = control.getEnvironment();
+          mainVerifierWindowFrame.getActiveDerivationListPanel().disposeDerivations();
+          mainVerifierWindowFrame.getUserInterface().resetVCcount();
+          mainVerifierWindowFrame.getUserInterface().resetDerivationVcMappingFromPriorSession();
+          mainVerifierWindowFrame.getVerificationConditionViewPanel().dispose();
         }
       });
     }
+  }
+
+  private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
+    Iterable<VerificationCondition> vcs) {
+    Map<Integer, List<VerificationCondition>> result = new HashMap<>();
+
+    for (VerificationCondition vc : vcs) {
+      int currentLineNum = vc.getSourceInfo().getReportableLoc().getLineNumber();
+      if (result.get(currentLineNum) == null) {
+        List<VerificationCondition> vcsForThisLine = new ArrayList<>();
+        vcsForThisLine.add(vc);
+        result.put(currentLineNum, vcsForThisLine);
+      }
+      else {
+        result.get(currentLineNum).add(vc);
+      }
+    }
+    return result;
   }
 
   public void annotateVCInEditor(@NotNull VirtualFile file,
