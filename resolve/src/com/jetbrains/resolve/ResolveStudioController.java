@@ -11,32 +11,47 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.psi.impl.file.impl.FileManager;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.content.ContentFactory;
+import com.jetbrains.resolve.action.ResolveValidateAction;
 import com.jetbrains.resolve.symbols.MathSymbolPanel;
 import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.ResolveMessage;
 import edu.clemson.resolve.core.ResolveSelectionEvent;
 import edu.clemson.resolve.verifier.ResolveSelectionListener;
 import edu.clemson.resolve.verifier.VerificationCondition;
 import edu.clemson.resolve.verifier.gui.MainWindow;
+import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This object is the controller for the RESOLVE plug-in. It receives events and can send them on to its contained
  * components; here the main components being primarily the compiler's console output window.
  */
 public class ResolveStudioController implements ProjectComponent {
+
+  public static final Key<VerificationCondition> VC_ANNOTATION = Key.create("VC_ANNOTATION");
 
   //public static final String RESOLVESTUDIO_ID = "com.jetbrains.resolve";
   public static final Logger LOG = Logger.getInstance("RESOLVEPluginController");
@@ -88,7 +103,6 @@ public class ResolveStudioController implements ProjectComponent {
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-
     Main.InitConfig env = new Main.InitConfig();
     mainVerifierWindowFrame = MainWindow.getInstance(env, false);
 
@@ -139,10 +153,79 @@ public class ResolveStudioController implements ProjectComponent {
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (editor == null) return;
 
-        editor.
+        editor.getMarkupModel().addRangeHighlighter()
+        VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
+        List<RangeHighlighter> highlighters = new ArrayList<>();
+        annotateVCInEditor(f, highlighters, editor, vc);
+        //editor.getMarkupModel().addRangeHighlighter()
+        //VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
+
       }
     });
   }
+
+  public void annotateVCInEditor(@NotNull VirtualFile file,
+                                 List<RangeHighlighter> highlighters,
+                                 Editor editor,
+                                 VerificationCondition vc) {
+    MarkupModel markupModel = editor.getMarkupModel();  //ref to the current editor's markup model...
+    final TextAttributes attr = new TextAttributes();
+
+    int a = vc.getSourceInfo().getReportableLoc().getStart();
+    int b = vc.getSourceInfo().getReportableLoc().getStop() + 1;
+    attr.setBackgroundColor(new JBColor(new Color(246, 235, 188),
+                                        new Color(246, 235, 188)));
+    attr.setEffectType(EffectType.BOXED);
+
+    String sourceName = vc.getSourceInfo().getReportableLoc().getFileName();
+    String vFilePath = file.getPath();
+    if (vFilePath.equals(sourceName)) { //only want highlights in the doc the user is looking at.
+      RangeHighlighter h = markupModel.addRangeHighlighter(
+        a, b, HighlighterLayer.ERROR, // layer
+        attr, HighlighterTargetArea.EXACT_RANGE);
+      
+      highlighters.add(h);
+      h.putUserData(VC_ANNOTATION, vc);
+    }
+  }
+
+  /*
+  public static void annotateIssueInEditor(@NotNull VirtualFile file,
+                                           @NotNull List<RangeHighlighter> highlighters,
+                                           @NotNull Editor editor,
+                                           @NotNull ResolveValidateAction.Issue issue) {
+    MarkupModel markupModel = editor.getMarkupModel();  //ref to the current editor's markup model...
+    final TextAttributes attr = new TextAttributes();
+
+    Token offendingToken = issue.msg.offendingToken;
+    int a = offendingToken.getStartIndex();
+    int b = offendingToken.getStopIndex() + 1;
+
+    if (issue.msg instanceof ResolveMessage.LanguageSemanticsMessage) {
+      if (issue.msg.getErrorType().severity == ResolveMessage.ErrorSeverity.ERROR) {
+        attr.setForegroundColor(JBColor.RED);
+        attr.setEffectColor(JBColor.RED);
+        attr.setEffectType(EffectType.WAVE_UNDERSCORE);
+      }
+      else {  //warning (should be yellowish or something)
+        attr.setBackgroundColor(new JBColor(new Color(246, 235, 188),
+                                            new Color(246, 235, 188)));
+        attr.setEffectType(EffectType.BOXED);
+      }
+    }
+    String sourceName = offendingToken.getTokenSource().getSourceName();
+    String vFilePath = file.getPath();
+    if (vFilePath.equals(sourceName)) { //only want highlights in the doc the user is looking at.
+      RangeHighlighter highlighter = markupModel.addRangeHighlighter(a,
+                                                                     b,
+                                                                     HighlighterLayer.ERROR, // layer
+                                                                     attr,
+                                                                     HighlighterTargetArea.EXACT_RANGE);
+      highlighters.add(highlighter);
+      highlighter.putUserData(ISSUE_ANNOTATION, issue);
+    }
+  }
+  */
 
   public MainWindow getMainVerifierWindowFrame() {
     return mainVerifierWindowFrame;
