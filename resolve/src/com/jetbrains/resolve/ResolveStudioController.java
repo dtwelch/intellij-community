@@ -6,11 +6,13 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.ide.IdeAboutInfoUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -34,15 +36,21 @@ import com.jetbrains.resolve.symbols.MathSymbolPanel;
 import edu.clemson.resolve.core.Main;
 import edu.clemson.resolve.core.ResolveMessage;
 import edu.clemson.resolve.core.ResolveSelectionEvent;
+import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
+import edu.clemson.resolve.core.control.WindowUserInterfaceControl;
+import edu.clemson.resolve.util.immutableadts.ImmutableList;
 import edu.clemson.resolve.verifier.ResolveSelectionListener;
 import edu.clemson.resolve.verifier.VerificationCondition;
+import edu.clemson.resolve.verifier.derivation.Derivation;
 import edu.clemson.resolve.verifier.gui.MainWindow;
+import edu.clemson.resolve.verifier.proof.*;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -100,6 +108,20 @@ public class ResolveStudioController implements ProjectComponent {
     //installListeners();
   }
 
+  ProofTreeListener ptl = new ProofTreeAdaptor() {
+    @Override
+    public void proofGoalsAdded(ProofTreeEvent e) {
+    }
+
+    //when at least one derivation is closed, this action should be
+    // activated
+    @Override
+    public void derivationClosed(ProofTreeEvent e) {
+
+    }
+  };
+
+
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
@@ -153,15 +175,137 @@ public class ResolveStudioController implements ProjectComponent {
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (editor == null) return;
 
-        editor.getMarkupModel().addRangeHighlighter()
         VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
+        if (f == null) return;
         List<RangeHighlighter> highlighters = new ArrayList<>();
         annotateVCInEditor(f, highlighters, editor, vc);
-        //editor.getMarkupModel().addRangeHighlighter()
-        //VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
 
       }
     });
+
+    //install gutter icon capability + navigation
+    mainVerifierWindowFrame.getUserInterface().getProofControl()
+      .addAutoDerivationModeListener(new AutoModeListener() {
+      @Override
+      public void autoModeStarted(ProofEvent event) {
+        //clear existing gutter icons
+      }
+
+      @Override
+      public void autoModeStopped(ProofEvent event) {
+        Derivation closedDerivation = event.getSource();
+
+        ImmutableList<VerificationCondition> finalVCs =
+              mainVerifierWindowFrame.getMediator()
+                .getUIControl()
+                .convertToVcs(closedDerivation);
+
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if (editor == null) return;
+        addVCGutterIcons(finalVCs, editor, project,
+                         mainVerifierWindowFrame.getUserInterface());
+      }
+    });
+
+
+
+  }
+
+  private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
+    Iterable<VerificationCondition> vcs) {
+    Map<Integer, List<VerificationCondition>> result = new HashMap<>();
+
+    for (VerificationCondition vc : vcs) {
+      int currentLineNum = vc.getSourceInfo().getReportableLoc().getLineNumber();
+      if (result.get(currentLineNum) == null) {
+        List<VerificationCondition> vcsForThisLine = new ArrayList<>();
+        vcsForThisLine.add(vc);
+        result.put(currentLineNum, vcsForThisLine);
+      }
+      else {
+        result.get(currentLineNum).add(vc);
+      }
+    }
+    return result;
+  }
+
+  private void addVCGutterIcons(@NotNull ImmutableList<VerificationCondition> vcs,
+                                Editor editor, Project project,
+                                WindowUserInterfaceControl control) {
+    if (!editor.isDisposed()) {
+      MarkupModel markup = editor.getMarkupModel();
+
+      //RESOLVEPluginController controller = RESOLVEPluginController.getInstance(project);
+      markup.removeAllHighlighters();
+
+      //A mapping from [line number] -> [vc_1, .., vc_j]
+      Map<Integer, List<VerificationCondition>> byLine = getVCsGroupedByLineNumber(vcs);
+      List<RangeHighlighter> vcRelatedHighlighters = new ArrayList<>();
+
+      /*for (Map.Entry<Integer, List<VerificationCondition>> vcsByLine : byLine.entrySet()) {
+        List<AnAction> actionsPerVC = new ArrayList<>();
+        //create clickable actions for each vc
+        for (VerificationCondition vc : vcsByLine.getValue()) {
+          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), "hmmm", vc, control));
+        }
+
+        RangeHighlighter highlighter =
+          markup.addLineHighlighter(vcsByLine.getKey() - 1, HighlighterLayer.ELEMENT_UNDER_CARET, null);
+        highlighter.setGutterIconRenderer(new GutterIconRenderer() {
+          @NotNull
+          @Override
+          public Icon getIcon() {
+            return ResolveIcons.VC;
+          }
+
+          @Override
+          public boolean equals(Object obj) {
+            return false;
+          }
+
+          @Override
+          public int hashCode() {
+            return 0;
+          }
+
+          @Override
+          public boolean isNavigateAction() {
+            return true;
+          }
+
+          @Nullable
+          public ActionGroup getPopupMenuActions() {
+            DefaultActionGroup g = new DefaultActionGroup();
+            g.addAll(actionsPerVC);
+            return g;
+          }
+
+          @Nullable
+          public AnAction getClickAction() {
+            return null;
+          }
+
+        });
+        vcRelatedHighlighters.add(highlighter);
+        highlighters.add(highlighter);
+      }
+
+      editor.getDocument().addDocumentListener(new DocumentListener() {
+        @Override
+        public void beforeDocumentChange(DocumentEvent event) {
+        }
+        @Override
+        public void documentChanged(DocumentEvent event) {
+          //remove vc-related highlighters
+          for (RangeHighlighter h : vcRelatedHighlighters) {
+            markup.removeHighlighter(h);
+          }
+          VerifierPanel verifierPanel = controller.getVerifierPanel();
+          //controller.getVerifierWindow().hide(null);
+          verifierPanel.revertToBaseGUI();
+        }
+      });*/
+    }
   }
 
   public void annotateVCInEditor(@NotNull VirtualFile file,
@@ -183,7 +327,7 @@ public class ResolveStudioController implements ProjectComponent {
       RangeHighlighter h = markupModel.addRangeHighlighter(
         a, b, HighlighterLayer.ERROR, // layer
         attr, HighlighterTargetArea.EXACT_RANGE);
-      
+
       highlighters.add(h);
       h.putUserData(VC_ANNOTATION, vc);
     }
@@ -284,4 +428,49 @@ public class ResolveStudioController implements ProjectComponent {
   public String getComponentName() {
     return "resolve.ProjectComponent";
   }
+
+  private static class VCNavigationAction extends AnAction {
+
+    private final int vcNum;
+    public boolean isProved = false;
+
+    private final WindowUserInterfaceControl uiControl;
+    private final VerificationCondition vc;
+
+    VCNavigationAction(int vcId, String explanation, VerificationCondition vc,
+                       WindowUserInterfaceControl verifierUiControl) {
+      super("VC #" + vcId + " : " + explanation);
+      this.vc = vc;
+      Presentation template = this.getTemplatePresentation();
+      template.setText("VC #" + vcId + " : " + explanation, false);   //mneumonic set to false so my tooltips can have underscores.
+      this.vcNum = vcId;
+      this.uiControl = verifierUiControl;
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+    }
+
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+      if (e.getProject() == null) return;
+      ResolveStudioController controller = ResolveStudioController.getInstance(e.getProject());
+      controller.getVerifierWindow().show(null);  //open the verifier window
+
+      //maybe this will make it update the view with the current vc?
+      uiControl.getMediator().setSelectedVC(vc);
+      /*VerificationConditionSelectorPanel vcselector = controller.getVerifierPanel().getVcSelectorPanel();
+      if (vcselector == null) return;
+      vcselector.vcTabs.get(Integer.parseInt(vcNum));
+      VerifierPanel verifierPanel = controller.getVerifierPanel();
+      if (verifierPanel.getVcSelectorPanel() == null) return;
+      VerificationConditionSelectorPanel selector = verifierPanel.getVcSelectorPanel();
+      ConditionCollapsiblePanel details = selector.vcTabs.get(Integer.parseInt(vcNum));
+      details.setExpanded(true);
+*/
+      //TODO: Make it scroll to the vc selected! This is a top priority usability improvement.
+      //vcselector.scrollRectToVisible(details.get);
+    }
+  }
+
 }

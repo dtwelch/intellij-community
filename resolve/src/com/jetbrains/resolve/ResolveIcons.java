@@ -39,6 +39,7 @@ public class ResolveIcons {
 
   public static final Icon SYMBOLS = load("/icons/com/jetbrains/resolve/symbols.png");
   public static final Icon VCG = load("/icons/com/jetbrains/resolve/vcg.png");
+  public static final Icon VC = load("/icons/com/jetbrains/resolve/vc.png");
 
   public static final Icon VALIDATE = load("/icons/com/jetbrains/resolve/validate.png");
 
