@@ -150,7 +150,7 @@ public class ResolveStudioController implements ProjectComponent {
 
     //Ok. This was firing (unexpectedly and uninvitedly) twice per each derivation. Took me a while to track
     //down the source; it had to do with an erroneous call in ResolveMediator#setProofHelper(..) which is
-    //called once a derivation is closed.
+    //called once a derivation is closed. This is consequently why we also have the global: "alreadyHandledInCurrSession"
     mainVerifierWindowFrame.getMediator().addDerivationTreeListener(new DerivationTreeAdaptor() {
       @Override
       public void derivationClosed(ProofTreeEvent e) {
@@ -219,7 +219,7 @@ public class ResolveStudioController implements ProjectComponent {
       new Runnable() {
         public void run() {
           WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
-          if (alreadyHandledInCurrSession.get(closedDerivation.getName()) != null) return;
+          //if (alreadyHandledInCurrSession.get(closedDerivation.getName()) != null) return;
 
           ImmutableList<VerificationCondition> finalVCs =
             uiControl.convertToVcs(closedDerivation);
@@ -230,7 +230,7 @@ public class ResolveStudioController implements ProjectComponent {
 
           addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
                            mainVerifierWindowFrame.getUserInterface());
-          alreadyHandledInCurrSession.put(closedDerivation.getName(), closedDerivation);
+          //alreadyHandledInCurrSession.put(closedDerivation.getName(), closedDerivation);
         }
       });
   }
