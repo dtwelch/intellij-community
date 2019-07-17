@@ -443,26 +443,7 @@ public class ResolveStudioController implements ProjectComponent {
       //update nodeview with the current vc.
       ui.getMediator().setSelectedVC(vc);
       VerificationConditionTreePanel vcView = ui.getVerificationConditionViewPanel();
-      //DefaultMutableTreeNode root = tree.getRoot();
-      //Now navigate to the node
       vcView.navigateToSelectedVC(vc);
-
-     // for (int i = 0; i < tree.getRowCount())
-    //  DefaultMutableTreeNode firstLeaf = root.getFirstLeaf();
-     // tree.setSelectionPath(new TreePath(firstLeaf.getPath()));
-      //now position the treeView to focus on the vc requested
-
-      /*VerificationConditionSelectorPanel vcselector = controller.getVerifierPanel().getVcSelectorPanel();
-      if (vcselector == null) return;
-      vcselector.vcTabs.get(Integer.parseInt(vcNum));
-      VerifierPanel verifierPanel = controller.getVerifierPanel();
-      if (verifierPanel.getVcSelectorPanel() == null) return;
-      VerificationConditionSelectorPanel selector = verifierPanel.getVcSelectorPanel();
-      ConditionCollapsiblePanel details = selector.vcTabs.get(Integer.parseInt(vcNum));
-      details.setExpanded(true);
-*/
-      //TODO: Make it scroll to the vc selected! This is a top priority usability improvement.
-      //vcselector.scrollRectToVisible(details.get);
     }
   }
 }
