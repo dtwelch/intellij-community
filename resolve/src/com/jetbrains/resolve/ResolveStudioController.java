@@ -436,8 +436,11 @@ public class ResolveStudioController implements ProjectComponent {
       ResolveStudioController controller = ResolveStudioController.getInstance(e.getProject());
       controller.getVerifierWindow().show(null);  //open the verifier window
 
-      //maybe this will make it update the view with the current vc?
+      //update nodeview with the current vc.
       uiControl.getMediator().setSelectedVC(vc);
+
+      //now position the treeView to focus on the vc requested
+
       /*VerificationConditionSelectorPanel vcselector = controller.getVerifierPanel().getVcSelectorPanel();
       if (vcselector == null) return;
       vcselector.vcTabs.get(Integer.parseInt(vcNum));
