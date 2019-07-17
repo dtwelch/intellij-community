@@ -32,12 +32,16 @@ import edu.clemson.resolve.verifier.ResolveSelectionListener;
 import edu.clemson.resolve.verifier.VerificationCondition;
 import edu.clemson.resolve.verifier.derivation.Derivation;
 import edu.clemson.resolve.verifier.gui.MainWindow;
+import edu.clemson.resolve.verifier.gui.VerificationConditionTreePanel;
 import edu.clemson.resolve.verifier.proof.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -144,9 +148,9 @@ public class ResolveStudioController implements ProjectComponent {
     consoleWindow.getContentManager().addContent(contentFactory.createContent(consoleComponent, "", false));
     consoleWindow.setIcon(ResolveIcons.RESOLVE);
 
-    //TODO: rename this addInteractiveDerivationTreeListener(...)
-    //this one will work if ppl try to manually derive stuff. The other "auto" one will be
-    // when ppl click the play button.
+    //Ok. This was firing (unexpectedly and uninvitedly) twice per each derivation. Took me a while to track
+    //down the source; it had to do with an erroneous call in ResolveMediator#setProofHelper(..) which is
+    //called once a derivation is closed.
     mainVerifierWindowFrame.getMediator().addDerivationTreeListener(new DerivationTreeAdaptor() {
       @Override
       public void derivationClosed(ProofTreeEvent e) {
@@ -183,9 +187,20 @@ public class ResolveStudioController implements ProjectComponent {
       }
     });
 
+    mainVerifierWindowFrame.getReloadFileAction().addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if (editor == null) return;
+        MarkupModel markup = editor.getMarkupModel();
+        markup.removeAllHighlighters();
+      }
+    });
+
     //install gutter icon capability + navigation
     //mainVerifierWindowFrame.getUserInterface().getProofControl().getDefaultProverTaskListener()
-    mainVerifierWindowFrame.getUserInterface().getProofControl()
+
+    /*mainVerifierWindowFrame.getUserInterface().getProofControl()
       .addAutoDerivationModeListener(new AutoModeListener() {
         @Override
         public void autoModeStarted(ProofEvent event) {
@@ -196,7 +211,7 @@ public class ResolveStudioController implements ProjectComponent {
         public void autoModeStopped(ProofEvent event) {
           annotateVcsInGutter(event.getSource());
         }
-      });
+      });*/
   }
 
   private void annotateVcsInGutter(@NotNull Derivation closedDerivation) {
@@ -237,7 +252,7 @@ public class ResolveStudioController implements ProjectComponent {
         List<AnAction> actionsPerVC = new ArrayList<>();
         //create clickable actions for each vc
         for (VerificationCondition vc : vcsByLine.getValue()) {
-          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), vc.getSourceInfo().getExplanation(), vc, control));
+          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), vc.getSourceInfo().getExplanation(), vc, mainVerifierWindowFrame));
         }
 
         RangeHighlighter highlighter =
@@ -296,7 +311,6 @@ public class ResolveStudioController implements ProjectComponent {
           VirtualFile vf = FileDocumentManager.getInstance().getFile(event.getDocument());
 
           //these lines should reset all important state for the verifiergui...
-
           Main.InitConfig env = control.getEnvironment();
           mainVerifierWindowFrame.getActiveDerivationListPanel().disposeDerivations();
           mainVerifierWindowFrame.getUserInterface().resetVCcount();
@@ -413,17 +427,17 @@ public class ResolveStudioController implements ProjectComponent {
     private final int vcNum;
     public boolean isProved = false;
 
-    private final WindowUserInterfaceControl uiControl;
+    private final MainWindow ui;
     private final VerificationCondition vc;
 
     VCNavigationAction(int vcId, String explanation, VerificationCondition vc,
-                       WindowUserInterfaceControl verifierUiControl) {
+                       MainWindow ui) {
       super("VC #" + vcId + " : " + explanation);
       this.vc = vc;
       Presentation template = this.getTemplatePresentation();
       template.setText("VC #" + vcId + " : " + explanation, false);   //mneumonic set to false so my tooltips can have underscores.
       this.vcNum = vcId;
-      this.uiControl = verifierUiControl;
+      this.ui = ui;
     }
 
     @Override
@@ -437,8 +451,15 @@ public class ResolveStudioController implements ProjectComponent {
       controller.getVerifierWindow().show(null);  //open the verifier window
 
       //update nodeview with the current vc.
-      uiControl.getMediator().setSelectedVC(vc);
+      ui.getMediator().setSelectedVC(vc);
+      VerificationConditionTreePanel vcView = ui.getVerificationConditionViewPanel();
+      //DefaultMutableTreeNode root = tree.getRoot();
+      //Now navigate to the node
+      vcView.navigateToSelectedVC(vc);
 
+     // for (int i = 0; i < tree.getRowCount())
+    //  DefaultMutableTreeNode firstLeaf = root.getFirstLeaf();
+     // tree.setSelectionPath(new TreePath(firstLeaf.getPath()));
       //now position the treeView to focus on the vc requested
 
       /*VerificationConditionSelectorPanel vcselector = controller.getVerifierPanel().getVcSelectorPanel();

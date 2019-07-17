@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -48,9 +49,13 @@ public class VerificationConditionDerivationAction
     VirtualFile resolveFile = getRESOLVEFileFromEvent(e);
     if (resolveFile == null || editor == null) return;
 
-
     ResolveStudioController controller = ResolveStudioController.getInstance(project);
     ResolveStudioController.showVerifierWindow(project);
+
+    //clear the existing buttons in the gutter.
+    MarkupModel markup = editor.getMarkupModel();
+    markup.removeAllHighlighters();
+
 
     MainWindow mainWindow = controller.getMainVerifierWindowFrame();
     mainWindow.getUserInterface().registerSupplementalASCIIAbbreviations();
