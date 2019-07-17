@@ -160,6 +160,7 @@ public class ResolveStudioController implements ProjectComponent {
 
     mainVerifierWindowFrame.getMediator().addResolveSelectionListener(new ResolveSelectionListener() {
 
+      private List<RangeHighlighter> activeHighlighters = new ArrayList<>();
       /**
        * focused node has changed
        */
@@ -180,10 +181,14 @@ public class ResolveStudioController implements ProjectComponent {
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (editor == null) return;
 
+        for (RangeHighlighter h : activeHighlighters) {
+          editor.getMarkupModel().removeHighlighter(h);
+        }
+        activeHighlighters.clear();
+
         VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
         if (f == null) return;
-        List<RangeHighlighter> highlighters = new ArrayList<>();
-        //annotateVCInEditor(f, highlighters, editor, vc);
+        annotateVCInEditor(f, activeHighlighters, editor, vc);
       }
     });
 
@@ -197,21 +202,6 @@ public class ResolveStudioController implements ProjectComponent {
       }
     });
 
-    //install gutter icon capability + navigation
-    //mainVerifierWindowFrame.getUserInterface().getProofControl().getDefaultProverTaskListener()
-
-    /*mainVerifierWindowFrame.getUserInterface().getProofControl()
-      .addAutoDerivationModeListener(new AutoModeListener() {
-        @Override
-        public void autoModeStarted(ProofEvent event) {
-          //clear existing gutter icons
-        }
-
-        @Override
-        public void autoModeStopped(ProofEvent event) {
-          annotateVcsInGutter(event.getSource());
-        }
-      });*/
   }
 
   private void annotateVcsInGutter(@NotNull Derivation closedDerivation) {
