@@ -30,7 +30,7 @@ import edu.clemson.resolve.core.control.WindowUserInterfaceControl;
 import edu.clemson.resolve.util.immutableadts.ImmutableList;
 import edu.clemson.resolve.verifier.ResolveSelectionListener;
 import edu.clemson.resolve.verifier.VerificationCondition;
-import edu.clemson.resolve.verifier.derivation.Derivation;
+import edu.clemson.resolve.verifier.absyn.PTerm;
 import edu.clemson.resolve.verifier.gui.MainWindow;
 import edu.clemson.resolve.verifier.gui.VerificationConditionTreePanel;
 import edu.clemson.resolve.verifier.proof.*;
@@ -38,10 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -97,23 +95,37 @@ public class ResolveStudioController implements ProjectComponent {
     createToolWindows();
     System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-    //installListeners();
+    installListeners();
   }
 
-  ProofTreeListener ptl = new ProofTreeAdaptor() {
-    @Override
-    public void proofGoalsAdded(ProofTreeEvent e) {
-    }
+  @Override
+  public void projectClosed() {
+    LOG.info("projectClosed " + project.getName());
+    projectIsClosed = true;
+    //uninstallListeners();
+    Disposer.dispose(console);
 
-    //when at least one derivation is closed, this action should be
-    // activated
-    @Override
-    public void derivationClosed(ProofTreeEvent e) {
+    unregisterWindow(VERIFIER_WINDOW_ID);
+    unregisterWindow(SYMBOL_WINDOW_ID);
+    unregisterWindow(CONSOLE_WINDOW_ID);
 
-    }
-  };
+    mainVerifierWindowFrame = null;
+    verifierPanel = null;
+    consoleWindow = null;
+    verifierWindow = null;
+    project = null;
+  }
 
-  private static Map<String, Derivation> alreadyHandledInCurrSession = new HashMap<>();
+  private void installListeners() {
+    ClosedDerivationAnnotationListener l =
+      new ClosedDerivationAnnotationListener(mainVerifierWindowFrame, project);
+    mainVerifierWindowFrame.getMediator().addDerivationTreeListener(l);
+
+  }
+
+  private void uninstallListeners() {
+
+  }
 
   public void createToolWindows() {
     LOG.info("createToolWindows " + project.getName());
@@ -122,6 +134,7 @@ public class ResolveStudioController implements ProjectComponent {
     mainVerifierWindowFrame = MainWindow.getInstance(env, false);
 
     verifierPanel = mainVerifierWindowFrame.getContentsAsPanel();
+
     mathSymbolPanel = new MathSymbolPanel(project);
 
     ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -147,145 +160,215 @@ public class ResolveStudioController implements ProjectComponent {
     consoleWindow = toolWindowManager.registerToolWindow(CONSOLE_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
     consoleWindow.getContentManager().addContent(contentFactory.createContent(consoleComponent, "", false));
     consoleWindow.setIcon(ResolveIcons.RESOLVE);
-
-    //Ok. This was firing (unexpectedly and uninvitedly) twice per each derivation. Took me a while to track
-    //down the source; it had to do with an erroneous call in ResolveMediator#setProofHelper(..) which is
-    //called once a derivation is closed. This is consequently why we also have the global: "alreadyHandledInCurrSession"
-    mainVerifierWindowFrame.getMediator().addDerivationTreeListener(new DerivationTreeAdaptor() {
-      @Override
-      public void derivationClosed(ProofTreeEvent e) {
-        annotateVcsInGutter(e.getSource());
-      }
-    });
-
-    mainVerifierWindowFrame.getMediator().addResolveSelectionListener(new ResolveSelectionListener() {
-
-      private List<RangeHighlighter> activeHighlighters = new ArrayList<>();
-      /**
-       * focused node has changed
-       */
-      @Override
-      public void selectedNodeChanged(ResolveSelectionEvent e) {
-      }
-
-      @Override
-      public void selectedProofChanged(ResolveSelectionEvent e) {
-      }
-
-      @Override
-      public void selectedVCChanged(ResolveSelectionEvent e) {
-        if (e.getSource() == null) return;
-        if (e.getSource().getSelectedVC() == null) return;
-
-        VerificationCondition vc = e.getSource().getSelectedVC();
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) return;
-
-        for (RangeHighlighter h : activeHighlighters) {
-          editor.getMarkupModel().removeHighlighter(h);
-        }
-        activeHighlighters.clear();
-
-        VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
-        if (f == null) return;
-        annotateVCInEditor(f, activeHighlighters, editor, vc);
-      }
-    });
-
-    mainVerifierWindowFrame.getReloadFileAction().addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) return;
-        MarkupModel markup = editor.getMarkupModel();
-        markup.removeAllHighlighters();
-      }
-    });
-
   }
 
-  private void annotateVcsInGutter(@NotNull Derivation closedDerivation) {
-    ApplicationManager.getApplication().invokeLater(
-      new Runnable() {
-        public void run() {
-          WindowUserInterfaceControl uiControl = mainVerifierWindowFrame.getUserInterface();
-          //if (alreadyHandledInCurrSession.get(closedDerivation.getName()) != null) return;
+  //responsible for annotating gutter information about vcs + highlighting the regions corresponding to
+  // selected vcs in the editor
+  public static class ClosedDerivationAnnotationListener extends DerivationTreeAdaptor {
 
-          ImmutableList<VerificationCondition> finalVCs =
-            uiControl.convertToVcs(closedDerivation);
+    private final MainWindow mainWindowFrame;
+    private final Project project;
+    //these are basically the highlights for each line where one or more vcs arises (bscly for annotation
+    //of the gutter icons)
+    final List<RangeHighlighter> activeVcGutterLineHiglighters = new ArrayList<>();
 
-          Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-          if (editor == null) return;
-          final List<RangeHighlighter> activeVcLineMarkers = new ArrayList<>();
+    //technically this is just going to be a singleton (as far as my thinking has gone), cant
+    //use an ordinary var though as java would copy the ref, so it'd have to be effectively final
+    // (which I can't do for this since its constantly getting updated as users click various vcs in the VGui panel)
+    final List<RangeHighlighter> currentlySelectedVcHighlighters = new ArrayList<>();
 
-          addVCGutterIcons(finalVCs, editor, activeVcLineMarkers,
-                           mainVerifierWindowFrame.getUserInterface());
-          //alreadyHandledInCurrSession.put(closedDerivation.getName(), closedDerivation);
-        }
-      });
-  }
+    private DocumentListener docListener = null;
+    private ActionListener reloadListener = null;
+    private ResolveSelectionListener vcSelectionListener = null;
 
-  private void addVCGutterIcons(@NotNull ImmutableList<VerificationCondition> vcs,
-                                Editor editor, List<RangeHighlighter> activeVcMarkers,
-                                WindowUserInterfaceControl control) {
-    if (!editor.isDisposed()) {
-      MarkupModel markup = editor.getMarkupModel();
+    public ClosedDerivationAnnotationListener(@NotNull MainWindow mainWindow, @NotNull Project p) {
+      this.mainWindowFrame = mainWindow;
+      this.project = p;
+    }
 
-      //RESOLVEPluginController controller = RESOLVEPluginController.getInstance(project);
-      //markup.removeAllHighlighters();
+    @Override
+    public void derivationClosed(ProofTreeEvent e) {
+      WindowUserInterfaceControl uiControl = mainWindowFrame.getUserInterface();
+      ImmutableList<VerificationCondition> finalVCs = uiControl.convertToVcs(e.getSource());
+      if (finalVCs.isEmpty()) return;
 
-      //A mapping from [line number] -> [vc_1, .., vc_j]
-      Map<Integer, List<VerificationCondition>> byLine = getVCsGroupedByLineNumber(vcs);
-      List<RangeHighlighter> vcRelatedHighlighters = new ArrayList<>();
+      ApplicationManager.getApplication().invokeLater(
+        new Runnable() {
+          public void run() {
 
-      for (Map.Entry<Integer, List<VerificationCondition>> vcsByLine : byLine.entrySet()) {
-        List<AnAction> actionsPerVC = new ArrayList<>();
-        //create clickable actions for each vc
-        for (VerificationCondition vc : vcsByLine.getValue()) {
-          actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(), vc.getSourceInfo().getExplanation(), vc, mainVerifierWindowFrame));
-        }
+            Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
 
-        RangeHighlighter highlighter =
-          markup.addLineHighlighter(vcsByLine.getKey() - 1,
-                                    HighlighterLayer.ELEMENT_UNDER_CARET, null);
-        highlighter.setGutterIconRenderer(new GutterIconRenderer() {
-          @NotNull
-          @Override
-          public Icon getIcon() {
-            return ResolveIcons.VC;
-          }
+            if (editor == null || editor.isDisposed()) return;
 
-          @Override
-          public boolean equals(Object obj) {
-            return false;
-          }
+            if (docListener != null) {
+              editor.getDocument().removeDocumentListener(docListener);
+            }
+            if (reloadListener != null) {
+              mainWindowFrame.getReloadFileAction().removeActionListener(reloadListener);
+            }
+            if (vcSelectionListener != null) {
+              mainWindowFrame.getMediator().getSelectionModel()
+                .removeResolveSelectionListener(vcSelectionListener);
+            }
 
-          @Override
-          public int hashCode() {
-            return 0;
-          }
+            //add the gutter icons + links
+            annotateVcGutterIcons(editor, finalVCs);
 
-          @Override
-          public boolean isNavigateAction() {
-            return true;
-          }
+            vcSelectionListener = getVcSelectionHighlightingListener(editor);
+            mainWindowFrame.getMediator().getSelectionModel()
+              .addResolveSelectionListener(vcSelectionListener);
 
-          public ActionGroup getPopupMenuActions() {
-            DefaultActionGroup g = new DefaultActionGroup();
-            g.addAll(actionsPerVC);
-            return g;
-          }
+            docListener = getDocumentChangeListener(editor);
+            editor.getDocument().addDocumentListener(docListener);
 
-          @Nullable
-          public AnAction getClickAction() {
-            return null;
+            reloadListener = getReloadListener(editor);
+            mainWindowFrame.getReloadFileAction().addActionListener(reloadListener);
           }
         });
-        //vcRelatedHighlighters.add(highlighter);
-        activeVcMarkers.add(highlighter);
-      }
+    }
 
-      editor.getDocument().addDocumentListener(new DocumentListener() {
+    private void annotateVcGutterIcons(Editor editor,
+                                       @NotNull ImmutableList<VerificationCondition> vcs) {
+
+      if (!editor.isDisposed()) {
+        MarkupModel markup = editor.getMarkupModel();
+
+        //RESOLVEPluginController controller = RESOLVEPluginController.getInstance(project);
+        //markup.removeAllHighlighters();
+
+        //A mapping from [line number] -> [vc_1, .., vc_j]
+        Map<Integer, List<VerificationCondition>> byLine = getVCsGroupedByLineNumber(vcs);
+
+        for (Map.Entry<Integer, List<VerificationCondition>> vcsByLine : byLine.entrySet()) {
+          List<AnAction> actionsPerVC = new ArrayList<>();
+          //create clickable actions for each vc
+          for (VerificationCondition vc : vcsByLine.getValue()) {
+            actionsPerVC.add(new VCNavigationAction(vc.getUniqueId(),
+                                                    vc.getSourceInfo().getExplanation(), vc,
+                                                    mainWindowFrame));
+          }
+
+          RangeHighlighter highlighter =
+            markup.addLineHighlighter(vcsByLine.getKey() - 1,
+                                      HighlighterLayer.ELEMENT_UNDER_CARET, null);
+          highlighter.setGutterIconRenderer(new GutterIconRenderer() {
+            @NotNull
+            @Override
+            public Icon getIcon() {
+              return ResolveIcons.VC;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+              return false;
+            }
+
+            @Override
+            public int hashCode() {
+              return 0;
+            }
+
+            @Override
+            public boolean isNavigateAction() {
+              return true;
+            }
+
+            public ActionGroup getPopupMenuActions() {
+              DefaultActionGroup g = new DefaultActionGroup();
+              g.addAll(actionsPerVC);
+              return g;
+            }
+
+            @Nullable
+            public AnAction getClickAction() {
+              return null;
+            }
+          });
+          activeVcGutterLineHiglighters.add(highlighter);
+        }
+      }
+    }
+
+    private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
+      Iterable<VerificationCondition> vcs) {
+      Map<Integer, List<VerificationCondition>> result = new HashMap<>();
+
+      for (VerificationCondition vc : vcs) {
+        PTerm.TermLabel vcInfo = vc.getSourceInfo();
+        PTerm.Location loc = vcInfo.getReportableLocation();
+        int currentLineNum = loc.getLineNumber();
+        if (result.get(currentLineNum) == null) {
+          List<VerificationCondition> vcsForThisLine = new ArrayList<>();
+          vcsForThisLine.add(vc);
+          result.put(currentLineNum, vcsForThisLine);
+        }
+        else {
+          result.get(currentLineNum).add(vc);
+        }
+      }
+      return result;
+    }
+
+    public ResolveSelectionListener getVcSelectionHighlightingListener(Editor editor) {
+      return new ResolveSelectionListener() {
+        /**
+         * focused node has changed
+         */
+        @Override
+        public void selectedNodeChanged(ResolveSelectionEvent e) {
+        }
+
+        @Override
+        public void selectedProofChanged(ResolveSelectionEvent e) {
+        }
+
+        @Override
+        public void selectedVCChanged(ResolveSelectionEvent e) {
+          if (e.getSource() == null) return;
+          if (e.getSource().getSelectedVC() == null) return;
+
+          VerificationCondition vc = e.getSource().getSelectedVC();
+          if (editor == null) return;
+
+          //remove the existing vc location highlight in the editor (if there is one)
+          MarkupModel markup = editor.getMarkupModel();
+          for (RangeHighlighter h : currentlySelectedVcHighlighters) {
+            markup.removeHighlighter(h);
+          }
+          //clear the prior highlight from our running list (if there was one)
+          currentlySelectedVcHighlighters.clear();
+
+          final TextAttributes attr = new TextAttributes();
+
+          int a = vc.getSourceInfo().getReportableLocation().getStart();
+          int b = vc.getSourceInfo().getReportableLocation().getStop() + 1;
+          attr.setBackgroundColor(new JBColor(new Color(246, 235, 188),
+                                              new Color(246, 235, 188)));
+          attr.setEffectType(EffectType.BOXED);
+
+          VirtualFile f = FileDocumentManager.getInstance().getFile(editor.getDocument());
+          if (f == null) return;
+          String sourceName = vc.getSourceInfo().getReportableLocation().getFileName();
+          String vFilePath = f.getPath();
+          if (vFilePath.equals(sourceName)) { //only want highlights in the doc the user is looking at.
+            RangeHighlighter h = markup.addRangeHighlighter(
+              a, b, HighlighterLayer.ERROR, // layer
+              attr, HighlighterTargetArea.EXACT_RANGE);
+
+            currentlySelectedVcHighlighters.add(h);
+            h.putUserData(VC_ANNOTATION, vc);
+          }
+        }
+      };
+    }
+
+    //i don't like the way this is currently used since it means that each time we close a derivation
+    //we install a new document listener
+    private DocumentListener getDocumentChangeListener(Editor editor) {
+      if (editor == null) return null;
+      MarkupModel markup = editor.getMarkupModel();
+      //if (editor.getDocument())
+      return new DocumentListener() {
         @Override
         public void beforeDocumentChange(DocumentEvent event) {
         }
@@ -293,88 +376,56 @@ public class ResolveStudioController implements ProjectComponent {
         @Override
         public void documentChanged(DocumentEvent event) {
           //remove vc-related highlighters
-          for (RangeHighlighter h : activeVcMarkers) {
-            markup.removeAllHighlighters();
-            //markup.removeHighlighter(h);
+          for (RangeHighlighter h : activeVcGutterLineHiglighters) {
+            markup.removeHighlighter(h);
+          }
+          for (RangeHighlighter h : currentlySelectedVcHighlighters) {
+            markup.removeHighlighter(h);
           }
 
-          VirtualFile vf = FileDocumentManager.getInstance().getFile(event.getDocument());
+          currentlySelectedVcHighlighters.clear();
+          activeVcGutterLineHiglighters.clear();
 
           //these lines should reset all important state for the verifiergui...
-          Main.InitConfig env = control.getEnvironment();
-          mainVerifierWindowFrame.getActiveDerivationListPanel().disposeDerivations();
-          mainVerifierWindowFrame.getUserInterface().resetVCcount();
-          mainVerifierWindowFrame.getUserInterface().resetDerivationVcMappingFromPriorSession();
-          mainVerifierWindowFrame.getVerificationConditionViewPanel().dispose();
+          mainWindowFrame.getActiveDerivationListPanel().disposeDerivations();
+          mainWindowFrame.getUserInterface().resetVCcount();
+          mainWindowFrame.getUserInterface().resetDerivationVcMappingFromPriorSession();
+          mainWindowFrame.getVerificationConditionViewPanel().dispose();
         }
-      });
+      };
     }
-  }
 
-  private Map<Integer, List<VerificationCondition>> getVCsGroupedByLineNumber(
-    Iterable<VerificationCondition> vcs) {
-    Map<Integer, List<VerificationCondition>> result = new HashMap<>();
+    private ActionListener getReloadListener(Editor editor) {
+      return new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (editor == null) return;
+          MarkupModel markup = editor.getMarkupModel();
+          //remove any active vc gutter related highlighters
+          for (RangeHighlighter h : activeVcGutterLineHiglighters) {
+            markup.removeHighlighter(h);
+          }
+          //now remove any highlights related to the currently selected vc
+          for (RangeHighlighter h : currentlySelectedVcHighlighters) {
+            markup.removeHighlighter(h);
+          }
+          currentlySelectedVcHighlighters.clear();
+          activeVcGutterLineHiglighters.clear();
 
-    for (VerificationCondition vc : vcs) {
-      int currentLineNum = vc.getSourceInfo().getReportableLoc().getLineNumber();
-      if (result.get(currentLineNum) == null) {
-        List<VerificationCondition> vcsForThisLine = new ArrayList<>();
-        vcsForThisLine.add(vc);
-        result.put(currentLineNum, vcsForThisLine);
-      }
-      else {
-        result.get(currentLineNum).add(vc);
-      }
+          //these lines should reset all important state for the verifiergui...
+          mainWindowFrame.getMediator().removeResolveSelectionListener(vcSelectionListener);
+          mainWindowFrame.getActiveDerivationListPanel().disposeDerivations();
+          mainWindowFrame.getUserInterface().resetVCcount();
+          mainWindowFrame.getUserInterface().resetDerivationVcMappingFromPriorSession();
+          mainWindowFrame.getVerificationConditionViewPanel().dispose();
+        }
+      };
     }
-    return result;
-  }
 
-  public void annotateVCInEditor(@NotNull VirtualFile file,
-                                 List<RangeHighlighter> highlighters,
-                                 Editor editor,
-                                 VerificationCondition vc) {
-    MarkupModel markupModel = editor.getMarkupModel();  //ref to the current editor's markup model...
-    final TextAttributes attr = new TextAttributes();
-
-    int a = vc.getSourceInfo().getReportableLoc().getStart();
-    int b = vc.getSourceInfo().getReportableLoc().getStop() + 1;
-    attr.setBackgroundColor(new JBColor(new Color(246, 235, 188),
-                                        new Color(246, 235, 188)));
-    attr.setEffectType(EffectType.BOXED);
-
-    String sourceName = vc.getSourceInfo().getReportableLoc().getFileName();
-    String vFilePath = file.getPath();
-    if (vFilePath.equals(sourceName)) { //only want highlights in the doc the user is looking at.
-      RangeHighlighter h = markupModel.addRangeHighlighter(
-        a, b, HighlighterLayer.ERROR, // layer
-        attr, HighlighterTargetArea.EXACT_RANGE);
-
-      highlighters.add(h);
-      h.putUserData(VC_ANNOTATION, vc);
-    }
   }
 
   public MainWindow getMainVerifierWindowFrame() {
     return mainVerifierWindowFrame;
-  }
-
-  @Override
-  public void projectClosed() {
-    LOG.info("projectClosed " + project.getName());
-    projectIsClosed = true;
-    //uninstallListeners();
-    Disposer.dispose(console);
-
-    unregisterWindow(VERIFIER_WINDOW_ID);
-    unregisterWindow(SYMBOL_WINDOW_ID);
-    unregisterWindow(CONSOLE_WINDOW_ID);
-
-    mainVerifierWindowFrame = null;
-    verifierPanel = null;
-    consoleWindow = null;
-    verifierWindow = null;
-
-    project = null;
   }
 
   public void unregisterWindow(String id) {
@@ -395,11 +446,13 @@ public class ResolveStudioController implements ProjectComponent {
   }
 
   public static void showConsoleWindow(final Project project) {
-    ApplicationManager.getApplication().invokeLater(() -> getInstance(project).getConsoleWindow().show(null));
+    ApplicationManager.getApplication()
+      .invokeLater(() -> getInstance(project).getConsoleWindow().show(null));
   }
 
   public static void showVerifierWindow(final Project project) {
-    ApplicationManager.getApplication().invokeLater(() -> getInstance(project).getVerifierWindow().show(null));
+    ApplicationManager.getApplication()
+      .invokeLater(() -> getInstance(project).getVerifierWindow().show(null));
   }
 
   @Override

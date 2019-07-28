@@ -53,9 +53,10 @@ public class VerificationConditionDerivationAction
     ResolveStudioController.showVerifierWindow(project);
 
     //clear the existing buttons in the gutter.
-    MarkupModel markup = editor.getMarkupModel();
-    markup.removeAllHighlighters();
-
+    //MarkupModel markup = editor.getMarkupModel();
+    //markup.removeAllHighlighters();
+    //trigger a reset session action:
+    controller.mainVerifierWindowFrame.getClearSessionAction().actionPerformed(null);
 
     MainWindow mainWindow = controller.getMainVerifierWindowFrame();
     mainWindow.getUserInterface().registerSupplementalASCIIAbbreviations();
@@ -68,10 +69,9 @@ public class VerificationConditionDerivationAction
       }
     };
 
-
     ProgressManager.getInstance().run(task);
 
-    editor.getDocument().addDocumentListener(new DocumentListener() {
+    /*editor.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void beforeDocumentChange(DocumentEvent event) {
       }
@@ -81,16 +81,6 @@ public class VerificationConditionDerivationAction
         controller.mainVerifierWindowFrame
           .getClearSessionAction().actionPerformed(null);
       }
-    });
-
-
-
-    //load all assertive code blocks into current session..
-
-
-    //MainWindow actually instantiates control... which need
-    //WindowUserInterfaceControl control = new WindowUserInterfaceControl(env, )
-    //VerifierPanel verifierPanel = controller.getVerifierPanel();
-
+    });*/
   }
 }
