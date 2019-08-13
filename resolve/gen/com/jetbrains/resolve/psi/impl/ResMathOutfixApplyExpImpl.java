@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathOutfixApplyExpImpl extends ResMathExpImpl implements ResMathOutfixApplyExp {
 
-  public ResMathOutfixApplyExpImpl(ASTNode node) {
+  public ResMathOutfixApplyExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

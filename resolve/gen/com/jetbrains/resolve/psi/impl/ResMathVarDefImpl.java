@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathVarDefImpl extends ResMathNamedElementImpl implements ResMathVarDef {
 
-  public ResMathVarDefImpl(ASTNode node) {
+  public ResMathVarDefImpl(@NotNull ASTNode node) {
     super(node);
   }
 

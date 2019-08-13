@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathFunctionAppListImpl extends ResCompositeElementImpl implements ResMathFunctionAppList {
 
-  public ResMathFunctionAppListImpl(ASTNode node) {
+  public ResMathFunctionAppListImpl(@NotNull ASTNode node) {
     super(node);
   }
 

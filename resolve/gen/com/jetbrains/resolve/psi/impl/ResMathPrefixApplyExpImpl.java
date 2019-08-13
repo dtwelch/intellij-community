@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathPrefixApplyExpImpl extends ResMathExpImpl implements ResMathPrefixApplyExp {
 
-  public ResMathPrefixApplyExpImpl(ASTNode node) {
+  public ResMathPrefixApplyExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

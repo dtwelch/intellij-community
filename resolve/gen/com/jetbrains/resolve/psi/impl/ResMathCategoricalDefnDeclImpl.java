@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathCategoricalDefnDeclImpl extends ResAbstractMathDefnImpl implements ResMathCategoricalDefnDecl {
 
-  public ResMathCategoricalDefnDeclImpl(ASTNode node) {
+  public ResMathCategoricalDefnDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

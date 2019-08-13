@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResArgumentListImpl extends ResCompositeElementImpl implements ResArgumentList {
 
-  public ResArgumentListImpl(ASTNode node) {
+  public ResArgumentListImpl(@NotNull ASTNode node) {
     super(node);
   }
 

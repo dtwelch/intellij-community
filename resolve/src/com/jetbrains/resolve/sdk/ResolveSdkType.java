@@ -4,6 +4,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.JBDefaultTreeCellRenderer;
 import com.jetbrains.resolve.ResolveBundle;
 import com.jetbrains.resolve.ResolveIcons;
 import org.jdom.Element;
@@ -84,7 +85,7 @@ public class ResolveSdkType extends SdkType {
     if (version == null) {
       return "Unknown Resolve version at " + sdkHome;
     }
-    return "Resolve " + version;
+    return "RESOLVE " + version;
   }
 
   @Nullable

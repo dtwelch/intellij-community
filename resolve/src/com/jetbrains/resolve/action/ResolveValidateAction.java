@@ -3,6 +3,7 @@ package com.jetbrains.resolve.action;
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -22,19 +23,23 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.intellij.util.containers.ContainerUtil;
-import com.jetbrains.resolve.ResolveIcons;
 import com.jetbrains.resolve.ResolveStudioController;
-import com.jetbrains.resolve.configuration.ResolveCompilerSettings;
-import edu.clemson.resolve.Resolve;
-import edu.clemson.resolve.ResolveMessage;
-import edu.clemson.resolve.Utils;
+import com.jetbrains.resolve.ResolveCompilerSettings;
+import edu.clemson.resolve.core.Main;
+import edu.clemson.resolve.core.ResolveCompilerListener;
+import edu.clemson.resolve.core.ResolveMessage;
+import edu.clemson.resolve.core.control.AbstractUserInterfaceControl;
+import edu.clemson.resolve.core.control.DefaultUserInterfaceControl;
+import edu.clemson.resolve.core.control.UserInterfaceControl;
+import edu.clemson.resolve.util.Utils;
+import edu.clemson.resolve.verifier.prettyprint.LogicPrinter;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.ST;
 
 import java.awt.*;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -53,58 +58,60 @@ public class ResolveValidateAction extends ResolveAction {
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) return;
 
-    List<String> cmdArgs = ContainerUtil.newArrayList();
-    cmdArgs.add(resolveFile.getCanonicalPath());
-    if (ResolveCompilerSettings.getInstance().isNoAutoStandardUses()) {
-      cmdArgs.add("-no-std-uses");
+    ResolveCompilerSettings ideSettings = ResolveCompilerSettings.getInstance();
+
+    List<String> args = new ArrayList<>();
+    args.add(resolveFile.getPath());
+    if (ideSettings.isNoAutoStandardUses()) {
+      args.add("-no-std-uses");
     }
 
-    //argMap.put("-lib", getContentRoot(project, resolveFile).getPath());
     CompilerIssueListener issueListener = new CompilerIssueListener();
 
-    Resolve compiler = setupAndRunCompiler(project, editor, resolveFile, cmdArgs, issueListener);
-    if (compiler.targetModule.hasParseErrors) return;
+    AbstractUserInterfaceControl control =
+      setupAndRunCompiler(project, "Validating RESOLVE source files",
+                          resolveFile, args, issueListener);
 
-    annotateIssues(editor, resolveFile, compiler, issueListener);
-  }
+    if (control.getEnvironment().targetModule == null ||
+        control.getEnvironment().targetModule.hasParseErrors) {
+      return;
+    }
 
-  @Override
-  public void update(AnActionEvent e) {
-    e.getPresentation().setIcon(ResolveIcons.VALIDATE);
-  }
-
-  @Nullable
-  public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                            @NotNull Editor editor,
-                                            @NotNull VirtualFile targetFile,
-                                            @NotNull List<String> args) {
-    return setupAndRunCompiler(project, editor, targetFile, args, null);
+    annotateIssues(editor, resolveFile, control, issueListener);
   }
 
   @NotNull
-  public static Resolve setupAndRunCompiler(@NotNull Project project,
-                                            @NotNull Editor editor,
+  public static AbstractUserInterfaceControl setupAndRunCompiler(@NotNull Project project,
+                                            @NotNull String title,
                                             @NotNull VirtualFile targetFile,
                                             @NotNull List<String> args,
-                                            @Nullable Resolve.ResolveListener customListener) {
-    Resolve compiler = getDefaultCompiler(args);
+                                            @Nullable ResolveCompilerListener customListener) {
+    Main.InitConfig env = new Main.InitConfig();
+    AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
+    control.registerSupplementalASCIIAbbreviations();
+
+    String[] argsArray = new String[args.size()];
+    Main.evaluateArguments(env, args.toArray(argsArray));
+
     ConsoleView console = ResolveStudioController.getInstance(project).getConsole();
     console.clear();
     String timeStamp = getTimeStamp();
     console.print(timeStamp + ": resolve " + Utils.join(args, " ") + "\n",
                   ConsoleViewContentType.SYSTEM_OUTPUT);
 
-    RunResolveListener defaultListener = new RunResolveListener(compiler, console);
-    compiler.removeListeners();
-    compiler.addListener(defaultListener);
-    if (customListener != null) compiler.addListener(customListener);
+    RunResolveListener defaultListener = new RunResolveListener(control, console);
+    //compiler.removeListeners();
+    control.addAdditionalCompilerListener(defaultListener);
+    if (customListener != null) {
+      control.addAdditionalCompilerListener(customListener);
+    }
     try {
       ProgressManager.getInstance().run(new Task.WithResult<Boolean, Exception>(
-        project, "Analyzing Current Source", false) {
+        project, title, false) {
         @Override
         protected Boolean compute(@NotNull ProgressIndicator indicator) throws Exception {
-          compiler.processCommandLineTarget();
-          return compiler.errMgr.getErrorCount() == 0;
+          control.loadProgram(new File(targetFile.getPath()));
+          return control.getErrorManager().getErrorCount() == 0;
         }
       });
     }
@@ -113,24 +120,27 @@ public class ResolveValidateAction extends ResolveAction {
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);
       String msg = sw.toString();
+
       Notification notification =
         new Notification("AnalyzeAction", "failed to execute " + targetFile.getPath(),
                          e.toString(),
                          NotificationType.INFORMATION);
       Notifications.Bus.notify(notification, project);
+
       console.print(timeStamp + ": resolve " + msg + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
       defaultListener.hasOutput = true; // show console below
     }
     if (defaultListener.hasOutput) {
       ResolveStudioController.showConsoleWindow(project);
     }
-    return compiler;
+    return control;
   }
+
 
   public static void annotateIssues(Editor editor,
                                     VirtualFile targetFile,
-                                    Resolve compiler,
-                                    CompilerIssueListener issueListener) {
+                                    AbstractUserInterfaceControl compiler,
+                                    @Nullable CompilerIssueListener issueListener) {
     editor.getMarkupModel().removeAllHighlighters();    //first
 
     EditorMouseMotionListener mouseListener = new EditorMouseMotionListener() {
@@ -150,6 +160,8 @@ public class ResolveValidateAction extends ResolveAction {
           if (errorMsg != null) msgs.add(errorMsg);
         }
         String combinedErrorMsg = Utils.join(msgs, "\n");
+
+        HintManager.getInstance();
         showErrorToolTip(editor, offset, HintManager.getInstance(), combinedErrorMsg, e);
       }
 
@@ -157,9 +169,12 @@ public class ResolveValidateAction extends ResolveAction {
       public void mouseDragged(EditorMouseEvent e) {
       }
     };
+
     List<RangeHighlighter> issueRelatedHighlighters = new ArrayList<>();
-    for (Issue issue : issueListener.issues) {
-      annotateIssueInEditor(targetFile, issueRelatedHighlighters, editor, issue);
+    if (issueListener != null) {
+      for (Issue issue : issueListener.issues) {
+        annotateIssueInEditor(targetFile, issueRelatedHighlighters, editor, issue);
+      }
     }
 
     editor.addEditorMouseMotionListener(mouseListener);
@@ -184,8 +199,8 @@ public class ResolveValidateAction extends ResolveAction {
     });
   }
 
-  public static String getIssueDisplayString(Resolve compiler, Issue e) {
-    ST st = compiler.errMgr.getMessageTemplate(e.msg);
+  public static String getIssueDisplayString(UserInterfaceControl compiler, Issue e) {
+    ST st = compiler.getErrorManager().getMessageTemplate(e.msg);
     return st.render();
   }
 
@@ -195,10 +210,13 @@ public class ResolveValidateAction extends ResolveAction {
                                       EditorMouseEvent event) {
     int flags = HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE | HintManager.HIDE_BY_SCROLLING;
     int timeout = 0; // default?
-   // UIManager.getFont("Label.font")
+    // UIManager.getFont("Label.font")
+    Annotation annotation;
+
+    msg = "<html><p style=\"font-family:IsabelleText;\">" + LogicPrinter.escapeHTML(msg, true) + "</p></html>";
     hintMgr.showErrorHint(editor, msg, offset, offset + 1, HintManager.ABOVE, flags, timeout);
   }
-//for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
+  //for some reason, for unicode chars like 𝒩 the antlr start and stop tokens have the same idx...
   //nope, it's not antlr, single (normal) chars have the same start and stop too..
   //I just loaded up IDEA 2016.2 and it uses two spaces for things like 𝒩.. what the hell..
 

@@ -9,10 +9,12 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
+import com.intellij.psi.ResolveState;
+import com.intellij.psi.scope.PsiScopeProcessor;
 
 public class ResPrecisBlockImpl extends ResCompositeElementImpl implements ResPrecisBlock {
 
-  public ResPrecisBlockImpl(ASTNode node) {
+  public ResPrecisBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -53,6 +55,10 @@ public class ResPrecisBlockImpl extends ResCompositeElementImpl implements ResPr
   @NotNull
   public List<ResMathTheoremDecl> getMathTheoremDeclList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathTheoremDecl.class);
+  }
+
+  public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
+    return ResPsiImplUtil.processDeclarations(this, processor, state, lastParent, place);
   }
 
 }

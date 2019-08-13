@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathNestedExpImpl extends ResMathExpImpl implements ResMathNestedExp {
 
-  public ResMathNestedExpImpl(ASTNode node) {
+  public ResMathNestedExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

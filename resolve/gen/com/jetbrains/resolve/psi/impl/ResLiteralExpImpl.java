@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResLiteralExpImpl extends ResExpImpl implements ResLiteralExp {
 
-  public ResLiteralExpImpl(ASTNode node) {
+  public ResLiteralExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

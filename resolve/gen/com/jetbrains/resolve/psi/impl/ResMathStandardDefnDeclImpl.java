@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl implements ResMathStandardDefnDecl {
 
-  public ResMathStandardDefnDeclImpl(ASTNode node) {
+  public ResMathStandardDefnDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -45,20 +45,8 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
 
   @Override
   @Nullable
-  public ResMathPostfixDefnSig getMathPostfixDefnSig() {
-    return findChildByClass(ResMathPostfixDefnSig.class);
-  }
-
-  @Override
-  @Nullable
   public ResMathPrefixDefnSig getMathPrefixDefnSig() {
     return findChildByClass(ResMathPrefixDefnSig.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getChainable() {
-    return findChildByType(CHAINABLE);
   }
 
   @Override
@@ -81,14 +69,26 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
 
   @Override
   @Nullable
+  public PsiElement getIs() {
+    return findChildByType(IS);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getLiteral() {
+    return findChildByType(LITERAL);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getSemicolon() {
     return findChildByType(SEMICOLON);
   }
 
   @Override
   @Nullable
-  public PsiElement getTriEquals() {
-    return findChildByType(TRI_EQUALS);
+  public PsiElement getTriangleq() {
+    return findChildByType(TRIANGLEQ);
   }
 
   @Override

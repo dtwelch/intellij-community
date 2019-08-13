@@ -25,7 +25,4 @@ public interface ResMathPrefixDefnSig extends ResMathDefnSig {
   @Nullable
   PsiElement getRparen();
 
-  @Nullable
-  PsiElement getTricolon();
-
 }

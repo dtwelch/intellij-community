@@ -13,4 +13,10 @@ public interface ResParamDecl extends ResCompositeElement {
   @NotNull
   ResParameterMode getParameterMode();
 
+  @Nullable
+  ResType getType();
+
+  @Nullable
+  PsiElement getColon();
+
 }

@@ -17,7 +17,7 @@ public interface ResMathSymbolName extends ResCompositeElement {
   PsiElement getInt();
 
   @Nullable
-  PsiElement getMathsymbol();
+  PsiElement getMathidentifier();
 
   @Nullable
   PsiElement getSymbol();

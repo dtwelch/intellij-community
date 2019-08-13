@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public abstract class ResMathAssertionExpImpl extends ResMathExpImpl implements ResMathAssertionExp {
 
-  public ResMathAssertionExpImpl(ASTNode node) {
+  public ResMathAssertionExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathVarDeclImpl extends ResMathVarDeclGroupImpl implements ResMathVarDecl {
 
-  public ResMathVarDeclImpl(ASTNode node) {
+  public ResMathVarDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

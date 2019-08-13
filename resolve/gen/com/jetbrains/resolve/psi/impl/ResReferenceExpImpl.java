@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResReferenceExpImpl extends ResExpImpl implements ResReferenceExp {
 
-  public ResReferenceExpImpl(ASTNode node) {
+  public ResReferenceExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -44,6 +44,10 @@ public class ResReferenceExpImpl extends ResExpImpl implements ResReferenceExp {
   @Nullable
   public PsiElement resolve() {
     return ResPsiImplUtil.resolve(this);
+  }
+
+  public boolean shouldReferenceModule() {
+    return ResPsiImplUtil.shouldReferenceModule(this);
   }
 
 }

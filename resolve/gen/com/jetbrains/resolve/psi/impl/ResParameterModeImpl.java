@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResParameterModeImpl extends ResCompositeElementImpl implements ResParameterMode {
 
-  public ResParameterModeImpl(ASTNode node) {
+  public ResParameterModeImpl(@NotNull ASTNode node) {
     super(node);
   }
 

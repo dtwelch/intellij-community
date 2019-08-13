@@ -20,11 +20,12 @@
         DOT     = '.'
         LPAREN  = '('
         RPAREN  = ')'
-        PRIME   = '′'
+        TICK    = '`'
+        PRIME    = "'"
 
         COLON       = ':'
-        TRICOLON    = 'ː'
         COLON_COLON = '::'
+
         SEMICOLON   = ';'
         COMMA       = ','
         IND_BASE    = '(i.)'
@@ -40,53 +41,58 @@
 
         LBRACK = '['
         RBRACK = ']'
-
-        DBL_LBRACE = '{{'
-        DBL_RBRACE = '}}'
+        PIECEWISE = '|{'
 
         LBRACE  = '{'
         RBRACE  = '}'
         BAR     = '|'
 
         // Builtin
+        LAMBDA = 'λ'
         EXISTS = '∃'
         FORALL = '∀'
-        LAMBDA = 'λ'
-        TRI_EQUALS = '≜'
+        AND = '∧'
+        OR = '∨'
+        EQUALS = '='
+        NEQUALS = '≠'
         COLON_EQUALS = ':='
+        TRIANGLEQ = '≜'
         COLON_EQUALS_COLON = ':=:'
-        BAD_CHARACTER = '"\\"'
+        //BAD_CHARACTER = '"\\"'
 
         // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
         // this in grammarkit's issue section. But for now this is just the way it is.
         // Keywords (capitalized)
         CART_PROD     = 'Cart_Prod'
         CATEGORICAL   = 'Categorical'
-        //CONCEPT       = 'Concept'
+        CONCEPT       = 'Concept'
         COROLLARY     = 'Corollary'
         COERCER       = 'Coercer'
         CHAINABLE     = 'Chainable'
         //DEFINES       = 'Defines'
         DEFINITION    = 'Definition'
-        //ENHANCEMENT   = 'Enhancement'
-        //FACILITY      = 'Facility'
-        //IF_PROG       = 'If'
+        ENHANCEMENT   = 'Enhancement'
+        FACILITY      = 'Facility'
+        IF_MATH       = 'if'
+        IF_PROG       = 'If'
         IMPLICIT      = 'Implicit'
         INDUCTIVE     = 'Inductive'
         OPERATION     = 'Operation'
         PRECIS        = 'Precis'
-        //PROCEDURE     = 'Procedure'
+        PROCEDURE     = 'Procedure'
         REALIZATION   = 'Realization'
         RECOGNITION   = 'Recognition'
-        //RECORD        = 'Record'
-        //RECURSIVE     = 'Recursive'
+        RECORD        = 'Record'
+        RECURSIVE     = 'Recursive'
         THEOREM       = 'Theorem'
-        //TYPE_FAMILY   = 'Type'
+        TYPE_FAMILY   = 'Type'
         TYPE_PARAM    = 'type'
         VALUED        = 'Valued'
-        //VAR           = 'Var'
-        //NOTICE        = 'Notice'
-        //WHILE         = 'While'
+        VAR           = 'Var'
+        NOTICE        = 'Notice'
+        WHILE         = 'While'
+        LITERAL       = 'Literal'
+        IS            = 'is'
 
         //these two are so grammarkit's live preview feature will work right,
         //disregard them otherwise
@@ -99,12 +105,12 @@
     implements("Math.*DefnDecl")="com.jetbrains.resolve.psi.ResMathDefnDecl"
     implements(".*ModuleDecl")="com.jetbrains.resolve.psi.ResModuleDecl"
     implements("Math(Prefix|Infix|Outfix|Postfix)(DefnSig)")="com.jetbrains.resolve.psi.ResMathDefnSig"
-    //implements("(Procedure|Operation)Decl|OperationProcedureDecl")="com.jetbrains.resolve.psi.ResOperationLikeNode"
+    implements("(Procedure|Operation)Decl|OperationProcedureDecl")="com.jetbrains.resolve.psi.ResOperationLikeNode"
     implements(".*ReferenceExp")="com.jetbrains.resolve.psi.ResReferenceExpBase"
     implements("(Spec|Realiz)ModuleParameters")="com.jetbrains.resolve.psi.ResModuleParameters"
     implements(".*((Var|Param|Field)Def|(MathTheorem|TypeParam|Exemplar|Facility)Decl|ModuleIdentifierSpec)")="com.jetbrains.resolve.psi.ResNamedElement"
 
-    //implements("(TypeModel|TypeRepr)Decl")="com.jetbrains.resolve.psi.ResTypeLikeNodeDecl"
+    implements("(TypeModel|TypeRepr)Decl")="com.jetbrains.resolve.psi.ResTypeLikeNodeDecl"
     implements(".*Block")="com.jetbrains.resolve.psi.ResBlock"
 
     extends("Math.*(DefnDecl)")="com.jetbrains.resolve.psi.impl.ResAbstractMathDefnImpl"
@@ -113,23 +119,39 @@
     extends("MathVarDef")="com.jetbrains.resolve.psi.impl.ResMathNamedElementImpl"
     extends("Math.*(Exp)")=MathExp
 
-    //extends("(Operation|Procedure|OperationProcedure)Decl")="edu.clemson.resolve.jetbrains.psi.impl.ResAbstractOperationLikeNode"
+    extends("(Operation|Procedure|OperationProcedure)Decl")="com.jetbrains.resolve.psi.impl.ResAbstractOperationLikeNode"
     extends("((Var|Param|Field)Def|(MathTheorem|TypeParam|Exemplar|Facility)Decl)|ModuleIdentifierSpec")="com.jetbrains.resolve.psi.impl.ResNamedElementImpl"
-    //extends("(TypeModel|TypeRepr)Decl")="com.jetbrains.resolve.psi.impl.ResAbstractTypeDeclLikeNodeImpl"
+    extends("(TypeModel|TypeRepr)Decl")="com.jetbrains.resolve.psi.impl.ResAbstractTypeDeclLikeNodeImpl"
 
-    //pin(".*Statement")=1
-    //extends(".*Statement")=Statement
+    pin(".*Statement")=1
+    extends(".*Statement")=Statement
     generateTokenAccessors=true
     pin('.*List(?:_\d.*)?')=1
 }
 
 ModuleDecl ::=
         PrecisModuleDecl
+      | ConceptModuleDecl
+      | ConceptEnhancementModuleDecl
       | RealizationModuleDecl
+      | FacilityModuleDecl
 
 PrecisModuleDecl ::= 'Precis' identifier (extends ModuleIdentifierSpec)? ';'
 UsesList?
 PrecisBlock
+end identifier ';' {pin(".*")=2}
+
+ConceptModuleDecl ::= 'Concept' identifier SpecModuleParameters? ';'
+UsesList?
+RequiresClause?
+ConceptBlock
+end identifier ';' {pin(".*")=1}
+
+ConceptEnhancementModuleDecl ::=
+'Enhancement' identifier SpecModuleParameters? for ModuleIdentifierSpec ';'
+UsesList?
+RequiresClause?
+ConceptBlock
 end identifier ';' {pin(".*")=2}
 
 RealizationModuleDecl ::= 'Realization' identifier RealizModuleParameters? for ModuleIdentifierSpec (of ModuleIdentifierSpec)? ';'
@@ -138,16 +160,25 @@ RequiresClause?
 RealizBlock
 end identifier ';' {pin(".*")=2}
 
+FacilityModuleDecl ::= 'Facility' identifier ';'
+UsesList?
+RequiresClause?
+FacilityBlock
+end identifier ';' {pin(".*")=3}
+
 // uses, imports
 
-UsesList ::= uses UsesSpecs ';'  {pin(".*")=1}
-private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*")=1}
-
+UsesList ::= uses UsesSpecs ';'  {pin(".*")=1 }
+private UsesSpecs ::= ModuleIdentifierSpec (',' ModuleIdentifierSpec)* {pin(".*")=1 recoverWhile=UsesRec}
+private UsesRec ::= !(';'|end|',')
 //shouldGoDeeper (impl sets to false) here allows us to avoid adding completions for ResModuleIdentifierSpec's
 //there was an issue where qualifiers on math syms in say, global requires clauses, would resolve to a
 //ModuleIdentifierSpec during the delegate's "treeWalkUp" phase -- leaving us with a ModuleIdentifierSpec, not a file..
 //We don't want to resolve these until we're good and ready (i.e.: in {@link ResReference#processUsesImports})
-ModuleIdentifierSpec ::= ModuleIdentifier [FromClause] {pin=1 methods=[getFromLibraryIdentifier getName getIdentifier shouldGoDeeper]}
+ModuleIdentifierSpec ::= ModuleIdentifier [WithClause] [FromClause]
+        {pin=1 methods=[getIdentifier getFromLibraryIdentifier shouldGoDeeper]}
+
+WithClause ::= with ModuleIdentifier {pin=1}
 private FromClause ::= from ModuleLibraryIdentifier {pin=1}
 
 ModuleIdentifier ::= identifier {pin=1 methods=[getReferences getModuleIdentiferTextRange resolve]}
@@ -156,17 +187,11 @@ ModuleLibraryIdentifier ::= identifier ('.' identifier)* {pin(".*")=1 methods=[g
 // Module blocks & items
 
 PrecisBlock ::= PrecisItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+ConceptBlock ::= ConceptItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+FacilityBlock ::= FacilityItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
 RealizBlock ::= RealizItem* {methods=[processDeclarations] recoverWhile=ItemsRecover}
+
 private ItemsRecover ::= !(end)
-
-private RealizItem ::=
-   /*   TypeReprDecl
-    | OperationProcedureDecl
-    | FacilityDecl
-    | ProcedureDecl
-    |*/ MathStandardDefnDecl {pin=1 recoverWhile=ImplItemRecover}
-
-private ImplItemRecover ::= !(/*'Type'|'Operation'|'Facility'|'Recursive'|*/'Definition'|/*'Procedure'|*/end)
 
 private PrecisItem ::=
             MathStandardDefnDecl
@@ -175,23 +200,73 @@ private PrecisItem ::=
           | MathCategoricalDefnDecl
           | MathInductiveDefnDecl {pin=1 recoverWhile=PrecisItemRecover}
 
-private PrecisItemRecover ::= !('Definition'|'Implicit'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Chainable'|'Coercer'|'Valued'|end)
+private PrecisItemRecover ::= !('Definition'|'Implicit'|'Literal'|'Theorem'|'Corollary'|'Categorical'|'Inductive'|'Recognition'|'Coercer'|'Valued'|end)
+
+private ConceptItem ::=
+      TypeModelDecl
+    | OperationDecl
+    | MathStandardDefnDecl
+    | ConstraintsClause {pin=1 recoverWhile=ConceptItemRecover}
+
+private ConceptItemRecover ::= !('Type'|'Operation'|'Definition'|'Valued'|'Literal'|constraints|end)
+
+private RealizItem ::=
+      TypeReprDecl
+    | OperationProcedureDecl
+    | FacilityDecl
+    | ProcedureDecl
+    | MathStandardDefnDecl {pin=1 recoverWhile=RealizItemRecover}
+
+private RealizItemRecover ::= !('Type'|'Operation'|'Facility'|'Recursive'|'Definition'|'Literal'|'Procedure'|end)
+
+private FacilityItem ::=
+      FacilityDecl
+    | OperationProcedureDecl
+    | TypeReprDecl
+    | MathStandardDefnDecl {pin=1 recoverWhile=FacilityItemRecover}
+
+private FacilityItemRecover ::= !('Facility'|'Operation'|'Definition'|'Literal'|'Type'|end)
+
+// type refs & decls
+
+Type ::= RecordType | NamedType {methods=[getUnderlyingType] extends=MathExp}
+private NamedType ::= TypeReferenceExp QualifiedTypeReferenceExp?
+TypeReferenceExp ::= identifier { methods=[getReference getQualifier resolve] }
+left QualifiedTypeReferenceExp ::= '::' identifier {elementType=TypeReferenceExp}
+RecordType ::= 'Record' RecordVarDeclGroup* end {pin=1 extends=Type}
+
+TypeModelDecl ::= 'Type' family identifier TypeModelPortion ';'
+    ExemplarDecl ConstraintsClause? IntializationClause? {pin=3}
+ExemplarDecl ::= exemplar identifier ';' {pin=2 methods=[getResMathMetaTypeExpInner]}
+private TypeModelPortion ::= is modeled by MathExp {pin=4}
+
+TypeReprDecl ::= 'Type' identifier is (RecordType|Type) ';'
+ExemplarDecl
+ConventionsClause?
+CorrespondenceClause?
+TypeImplInit?
+{pin=2 methods=[getResTypeInner]}
+
+// type initialization rules
+
+TypeImplInit ::= initialization (RequiresClause)? (EnsuresClause)?
+OpBlock end ';'
 
 // parameter and parameter-list related rules
 
-/*
 SpecModuleParameters ::= '(' SpecModuleParamList ')' {pin=1}
 private SpecModuleParamList ::= SpecParamDecl  (';' SpecParamDecl)* {recoverWhile=ParamListRec}
-private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathStandardDefnDecl
-*/
+private SpecParamDecl ::= TypeParamDecl | ParamDecl | MathParameterDefnDecl
+
+MathParameterDefnDecl ::= 'Definition' MathDefnSig {pin=1 extends=MathStandardDefnDecl}
 
 RealizModuleParameters ::= '(' ImplModuleParamList ')' {pin=1}
 private ImplModuleParamList ::= ImplParamDecl  (';' ImplParamDecl)* {recoverWhile=ParamListRec}
-private ImplParamDecl ::= ParamDecl//|OperationDecl
+private ImplParamDecl ::= ParamDecl | OperationDecl
 
-//private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
-//private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}
-ParamDecl ::= ParameterMode ParamDefinitionListNoPin /*':' Type*/ {pin=1}
+private OperationLikeParameters ::= '(' OpParamList? ')' {pin=1}
+private OpParamList ::= ParamDecl (';' ParamDecl)* {pin=1 recoverWhile=ParamListRec}
+ParamDecl ::= ParameterMode ParamDefinitionListNoPin ':' Type {pin=1}
 private ParamDefinitionListNoPin ::= ParamDef &(!(';'|')')) (',' ParamDef)* {pin=1}
 ParamDef ::= identifier
 
@@ -200,24 +275,82 @@ ParameterMode ::= (alters|updates|clears|restores|preserves|replaces|evaluates|i
 
 // program variable decls
 
+RecordVarDeclGroup ::= FieldVarDeclGroup ';' {pin=1}
+FieldVarDeclGroup ::= FieldVarDefList ':' Type {pin=1}
+private FieldVarDefList ::= FieldDef &(!(';'))(',' FieldDef)*
+FieldDef ::= identifier
+
+VarDeclGroup ::= 'Var' VarSpec ';' {pin=1}
+VarSpec ::= VarDefList ':' Type {pin=1}//{methods=[processDeclarations]}
+private VarDefList ::= VarDef &(!(';'))(',' VarDef)*
+VarDef ::= identifier {methods=[getResTypeInner getReference]}
 
 // facility decls
 
+FacilityDecl ::= 'Facility' identifier is ModuleIdentifier ModuleSpecArgList? [FromClause]
+(externally)? realized by ModuleIdentifier ModuleRealizArgList? [FromClause]
+ExtensionList? ';' {pin=2 methods=[resolveSpecification resolveImplementation]}
+
+private ExtensionList ::= (ExtensionPairing)* {recoverWhile=ExtensionListRec}
+private ExtensionListRec ::= !(';')
+
+ExtensionPairing ::= enhanced by ModuleIdentifier ModuleSpecArgList? [FromClause] (externally)?
+realized by ModuleIdentifier ModuleRealizArgList? [FromClause]
+{pin=1 methods=[resolveSpecification resolveImplementation]}
+
+ModuleSpecArgList ::= '(' SpecArgumentList ')' {pin=1}
+ModuleRealizArgList ::= '(' ExpArgumentList ')' {pin=1}
+
+private SpecArgumentList ::= SpecArg (',' SpecArg)* {pin(".*")=1}
+private SpecArg ::= (Exp|MathExp)
+
+OperationDecl ::= 'Operation' identifier OperationLikeParameters (':' Type)? ';'
+RequiresClause? EnsuresClause? {pin=2}
+
+OperationProcedureDecl ::= 'Operation' identifier OperationLikeParameters (':' Type)? ';'
+RequiresClause? EnsuresClause?
+OpProcBody
+end CloseIdentifier ';' {pin=2}
+private OpProcBody ::= ('Recursive')? 'Procedure' OpBlock {pin=2 }
+
+ProcedureDecl ::= ('Recursive')? 'Procedure' identifier OperationLikeParameters (':' Type)? ';'
+OpBlock
+end CloseIdentifier ';' {pin=3}
+
+OpBlock ::= VarDeclGroup* Statements?
+CloseIdentifier ::= identifier
 
 // statements
 
+Statement ::= SimpleStatement | WhileStatement | IfStatement | NoticeStatement
+SimpleStatement ::= Exp (AssignStatement|SwapStatement)? ';' {pin(".*")=1}
+private Statements ::= Statement* {recoverWhile=StatementRecover}
+private StatementRecover ::= !(end|':='|':=:'|'If'|'While'|else|'Notice'|identifier)
+
+left AssignStatement ::= ':=' Exp {pin=1}
+left SwapStatement ::= ':=:' Exp {pin=1}
+
+NoticeStatement ::= 'Notice' MathExp ';'
+WhileStatement ::= 'While' Exp ChangingClause? MaintainingClause? DecreasingClause?
+do Statements end ';'
+
+IfStatement ::= 'If' Exp then Statements (ElseStatement)? end ';' {pin=1}
+ElseStatement ::= else Statements {pin=1}
 
 // program expressions
 
-Exp ::= InfixExp | ParamExp | NestedExp | PrimeExp
+Exp ::= /*ProgAndOrInfixExp |*/ ProgEqualsInfixExp | InfixExp | ParamExp | NestedExp | PrimeExp
 {methods=[getResType] implements="com.jetbrains.resolve.psi.ResTypeOwner"}
 fake BinaryExp ::= Exp+ { methods=[left="Exp[0]" right="Exp[1]"] extends=Exp}
+
+ProgEqualsInfixExp ::= Exp ProgEqualsNotEqualsName Exp {extends=BinaryExp}
+ProgEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
 
 NestedExp ::= '(' Exp ')'   {pin=1 extends=Exp}
 SelectorExp ::= Exp '.' Exp {extends=BinaryExp}
 InfixExp ::= Exp ProgSymbolName Exp {extends=BinaryExp}
 ParamExp ::= NameExp ArgumentList {extends=Exp}
-ProgSymbolName ::= (identifier|symbol)
+ProgSymbolName ::= (mathidentifier|identifier)
 
 NameExp ::= ReferenceExp QualifiedReferenceExp? {elementType=ReferenceExp}
 left QualifiedReferenceExp ::= '::' identifier {elementType=ReferenceExp}
@@ -228,7 +361,7 @@ LiteralExp ::= (int|string|true|false)  {extends=Exp}
 ArgumentList ::= '(' ExpArgumentList? ')' {pin=1}
 private ExpArgumentList ::= Exp (',' Exp)* {pin(".*")=1}
 
-// math constructs
+// mathematical constructs
 
 MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' {pin = 2}
 MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
@@ -236,24 +369,24 @@ MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
 MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathPrefixDefnSigs is MathExp ';' {pin=2}
 
-MathStandardDefnDecl ::= ('Chainable')? ('Valued')? ('Implicit')? ('Coercer')?
-'Definition'  MathDefnSig ('≜' MathAssertionExp)? ';' {pin=5}
+MathStandardDefnDecl ::= ('Literal')? ('Coercer')? ('Valued')? ('Implicit')?
+'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';' {pin=6}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'
 '(ii.)' MathAssertionExp ';' {pin=2}
 
-private MathDefnSig ::= MathPrefixDefnSig | MathPostfixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
-MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? (':'|'ː') MathExp {pin=1}
+private MathDefnSig ::= MathPrefixDefnSig | MathOutfixDefnSig | MathInfixDefnSig
+MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? ':' MathExp {pin=1}
 
-private MathPrefixNameList ::= MathSymbolName (',' MathSymbolName)* {recoverWhile=MathPrefixListRec}
-private MathPrefixListRec ::= !(':'|'ː'|';'|'(')
+private MathPrefixNameList ::= MSymName (',' MSymName)* {recoverWhile=MathPrefixListRec}
+private MSymName ::= (MathAndOrName|MathSymbolName)
+private MathPrefixListRec ::= !(':'|';'|'(')
 private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
 private CategoricalSigListRec ::= !(is)
 
-MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' (':'|'ː') MathExp {pin=4}
-MathOutfixDefnSig ::= MathBracketName '(' MathDefnParamList ')' MathBracketName (':'|'ː') MathExp {pin=1}
-MathPostfixDefnSig ::= '(' MathVarDecl ')' MathBracketName '(' MathVarDecl ')' MathBracketName (':'|'ː') MathExp
+MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' ':' MathExp {pin=4}
+MathOutfixDefnSig ::= MathBracketName '(' MathDefnParamList ')' MathBracketName ':' MathExp {pin=1}
 
 private MathDefinitionParams ::= '(' MathDefnParamList ')' { pin=1}
 private ParamListRec ::= !(')'|';')
@@ -261,62 +394,85 @@ private MathDefnParamList ::= MathVarDeclGroup (',' MathVarDeclGroup)* {pin=1 re
 
 // mathematical variables
 
-MathVarDeclGroup ::= MathVarDeclList (':'|'ː') MathExp {pin=1}
+MathVarDeclGroup ::= MathVarDeclList ':' MathExp {pin=2}
 
-MathVarDecl ::= MathVarDef (':'|'ː') MathExp {pin=2 extends=MathVarDeclGroup}
+MathVarDecl ::= MathVarDef ':' MathExp {pin=2 extends=MathVarDeclGroup}
 private MathVarDeclList ::= MathVarDef &(!(')')) (',' MathVarDef)* {pin=1}
 MathVarDef ::= MathSymbolName
 
 // mathematical clauses
 
-//IntializationClause ::= initialization (EnsuresClause) ;
+IntializationClause ::= initialization (EnsuresClause) ;
 RequiresClause ::= requires MathAssertionExp (EntailsClause)? ';' {pin=1}
-/*EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
+EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
 ConstraintsClause ::= constraints MathAssertionExp ';' {pin=1}
 ConventionsClause ::= conventions MathAssertionExp (EntailsClause)? ';' {pin=1}
 CorrespondenceClause ::= correspondence MathAssertionExp ';' {pin=1}
 ChangingClause ::= changing ExpArgumentList ';' {pin=1}
 MaintainingClause ::= maintaining MathAssertionExp ';' {pin=1}
-DecreasingClause ::= decreasing MathAssertionExp ';' {pin=1}*/
+DecreasingClause ::= decreasing MathAssertionExp ';' {pin=1}
 EntailsClause ::= which_entails MathExp {pin=1}
 
 // mathematical expressions
 
 MathAssertionExp ::= MathQuantifiedExp | MathExp
-MathQuantifiedExp ::= ('∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
+MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
-          MathInfixApplyExp
+          MathAndOrApplyExp
+        | MathEqualsApplyExp
+        | MathInfixApplyExp
         | MathPrefixApplyExp
-        | MathMixfixApplyExp
         | MathNestedExp
         | MathPrimeExp {methods=[getResMathMetaTypeExp]}
 
 MathNestedExp ::= '(' MathAssertionExp ')' {pin=1}
 MathSelectorExp ::= MathExp '.' MathExp
 MathPrefixApplyExp ::= MathExp MathFunctionAppList
-MathMixfixApplyExp ::= MathExp MathBracketName MathNonStdAppList MathBracketName {pin=4}
 MathOutfixApplyExp ::=  MathOutfixAppList
+
+MathEqualsApplyExp ::= MathExp MathEqualsNotEqualsName MathExp {pin=2}
+MathAndOrApplyExp ::= MathExp MathAndOrName MathExp {pin=2}
+
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
-MathClssftnAssrtExp ::= MathExp (':'|'ː') MathExp
+
+//MathBinderAppExp ::= mathbinderidentifier MathVarDeclGroup ',' (MathFunctionAppList|MathExp) {pin=1} //recoverWhile=Rec
+//&(!(';'|')'))
+//SimpBinderName ::=  mathidentifier
+
+MathTypeAssertionExp ::= MathExp ':' MathExp
+
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 
 MathFunctionAppList ::= '(' MathArgList ')'
 private MathOutfixAppList ::= MathBracketName MathNonStdAppList MathBracketName {pin=3}
 private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
+
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-private MathPrimeExp ::= MathIncomingExp | MathSymbolExp | MathSelectorExp | MathLambdaExp
+
+//TODO: LAMBDAsss.
+private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
-        | MathClssftnAssrtExp
+        | MathEqualsNotEqualsOpExp
+        | MathAndOrOpExp
+        | MathTypeAssertionExp
+        | MathLambdaExp
         | MathOutfixApplyExp
         | MathCartProdExp
-        | MathBigUnionExp
      //   | MathSetRestrictionExp
 
+private LamPart ::= LAMBDA MathVarDeclGroup ',' {pin=3}
+MathLambdaExp ::= LamPart MathExp {pin=1 extends=MathExp}
+
+MathEqualsNotEqualsOpExp ::= MathEqualsNotEqualsName {extends=MathExp}
+MathAndOrOpExp ::= MathAndOrName {extends=MathExp}
+MathEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
+MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
+
 private MathOpSymbolName ::= MathSymbolExp
-MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
-MathSymbolName  ::= (identifier|int|symbol|mathsymbol|true|false)
+MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}'|ELANGLE|ERANGLE) {elementType=MathSymbolName}
+MathSymbolName  ::= (identifier|symbol|mathidentifier|int|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}
@@ -324,9 +480,26 @@ MathReferenceExp ::= MathSymbolName {methods=[getReference getQualifier getIdent
 
 MathCartProdExp ::= 'Cart_Prod' ResMathCartVarGroup+  end {pin=1}
 private ResMathCartVarGroup ::= MathVarDeclGroup ';' {pin=1}
-MathLambdaExp ::= 'λ' MathVarDecl ','  MathExp {pin=1}
-MathAlternativeExp ::= '{{' MathAlternativesList '}}' {pin=1}
+
+/*
+mathAlternativesExp
+    :   mathAltItemExp+
+        mathAltItemConclusionExp
+    ;
+
+mathAltItemExp
+    :   PIECEWISECURLY result=mathExp
+        ('if' condition=mathExp)
+    ;
+
+mathAltItemConclusionExp
+    :     PIECEWISECURLY result=mathExp 'otherwise'
+    ;
+*/
+MathAlternativeExp ::= MathAlternativesList MathAlternativeItemConclusionExp
 MathAlternativesList ::= MathAlternativeItemExp+
-MathAlternativeItemExp ::= MathExp (if MathExp ';' | otherwise ';')
+MathAlternativeItemExp ::= PIECEWISE MathExp IF_MATH MathExp  {pin=3}
+private MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
+
 //MathSetRestrictionExp ::= '{' MathVarDecl '|' MathExp '}' {pin=1}
-MathBigUnionExp ::= bigoperator MathVarDecl ',' MathExp
+

@@ -12,7 +12,6 @@
     <orderEntry type="module" module-name="lang-api" />
     <orderEntry type="module" module-name="lang-impl" />
     <orderEntry type="module" module-name="resolve-community" />
-    <orderEntry type="module" module-name="resolve-open-api" />
     <orderEntry type="module" module-name="vcs-api-core" />
     <orderEntry type="library" name="Gradle" level="project" />
     <orderEntry type="library" name="Guava" level="project" />

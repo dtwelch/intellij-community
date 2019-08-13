@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathRecognitionDeclImpl extends ResCompositeElementImpl implements ResMathRecognitionDecl {
 
-  public ResMathRecognitionDeclImpl(ASTNode node) {
+  public ResMathRecognitionDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

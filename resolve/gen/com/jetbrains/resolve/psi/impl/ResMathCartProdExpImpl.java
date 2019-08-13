@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathCartProdExpImpl extends ResMathExpImpl implements ResMathCartProdExp {
 
-  public ResMathCartProdExpImpl(ASTNode node) {
+  public ResMathCartProdExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

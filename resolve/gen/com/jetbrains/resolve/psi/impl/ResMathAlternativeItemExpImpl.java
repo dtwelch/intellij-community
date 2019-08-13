@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathAlternativeItemExpImpl extends ResMathExpImpl implements ResMathAlternativeItemExp {
 
-  public ResMathAlternativeItemExpImpl(ASTNode node) {
+  public ResMathAlternativeItemExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -33,20 +33,14 @@ public class ResMathAlternativeItemExpImpl extends ResMathExpImpl implements Res
 
   @Override
   @NotNull
-  public PsiElement getSemicolon() {
-    return findNotNullChildByType(SEMICOLON);
+  public PsiElement getIfMath() {
+    return findNotNullChildByType(IF_MATH);
   }
 
   @Override
-  @Nullable
-  public PsiElement getIf() {
-    return findChildByType(IF);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getOtherwise() {
-    return findChildByType(OTHERWISE);
+  @NotNull
+  public PsiElement getPiecewise() {
+    return findNotNullChildByType(PIECEWISE);
   }
 
 }

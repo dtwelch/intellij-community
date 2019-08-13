@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ResRealizModuleParameters extends ResModuleParameters {
 
   @NotNull
+  List<ResOperationDecl> getOperationDeclList();
+
+  @NotNull
   List<ResParamDecl> getParamDeclList();
 
   @NotNull

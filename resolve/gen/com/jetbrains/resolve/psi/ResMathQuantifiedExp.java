@@ -17,6 +17,12 @@ public interface ResMathQuantifiedExp extends ResMathExp {
   PsiElement getComma();
 
   @Nullable
+  PsiElement getEexists();
+
+  @Nullable
+  PsiElement getEforall();
+
+  @Nullable
   PsiElement getExists();
 
   @Nullable

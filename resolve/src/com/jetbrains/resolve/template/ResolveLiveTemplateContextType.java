@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.impl.source.tree.TreeUtil;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiUtilCore;
 import com.jetbrains.resolve.ResTypes;
 import com.jetbrains.resolve.ResolveLanguage;
@@ -70,6 +72,17 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
   // Modules
 
+  public static class ResolvePrecisModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolvePrecisModuleContextType() {
+      super("RESOLVE_PRECIS_MODULE", "RESOLVE Precis module", ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return element.getParent().getParent() instanceof ResPrecisModuleDecl;
+    }
+  }
+
   public static class ResolveFacilityModuleContextType extends ResolveLiveTemplateContextType {
     protected ResolveFacilityModuleContextType() {
       super("RESOLVE_FACILITY_MODULE", "RESOLVE Facility module", ResolveEverywhereContextType.class);
@@ -77,48 +90,81 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResFacilityModuleDecl;
+      return element.getParent().getParent() instanceof ResFacilityModuleDecl;
     }
   }
 
   public static class ResolveConceptModuleContextType extends ResolveLiveTemplateContextType {
     protected ResolveConceptModuleContextType() {
-      super("RESOLVE_CONCEPT_MODULE", "RESOLVE Facility module", ResolveEverywhereContextType.class);
+      super("RESOLVE_CONCEPT_MODULE", "RESOLVE Concept module", ResolveEverywhereContextType.class);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptModuleDecl;
     }
   }
 
-  public static class ResolveConceptExtModuleContextType extends ResolveLiveTemplateContextType {
-    protected ResolveConceptExtModuleContextType() {
-      super("RESOLVE_CONCEPT_EXT_MODULE", "RESOLVE extension module", ResolveEverywhereContextType.class);
+  public static class ResolveEnhancementModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolveEnhancementModuleContextType() {
+      super("RESOLVE_ENHANCEMENT_MODULE", "RESOLVE enhancement module", ResolveEverywhereContextType.class);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return element.getParent().getParent() instanceof ResConceptEnhancementModuleDecl;
     }
   }
 
-  public static class ResolveImplModuleContextType extends ResolveLiveTemplateContextType {
-    protected ResolveImplModuleContextType() {
-      super("RESOLVE_IMPL_MODULE", "RESOLVE concept (+ ext) implementation module", ResolveEverywhereContextType.class);
+  public static class ResolveRealizationModuleContextType extends ResolveLiveTemplateContextType {
+    protected ResolveRealizationModuleContextType() {
+      super("RESOLVE_REALIZ_MODULE", "RESOLVE implementation module", ResolveEverywhereContextType.class);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-      return false;
-      //TODO
-      //return element.getParent().getParent() instanceof ResConceptExtensionModuleDecl;
+      return TreeUtil.findParent(element.getNode(), ResTypes.REALIZ_MODULE_PARAMETERS) == null &&
+             element.getParent().getParent() instanceof ResRealizationModuleDecl;
+    }
+  }
+
+  public static class ResolveRealizationParameterList extends ResolveLiveTemplateContextType {
+    protected ResolveRealizationParameterList() {
+      super("RESOLVE_REALIZ_PARAM_LIST", "RESOLVE realization parameters", ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(), ResTypes.REALIZ_MODULE_PARAMETERS) != null &&
+             element.getParent().getParent() instanceof ResRealizationModuleDecl;
+    }
+  }
+
+  public static class ResolveCodeBlockContextType extends ResolveLiveTemplateContextType {
+    protected ResolveCodeBlockContextType() {
+      super("RESOLVE_CODE", "RESOLVE executable code block",
+            ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(),
+                                 TokenSet.create(ResTypes.PROCEDURE_DECL,
+                                                 ResTypes.OPERATION_PROCEDURE_DECL),
+                                 TokenSet.create(ResTypes.REALIZ_BLOCK)) != null;
+    }
+  }
+
+  public static class ResolveReprContextType extends ResolveLiveTemplateContextType {
+    protected ResolveReprContextType() {
+      super("RESOLVE_REPR", "RESOLVE representation type",
+            ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(),
+                                 TokenSet.create(ResTypes.TYPE_REPR_DECL)) != null;
     }
   }
 }

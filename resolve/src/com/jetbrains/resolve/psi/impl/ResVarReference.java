@@ -3,16 +3,13 @@ package com.jetbrains.resolve.psi.impl;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.ResolveState;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.jetbrains.resolve.psi.ResCompositeElement;
-import com.jetbrains.resolve.psi.ResMathVarDef;
+import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ResVarReference extends
-                             //ResCachedReference<ResVarDef> { //TODOTODO
-                               ResCachedReference<ResMathVarDef> {
+public class ResVarReference extends ResCachedReference<ResVarDef> {
 
-  protected ResVarReference(@NotNull ResMathVarDef element) {
+  protected ResVarReference(@NotNull ResVarDef element) {
     super(element);
   }
 
@@ -31,14 +28,14 @@ public class ResVarReference extends
 
   @Override
   public boolean processResolveVariants(@NotNull final ResScopeProcessor processor) {
-    /*ResVarProcessor p = processor instanceof ResVarProcessor
+    ResVarProcessor p = processor instanceof ResVarProcessor
                         ? ((ResVarProcessor) processor)
                         : new ResVarProcessor(myElement, processor.isCompletion()) {
                           @Override
                           public boolean execute(@NotNull PsiElement e, @NotNull ResolveState state) {
                             return super.execute(e, state) && processor.execute(e, state);
                           }
-                        };*/
+                        };
     return false;
   }
 
@@ -72,18 +69,16 @@ public class ResVarReference extends
         if (elseStatement != null) return elseStatement.getBlock();
        */
       //TODO: NOT RIGHT YET.. SHOULD JUST BE A GENERAL FXN BLOCK...
-      //return PsiTreeUtil.getParentOfType(o, ResOpBlock.class);
-      return null;
+      return PsiTreeUtil.getParentOfType(o, ResOpBlock.class);
     }
 
     @Override
     protected boolean crossOff(@NotNull PsiElement e) {
-      /*return !(e instanceof ResVarDef) &&
+      return !(e instanceof ResVarDef) &&
              !(e instanceof ResParamDef) &&
              !(e instanceof ResFieldDef) &&
              !(e instanceof ResTypeLikeNodeDecl) &&
-             !(e instanceof ResFacilityDecl);*/
-      return true;
+             !(e instanceof ResFacilityDecl);
     }
   }
 }

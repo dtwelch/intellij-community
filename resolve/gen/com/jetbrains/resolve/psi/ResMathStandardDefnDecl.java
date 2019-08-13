@@ -17,13 +17,7 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   ResMathOutfixDefnSig getMathOutfixDefnSig();
 
   @Nullable
-  ResMathPostfixDefnSig getMathPostfixDefnSig();
-
-  @Nullable
   ResMathPrefixDefnSig getMathPrefixDefnSig();
-
-  @Nullable
-  PsiElement getChainable();
 
   @Nullable
   PsiElement getCoercer();
@@ -35,10 +29,16 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   PsiElement getImplicit();
 
   @Nullable
+  PsiElement getIs();
+
+  @Nullable
+  PsiElement getLiteral();
+
+  @Nullable
   PsiElement getSemicolon();
 
   @Nullable
-  PsiElement getTriEquals();
+  PsiElement getTriangleq();
 
   @Nullable
   PsiElement getValued();

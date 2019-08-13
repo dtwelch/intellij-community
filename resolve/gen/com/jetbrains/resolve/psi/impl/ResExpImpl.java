@@ -9,10 +9,11 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
+import com.intellij.psi.ResolveState;
 
 public abstract class ResExpImpl extends ResCompositeElementImpl implements ResExp {
 
-  public ResExpImpl(ASTNode node) {
+  public ResExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -23,6 +24,11 @@ public abstract class ResExpImpl extends ResCompositeElementImpl implements ResE
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ResVisitor) accept((ResVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Nullable
+  public ResType getResType(@Nullable ResolveState context) {
+    return ResPsiImplUtil.getResType(this, context);
   }
 
 }

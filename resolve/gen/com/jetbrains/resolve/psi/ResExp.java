@@ -4,11 +4,11 @@ package com.jetbrains.resolve.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.ResolveState;
 
 public interface ResExp extends ResTypeOwner {
 
-  //WARNING: getResType(...) is skipped
-  //matching getResType(ResExp, ...)
-  //methods are not found in ResPsiImplUtil
+  @Nullable
+  ResType getResType(@Nullable ResolveState context);
 
 }

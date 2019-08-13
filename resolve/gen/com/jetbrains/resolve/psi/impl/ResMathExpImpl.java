@@ -13,7 +13,7 @@ import com.intellij.psi.ResolveState;
 
 public abstract class ResMathExpImpl extends ResCompositeElementImpl implements ResMathExp {
 
-  public ResMathExpImpl(ASTNode node) {
+  public ResMathExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -27,7 +27,7 @@ public abstract class ResMathExpImpl extends ResCompositeElementImpl implements 
   }
 
   @Nullable
-  public ResMathExp getResMathMetaTypeExp(ResolveState context) {
+  public ResMathExp getResMathMetaTypeExp(@Nullable ResolveState context) {
     return ResPsiImplUtil.getResMathMetaTypeExp(this, context);
   }
 

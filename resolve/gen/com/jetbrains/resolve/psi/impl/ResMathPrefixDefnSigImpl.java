@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathPrefixDefnSigImpl extends ResAbstractMathSigImpl implements ResMathPrefixDefnSig {
 
-  public ResMathPrefixDefnSigImpl(ASTNode node) {
+  public ResMathPrefixDefnSigImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -59,12 +59,6 @@ public class ResMathPrefixDefnSigImpl extends ResAbstractMathSigImpl implements 
   @Nullable
   public PsiElement getRparen() {
     return findChildByType(RPAREN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getTricolon() {
-    return findChildByType(TRICOLON);
   }
 
 }

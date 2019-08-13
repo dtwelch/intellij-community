@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResEntailsClauseImpl extends ResCompositeElementImpl implements ResEntailsClause {
 
-  public ResEntailsClauseImpl(ASTNode node) {
+  public ResEntailsClauseImpl(@NotNull ASTNode node) {
     super(node);
   }
 

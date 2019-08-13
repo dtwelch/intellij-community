@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathTheoremDeclImpl extends ResNamedElementImpl implements ResMathTheoremDecl {
 
-  public ResMathTheoremDeclImpl(ASTNode node) {
+  public ResMathTheoremDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

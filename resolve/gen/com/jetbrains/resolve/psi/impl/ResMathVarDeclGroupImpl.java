@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathVarDeclGroupImpl extends ResCompositeElementImpl implements ResMathVarDeclGroup {
 
-  public ResMathVarDeclGroupImpl(ASTNode node) {
+  public ResMathVarDeclGroupImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -38,15 +38,9 @@ public class ResMathVarDeclGroupImpl extends ResCompositeElementImpl implements 
   }
 
   @Override
-  @Nullable
+  @NotNull
   public PsiElement getColon() {
-    return findChildByType(COLON);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getTricolon() {
-    return findChildByType(TRICOLON);
+    return findNotNullChildByType(COLON);
   }
 
 }

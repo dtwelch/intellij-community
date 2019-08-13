@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResPrecisModuleDeclImpl extends ResAbstractModuleImpl implements ResPrecisModuleDecl {
 
-  public ResPrecisModuleDeclImpl(ASTNode node) {
+  public ResPrecisModuleDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

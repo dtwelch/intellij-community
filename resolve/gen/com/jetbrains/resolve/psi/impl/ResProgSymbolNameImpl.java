@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResProgSymbolNameImpl extends ResCompositeElementImpl implements ResProgSymbolName {
 
-  public ResProgSymbolNameImpl(ASTNode node) {
+  public ResProgSymbolNameImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -33,8 +33,8 @@ public class ResProgSymbolNameImpl extends ResCompositeElementImpl implements Re
 
   @Override
   @Nullable
-  public PsiElement getSymbol() {
-    return findChildByType(SYMBOL);
+  public PsiElement getMathidentifier() {
+    return findChildByType(MATHIDENTIFIER);
   }
 
 }

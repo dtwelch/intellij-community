@@ -9,10 +9,12 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
+import com.intellij.psi.ResolveState;
+import com.intellij.psi.scope.PsiScopeProcessor;
 
 public class ResRealizBlockImpl extends ResCompositeElementImpl implements ResRealizBlock {
 
-  public ResRealizBlockImpl(ASTNode node) {
+  public ResRealizBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -27,8 +29,36 @@ public class ResRealizBlockImpl extends ResCompositeElementImpl implements ResRe
 
   @Override
   @NotNull
+  public List<ResFacilityDecl> getFacilityDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResFacilityDecl.class);
+  }
+
+  @Override
+  @NotNull
   public List<ResMathStandardDefnDecl> getMathStandardDefnDeclList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathStandardDefnDecl.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ResOperationProcedureDecl> getOperationProcedureDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResOperationProcedureDecl.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ResProcedureDecl> getProcedureDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResProcedureDecl.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ResTypeReprDecl> getTypeReprDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResTypeReprDecl.class);
+  }
+
+  public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
+    return ResPsiImplUtil.processDeclarations(this, processor, state, lastParent, place);
   }
 
 }

@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathQuantifiedExpImpl extends ResMathExpImpl implements ResMathQuantifiedExp {
 
-  public ResMathQuantifiedExpImpl(ASTNode node) {
+  public ResMathQuantifiedExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -41,6 +41,18 @@ public class ResMathQuantifiedExpImpl extends ResMathExpImpl implements ResMathQ
   @Nullable
   public PsiElement getComma() {
     return findChildByType(COMMA);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getEexists() {
+    return findChildByType(EEXISTS);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getEforall() {
+    return findChildByType(EFORALL);
   }
 
   @Override

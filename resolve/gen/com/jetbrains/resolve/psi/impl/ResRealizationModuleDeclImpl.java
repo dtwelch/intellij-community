@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResRealizationModuleDeclImpl extends ResAbstractModuleImpl implements ResRealizationModuleDecl {
 
-  public ResRealizationModuleDeclImpl(ASTNode node) {
+  public ResRealizationModuleDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 

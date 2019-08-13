@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResRealizModuleParametersImpl extends ResCompositeElementImpl implements ResRealizModuleParameters {
 
-  public ResRealizModuleParametersImpl(ASTNode node) {
+  public ResRealizModuleParametersImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -23,6 +23,12 @@ public class ResRealizModuleParametersImpl extends ResCompositeElementImpl imple
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ResVisitor) accept((ResVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public List<ResOperationDecl> getOperationDeclList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResOperationDecl.class);
   }
 
   @Override

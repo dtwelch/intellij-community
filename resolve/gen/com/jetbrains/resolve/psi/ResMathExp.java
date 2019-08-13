@@ -9,6 +9,6 @@ import com.intellij.psi.ResolveState;
 public interface ResMathExp extends ResCompositeElement {
 
   @Nullable
-  ResMathExp getResMathMetaTypeExp(ResolveState context);
+  ResMathExp getResMathMetaTypeExp(@Nullable ResolveState context);
 
 }

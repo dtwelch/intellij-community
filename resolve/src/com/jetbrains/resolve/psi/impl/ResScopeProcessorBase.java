@@ -5,10 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.ResolveState;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.OrderedSet;
-import com.jetbrains.resolve.psi.ResMathCartProdExp;
-import com.jetbrains.resolve.psi.ResMathDefnDecl;
-import com.jetbrains.resolve.psi.ResNamedElement;
-import com.jetbrains.resolve.psi.ResUsesList;
+import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,10 +38,10 @@ public abstract class ResScopeProcessorBase extends ResScopeProcessor {
   public boolean execute(@NotNull PsiElement psiElement,
                          @NotNull ResolveState resolveState) {
     if (psiElement instanceof ResMathDefnDecl) return false;
-    //if (psiElement instanceof ResOperationLikeNode) return false;   //fornow (2-7-2018)
+    if (psiElement instanceof ResOperationLikeNode) return false;   //fornow (2-7-2018)
     if (psiElement instanceof ResUsesList) return false;
     if (psiElement instanceof ResMathCartProdExp) return false;   //fornow (2-7-2018)
-    //if (psiElement instanceof ResRecordType) return false;        //fornow (2-7-2018)
+    if (psiElement instanceof ResRecordType) return false;        //fornow (2-7-2018)
 
     if (!(psiElement instanceof ResNamedElement)) return true;
 

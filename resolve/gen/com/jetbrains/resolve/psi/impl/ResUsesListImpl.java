@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResUsesListImpl extends ResCompositeElementImpl implements ResUsesList {
 
-  public ResUsesListImpl(ASTNode node) {
+  public ResUsesListImpl(@NotNull ASTNode node) {
     super(node);
   }
 

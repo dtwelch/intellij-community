@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResSelectorExpImpl extends ResBinaryExpImpl implements ResSelectorExp {
 
-  public ResSelectorExpImpl(ASTNode node) {
+  public ResSelectorExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

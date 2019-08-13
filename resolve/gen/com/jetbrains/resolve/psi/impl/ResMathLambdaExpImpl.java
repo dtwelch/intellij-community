@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathLambdaExpImpl extends ResMathExpImpl implements ResMathLambdaExp {
 
-  public ResMathLambdaExpImpl(ASTNode node) {
+  public ResMathLambdaExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -32,15 +32,15 @@ public class ResMathLambdaExpImpl extends ResMathExpImpl implements ResMathLambd
   }
 
   @Override
-  @Nullable
-  public ResMathVarDecl getMathVarDecl() {
-    return findChildByClass(ResMathVarDecl.class);
+  @NotNull
+  public ResMathVarDeclGroup getMathVarDeclGroup() {
+    return findNotNullChildByClass(ResMathVarDeclGroup.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public PsiElement getComma() {
-    return findChildByType(COMMA);
+    return findNotNullChildByType(COMMA);
   }
 
   @Override

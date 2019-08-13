@@ -13,10 +13,7 @@ public interface ResMathVarDeclGroup extends ResCompositeElement {
   @NotNull
   List<ResMathVarDef> getMathVarDefList();
 
-  @Nullable
+  @NotNull
   PsiElement getColon();
-
-  @Nullable
-  PsiElement getTricolon();
 
 }

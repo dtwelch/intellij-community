@@ -1,6 +1,7 @@
 package com.jetbrains.resolve.completion;
 
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
@@ -8,8 +9,14 @@ import com.intellij.codeInsight.lookup.LookupElementRenderer;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
+import com.intellij.patterns.PatternCondition;
+import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.ProcessingContext;
+import com.jetbrains.resolve.ResTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +36,17 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
       protected void addCompletions(@NotNull final CompletionParameters parameters,
                                     ProcessingContext context,
                                     @NotNull CompletionResultSet result) {
-
         Editor editor = parameters.getEditor();
         Document doc = editor.getDocument();
-        if (parameters.getOffset() > 1 &&
-            doc.getCharsSequence().charAt(parameters.getOffset() - 1) == '\\') {
-          //so I think we want to pretty much add all elements in our symbol map
+        char cs = doc.getCharsSequence().charAt(parameters.getOffset() - 1);
+
+        if (parameters.getOffset() > 1 && cs == '\\') {
+          String prefix =result.getPrefixMatcher().getPrefix();
+          if (prefix.startsWith("\\")) {
+            prefix = prefix.length() > 1 ?  prefix.substring(1, prefix.length()) : "";
+          }
+          result = result.withPrefixMatcher(new CamelHumpMatcher(prefix, true));
+
           Map<String, String> x = SYMBOL_MAP;
           for (Map.Entry<String, String> keyword : SYMBOL_MAP.entrySet()) {
             result.addElement(createMathSymbolLookupElement(keyword.getKey(), keyword.getValue()));
@@ -47,7 +59,6 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
   @NotNull
   private LookupElement createMathSymbolLookupElement(@NotNull final String symbolCommand, String symbol) {
     final InsertHandler<LookupElement> handler = createMathSymbolInsertHandler(symbolCommand, symbol);
-
     return createKeywordLookupElement(symbolCommand, symbol, handler);
   }
 
@@ -88,8 +99,10 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
 
     return PrioritizedLookupElement.withPriority(builder, ResolveCompletionUtil.VAR_PRIORITY);
   }
+  
+  private static void populateMap() {
 
-  private void populateMap() {
+    if (!SYMBOL_MAP.isEmpty()) return;
     //Arrows
     SYMBOL_MAP.put("longleftarrow", "⟵");
     SYMBOL_MAP.put("Longleftarrow", "⟸");
@@ -125,8 +138,8 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("sum", "∑");
 
     //Operators
-    SYMBOL_MAP.put("wedge", "∧");
-    SYMBOL_MAP.put("vee", "∨");
+    SYMBOL_MAP.put("and", "∧");
+    SYMBOL_MAP.put("or", "∨");
     SYMBOL_MAP.put("neg", "¬");
     SYMBOL_MAP.put("cap", "∩");
     SYMBOL_MAP.put("cup", "∪");
@@ -135,6 +148,7 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("otimes", "⊗");
     SYMBOL_MAP.put("odot", "⊙");
     SYMBOL_MAP.put("ominus", "⊖");
+    SYMBOL_MAP.put("emptyset", "∅");
     SYMBOL_MAP.put("propto", "∝");
     SYMBOL_MAP.put("times", "×");
     SYMBOL_MAP.put("star", "⋆");
@@ -222,39 +236,11 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("Powerclass", "𝒫");
     SYMBOL_MAP.put("Powerset", "℘");
 
-    SYMBOL_MAP.put("AA", "𝒜");
-    SYMBOL_MAP.put("BB", "ℬ");
-    SYMBOL_MAP.put("CC", "𝒞");
-    SYMBOL_MAP.put("DD", "𝒟");
-    SYMBOL_MAP.put("EE", "ℰ");
-    SYMBOL_MAP.put("FF", "ℱ");
-    SYMBOL_MAP.put("GG", "𝒢");
-    SYMBOL_MAP.put("HH", "ℋ");
-    SYMBOL_MAP.put("II", "ℐ");
-    SYMBOL_MAP.put("JJ", "𝒥");
-    SYMBOL_MAP.put("KK", "𝒦");
-    SYMBOL_MAP.put("LL", "ℒ");
-    SYMBOL_MAP.put("MM", "ℳ");
-    SYMBOL_MAP.put("NN", "𝒩");
-    SYMBOL_MAP.put("OO", "𝒪");
-    SYMBOL_MAP.put("PP", "𝒫");
-    SYMBOL_MAP.put("QQ", "𝒬");
-    SYMBOL_MAP.put("RR", "ℛ");
-    SYMBOL_MAP.put("SS", "𝒮");
-    SYMBOL_MAP.put("TT", "𝒯");
-    SYMBOL_MAP.put("UU", "𝒰");
-    SYMBOL_MAP.put("VV", "𝒱");
-    SYMBOL_MAP.put("WW", "𝒲");
-    SYMBOL_MAP.put("XX", "𝒳");
-    SYMBOL_MAP.put("YY", "𝒴");
-    SYMBOL_MAP.put("ZZ", "𝒵");
-
     //Builtin
     SYMBOL_MAP.put("forall", "∀");
     SYMBOL_MAP.put("exists", "∃");
     SYMBOL_MAP.put("lambda", "λ");
     SYMBOL_MAP.put("triangleq", "≜");
-    //SYMBOL_MAP.put("tricolon", "ː");
   }
 
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {

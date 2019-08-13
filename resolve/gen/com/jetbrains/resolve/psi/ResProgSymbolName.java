@@ -11,6 +11,6 @@ public interface ResProgSymbolName extends ResCompositeElement {
   PsiElement getIdentifier();
 
   @Nullable
-  PsiElement getSymbol();
+  PsiElement getMathidentifier();
 
 }

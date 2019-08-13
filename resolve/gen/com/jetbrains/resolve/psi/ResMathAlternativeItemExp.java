@@ -11,12 +11,9 @@ public interface ResMathAlternativeItemExp extends ResMathExp {
   List<ResMathExp> getMathExpList();
 
   @NotNull
-  PsiElement getSemicolon();
+  PsiElement getIfMath();
 
-  @Nullable
-  PsiElement getIf();
-
-  @Nullable
-  PsiElement getOtherwise();
+  @NotNull
+  PsiElement getPiecewise();
 
 }

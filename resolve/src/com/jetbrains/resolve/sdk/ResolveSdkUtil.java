@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.ui.JBDefaultTreeCellRenderer;
 import com.intellij.util.Function;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
@@ -87,10 +88,16 @@ public class ResolveSdkUtil {
     return true;
   }
 
+  @NotNull
+  public static String getResolveCompilerJarNameWithExt() {
+    return "resolve.jar";
+  }
+
   @Nullable
-  public static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
+  protected static String getResolveCompilerJarPath(@Nullable String sdkHomePath) {
     if (sdkHomePath != null) {
-      File compiler = new File(sdkHomePath + File.separator + "compiler" + File.separator + "resolve.jar");
+      File compiler = new File(sdkHomePath + File.separator + "compiler" +
+                               File.separator + getResolveCompilerJarNameWithExt());
       if (compiler.exists()) {
         return compiler.getAbsolutePath();
       }
@@ -148,13 +155,15 @@ public class ResolveSdkUtil {
   public static String retrieveResolveVersion(@NotNull String sdkPath) {
     try {
       VirtualFile sdkRoot = VirtualFileManager.getInstance().findFileByUrl(VfsUtilCore.pathToUrl(sdkPath));
+
       if (sdkRoot != null) {
         String cachedVersion = sdkRoot.getUserData(RESOLVE_VER_DATA_KEY);
         if (cachedVersion != null) {
           return !cachedVersion.isEmpty() ? cachedVersion : null;
         }
+        VirtualFile versionFile =
+          sdkRoot.findFileByRelativePath("/compiler/resources/edu/clemson/resolve/util/version");
 
-        VirtualFile versionFile = sdkRoot.findFileByRelativePath("VERSION.txt");
         if (versionFile != null) {
           String text = VfsUtilCore.loadText(versionFile);
           String version = parseResolveVersion(text);
@@ -194,8 +203,15 @@ public class ResolveSdkUtil {
         public Result<Collection<VirtualFile>> compute() {
           return Result.create(getRESOLVEPathSourcesRootInner(project),
                                getSdkAndLibrariesCacheDependencies(project));
+          //JBDefaultTreeCellRenderer
         }
       });
+  }
+
+  @Nullable
+  public static VirtualFile getSrcDirRootForResolvePath(@NotNull final Project project) {
+    List<VirtualFile> x = new ArrayList<>(getResolvePathSourcesRoot(project));
+    return x.get(0);
   }
 
   @NotNull

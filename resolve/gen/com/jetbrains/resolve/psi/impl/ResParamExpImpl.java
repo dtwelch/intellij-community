@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResParamExpImpl extends ResExpImpl implements ResParamExp {
 
-  public ResParamExpImpl(ASTNode node) {
+  public ResParamExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

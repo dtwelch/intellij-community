@@ -14,7 +14,7 @@ import com.intellij.psi.PsiReference;
 
 public class ResModuleLibraryIdentifierImpl extends ResCompositeElementImpl implements ResModuleLibraryIdentifier {
 
-  public ResModuleLibraryIdentifierImpl(ASTNode node) {
+  public ResModuleLibraryIdentifierImpl(@NotNull ASTNode node) {
     super(node);
   }
 

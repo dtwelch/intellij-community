@@ -4,6 +4,8 @@ package com.jetbrains.resolve.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.ResolveState;
+import com.intellij.psi.scope.PsiScopeProcessor;
 
 public interface ResPrecisBlock extends ResBlock {
 
@@ -22,8 +24,6 @@ public interface ResPrecisBlock extends ResBlock {
   @NotNull
   List<ResMathTheoremDecl> getMathTheoremDeclList();
 
-  //WARNING: processDeclarations(...) is skipped
-  //matching processDeclarations(ResPrecisBlock, ...)
-  //methods are not found in ResPsiImplUtil
+  boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place);
 
 }

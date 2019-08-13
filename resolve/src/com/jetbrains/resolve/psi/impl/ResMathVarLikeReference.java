@@ -5,16 +5,15 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.OrderedSet;
-import com.jetbrains.resolve.psi.ResFile;
-import com.jetbrains.resolve.psi.ResMathReferenceExp;
-import com.jetbrains.resolve.psi.ResNamedElement;
+import com.jetbrains.resolve.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMathReferenceExp> {
 
@@ -77,7 +76,7 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
                                             @NotNull ResolveState state,
                                             boolean localResolve) {
     PsiElement parent = myElement.getParent();
-   /* if (parent instanceof ResMathSelectorExp) {
+    if (parent instanceof ResMathSelectorExp) {
       boolean result = processMathSelector((ResMathSelectorExp) parent, processor, state, myElement);
       if (processor.isCompletion()) return result;
       if (!result || ResPsiImplUtil.prevDot(myElement)) return false;
@@ -85,14 +84,34 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     PsiElement grandPa = parent.getParent();
     if (grandPa instanceof ResMathSelectorExp && !processMathSelector((ResMathSelectorExp) grandPa, processor, state, parent)) return false;
     if (ResPsiImplUtil.prevDot(parent)) return false;
-    */
+
     //if (!processConceptualAccessor(processor, state, true)) return false;
 
     if (!processBlock(processor, state, true)) return false;
     if (!ResReference.processModuleLevelEntities(file, processor, state, localResolve)) return false;
     if (!ResReference.processModuleHeaderAndExplicitUsesImports(file, processor, state)) return false;
-    //if (!processBuiltin(processor, state, myElement)) return false;
     return true;
+  }
+
+  @Nullable
+  private ResTypeModelDecl getCorrespondingModel() {
+    PsiElement rep = PsiTreeUtil.findFirstParent(myElement, e -> e instanceof ResTypeReprDecl);
+    PsiElement module = PsiTreeUtil.findFirstParent(myElement, e -> e instanceof ResRealizationModuleDecl);
+    if (rep == null || module == null) return null;
+
+    ResTypeReprDecl repr = (ResTypeReprDecl) rep;
+    ResRealizationModuleDecl implModule = (ResRealizationModuleDecl) module;
+    List<ResTypeModelDecl> models = new ArrayList<>();
+    for (ResModuleIdentifierSpec moduleRef : implModule.getUsesModuleIdentifierSpecs()) {
+      PsiElement resolvedModule = moduleRef.getModuleIdentifier().resolve();
+      if (resolvedModule == null) continue;
+      ResConceptBlock block = PsiTreeUtil.findChildOfType(resolvedModule, ResConceptBlock.class);
+      if (block == null) continue;
+      for (ResTypeModelDecl model : block.getTypeModelDeclList()) {
+        if (model.getName() != null && model.getName().equals(repr.getName())) return model;
+      }
+    }
+    return null;
   }
 
   //TODO: Keep eye on ResScopeProcessorBase!! #execute method added ResTypeReprDecl...
@@ -107,6 +126,60 @@ public class ResMathVarLikeReference extends PsiPolyVariantReferenceBase<ResMath
     return processNamedElements(processor, state, delegate.getVariants(), localResolve);
   }
 
+  private boolean processMathSelector(@NotNull ResMathSelectorExp parent,
+                                      @NotNull ResScopeProcessor processor,
+                                      @NotNull ResolveState state,
+                                      @Nullable PsiElement another) {
+    List<ResMathExp> list = parent.getMathExpList();
+    if (list.size() > 1) {
+      //Handling for conc, not sure if its totally right yet. But, better than nothing.
+      if (list.get(0).getText().equals("conc")) {
+        ResTypeModelDecl model = getCorrespondingModel();
+        if (model == null || model.getExemplarDecl() == null) return true;
+        if (!processor.execute(model.getExemplarDecl(), state)) return false;
+      }
+      else {
+        ResolveState context = createContext();
+        ResMathExp ele0 = list.get(0);
+        ResMathExp type = ele0.getResMathMetaTypeExp(context);
+        if (type != null && !processCartProdOrRecordFields(type, processor, state)) return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean processCartProdOrRecordFields(@NotNull ResMathExp type,
+                                                @NotNull ResScopeProcessor processor,
+                                                @NotNull ResolveState state) {
+    if (type instanceof ResMathReferenceExp) {
+      PsiElement resolvedType = ((ResMathReferenceExp) type).getReference().resolve();
+      if (resolvedType instanceof ResTypeModelDecl) {
+        ResTypeModelDecl asTypeModel = (ResTypeModelDecl) resolvedType;
+        if (asTypeModel.getMathExp() != null)
+          type = asTypeModel.getMathExp();
+      }
+    }
+    if (type instanceof ResMathCartProdExp) {
+      ResScopeProcessorBase delegate = createDelegate(processor);
+      type.processDeclarations(delegate, ResolveState.initial(), null, myElement);
+      //List<ResTypeReferenceExp> structRefs = ContainerUtil.newArrayList();
+      for (ResMathVarDeclGroup d : ((ResMathCartProdExp) type).getMathVarDeclGroupList()) {
+        if (!processNamedElements(processor, state, d.getMathVarDefList(), true))
+          return false;
+      }
+    }
+    if (type instanceof ResRecordType) {
+      ResScopeProcessorBase delegate = createDelegate(processor);
+      type.processDeclarations(delegate, ResolveState.initial(), null, myElement);
+      List<ResTypeReferenceExp> structRefs = ContainerUtil.newArrayList();
+      for (ResRecordVarDeclGroup d : ((ResRecordType) type).getRecordVarDeclGroupList()) {
+        if (!processNamedElements(processor, state, d.getFieldVarDeclGroup().getFieldDefList(), true))
+          return false;
+      }
+      //if (!processCollectedRefs(type, structRefs, processor, state)) return false;
+    }
+    return true;
+  }
 
   @NotNull
   private ResolveState createContext() {

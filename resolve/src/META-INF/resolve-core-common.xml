@@ -10,7 +10,7 @@
     <sdkType implementation="com.jetbrains.resolve.sdk.ResolveSdkType"/>
     <applicationService serviceImplementation="com.jetbrains.resolve.library.ResolveApplicationLibrariesService"/>
     <applicationService serviceImplementation="com.jetbrains.resolve.sdk.ResolveEnvironmentPathModificationTracker"/>
-    <applicationService serviceImplementation="com.jetbrains.resolve.configuration.ResolveCompilerSettings"/>
+    <applicationService serviceImplementation="com.jetbrains.resolve.ResolveCompilerSettings"/>
     <!--<projectConfigurable id="resolve" provider="com.jetbrains.resolve.configuration.ResolveSdkSetttingsConfigurableProvider"
                          dynamic="true" bundle="com.jetbrains.resolve.ResolveBundle"/>-->
 
@@ -19,6 +19,7 @@
     <fileIconPatcher implementation="com.jetbrains.resolve.ResolveFileIconPatcher"/>
     <fileTypeFactory implementation="com.jetbrains.resolve.ResolveFileTypeFactory"/>
 
+    <lang.braceMatcher language="Resolve" implementationClass="com.jetbrains.resolve.editor.ResolveBraceMatcher"/>
     <lang.syntaxHighlighterFactory language="Resolve" implementationClass="com.jetbrains.resolve.highlighting.ResolveSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Resolve" implementationClass="com.jetbrains.resolve.ResolveParserDefinition"/>
     <internalFileTemplate name="RESOLVE File"/>
@@ -32,27 +33,55 @@
     <defaultLiveTemplatesProvider implementation="com.jetbrains.resolve.template.ResolveLiveTemplatesProvider"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveEverywhereContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFileContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolvePrecisModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveConceptModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveFacilityModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveEnhancementModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationModuleContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationParameterList"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveCodeBlockContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveReprContextType"/>
 
-    <!--  necessary because we have live templates for var decls, ops, facility decls, etc that can only go in certain contexts.. these are those contexts:
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEFacilityModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEConceptExtModuleContextType"/>
-    <liveTemplateContext implementation="edu.clemson.resolve.jetbrains.template.RESOLVELiveTemplateContextType$RESOLVEImplModuleContextType"/>
-    -->
+    <!-- run single file (prog) -->
+    <configurationType implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationType"/>
+    <runConfigurationProducer implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationProducer"/>
+    <programRunner id="resolveRunner" implementation="com.jetbrains.resolve.runconfig.ResolveRunner"/>
+    <runLineMarkerContributor language="Resolve" implementationClass="com.jetbrains.resolve.runconfig.ResolveRunLineMarkerProvider"/>
+
   </extensions>
 
   <actions>
     <action id="NewRESOLVEFile" class="com.jetbrains.resolve.action.CreateResolveFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewXml"/>
     </action>
-    <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
-            text="RESOLVE Validate">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalSystem.Actions"/>
-      <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>-->
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+
+    <group id="ResolveUtils" text="RESOLVE Utils" description="General RESOLVE Utilities" icon="ResolveIcons.RESOLVE" popup="true">
+      <action id="resolve.Validate" class="com.jetbrains.resolve.action.ResolveValidateAction"
+              text="Validate Current File">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      </action>
+      <action id="resolve.GenVCs" class="com.jetbrains.resolve.action.VerificationConditionDerivationAction"
+              text="Derive VCs">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift V"/>
+        <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ResolveUtils"/>
+        <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="ResolveUtils"/>-->
+      </action>
+      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.fmt.ResolveFileFormatAction"
+              text="Format Math in File by Settings">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
+      </action>
+      <action id="resolve.FormatDir" class="com.jetbrains.resolve.action.fmt.ResolveDirFormatAction"
+              text="Format Math in Directory by Settings">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
+      </action>
+      <action id="resolve.FormatLaTeXFile" class="com.jetbrains.resolve.action.fmt.ResolveLaTeXFormatAction"
+              text="Format Math in File for LaTeX">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift L"/>
+      </action>
+      <add-to-group group-id="CodeMenu" anchor="last"/>
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </action>
+      <add-to-group group-id="EditorLangPopupMenu" anchor="last"/>
+    </group>
   </actions>
 
   <module-components>

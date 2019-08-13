@@ -17,9 +17,6 @@ public interface ResMathInductiveDefnDecl extends ResMathDefnDecl {
   ResMathOutfixDefnSig getMathOutfixDefnSig();
 
   @Nullable
-  ResMathPostfixDefnSig getMathPostfixDefnSig();
-
-  @Nullable
   ResMathPrefixDefnSig getMathPrefixDefnSig();
 
   @NotNull

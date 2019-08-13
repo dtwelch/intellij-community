@@ -4,14 +4,26 @@ package com.jetbrains.resolve.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.ResolveState;
+import com.intellij.psi.scope.PsiScopeProcessor;
 
 public interface ResRealizBlock extends ResBlock {
 
   @NotNull
+  List<ResFacilityDecl> getFacilityDeclList();
+
+  @NotNull
   List<ResMathStandardDefnDecl> getMathStandardDefnDeclList();
 
-  //WARNING: processDeclarations(...) is skipped
-  //matching processDeclarations(ResRealizBlock, ...)
-  //methods are not found in ResPsiImplUtil
+  @NotNull
+  List<ResOperationProcedureDecl> getOperationProcedureDeclList();
+
+  @NotNull
+  List<ResProcedureDecl> getProcedureDeclList();
+
+  @NotNull
+  List<ResTypeReprDecl> getTypeReprDeclList();
+
+  boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place);
 
 }

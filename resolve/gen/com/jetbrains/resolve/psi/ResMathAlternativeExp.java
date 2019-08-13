@@ -7,13 +7,16 @@ import com.intellij.psi.PsiElement;
 
 public interface ResMathAlternativeExp extends ResMathExp {
 
-  @Nullable
+  @NotNull
   ResMathAlternativesList getMathAlternativesList();
 
   @NotNull
-  PsiElement getDblLbrace();
+  ResMathExp getMathExp();
 
-  @Nullable
-  PsiElement getDblRbrace();
+  @NotNull
+  PsiElement getPiecewise();
+
+  @NotNull
+  PsiElement getOtherwise();
 
 }

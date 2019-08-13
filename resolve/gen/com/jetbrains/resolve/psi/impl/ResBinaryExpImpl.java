@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResBinaryExpImpl extends ResExpImpl implements ResBinaryExp {
 
-  public ResBinaryExpImpl(ASTNode node) {
+  public ResBinaryExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 

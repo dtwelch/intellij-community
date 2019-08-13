@@ -14,16 +14,16 @@ public interface ResModuleIdentifierSpec extends ResNamedElement {
   ResModuleLibraryIdentifier getModuleLibraryIdentifier();
 
   @Nullable
+  ResWithClause getWithClause();
+
+  @Nullable
   PsiElement getFrom();
 
   @Nullable
-  ResModuleLibraryIdentifier getFromLibraryIdentifier();
-
-  @NotNull
-  String getName();
-
-  @NotNull
   PsiElement getIdentifier();
+
+  @Nullable
+  ResModuleLibraryIdentifier getFromLibraryIdentifier();
 
   boolean shouldGoDeeper();
 

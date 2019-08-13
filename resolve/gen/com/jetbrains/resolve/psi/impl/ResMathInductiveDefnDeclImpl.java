@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResMathInductiveDefnDeclImpl extends ResAbstractMathDefnImpl implements ResMathInductiveDefnDecl {
 
-  public ResMathInductiveDefnDeclImpl(ASTNode node) {
+  public ResMathInductiveDefnDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -41,12 +41,6 @@ public class ResMathInductiveDefnDeclImpl extends ResAbstractMathDefnImpl implem
   @Nullable
   public ResMathOutfixDefnSig getMathOutfixDefnSig() {
     return findChildByClass(ResMathOutfixDefnSig.class);
-  }
-
-  @Override
-  @Nullable
-  public ResMathPostfixDefnSig getMathPostfixDefnSig() {
-    return findChildByClass(ResMathPostfixDefnSig.class);
   }
 
   @Override

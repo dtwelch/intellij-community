@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResParamDeclImpl extends ResCompositeElementImpl implements ResParamDecl {
 
-  public ResParamDeclImpl(ASTNode node) {
+  public ResParamDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -35,6 +35,18 @@ public class ResParamDeclImpl extends ResCompositeElementImpl implements ResPara
   @NotNull
   public ResParameterMode getParameterMode() {
     return findNotNullChildByClass(ResParameterMode.class);
+  }
+
+  @Override
+  @Nullable
+  public ResType getType() {
+    return findChildByClass(ResType.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getColon() {
+    return findChildByType(COLON);
   }
 
 }

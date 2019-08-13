@@ -12,7 +12,7 @@ import com.jetbrains.resolve.psi.*;
 
 public class ResModuleIdentifierSpecImpl extends ResNamedElementImpl implements ResModuleIdentifierSpec {
 
-  public ResModuleIdentifierSpecImpl(ASTNode node) {
+  public ResModuleIdentifierSpecImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -39,23 +39,24 @@ public class ResModuleIdentifierSpecImpl extends ResNamedElementImpl implements 
 
   @Override
   @Nullable
+  public ResWithClause getWithClause() {
+    return findChildByClass(ResWithClause.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getFrom() {
     return findChildByType(FROM);
   }
 
   @Nullable
-  public ResModuleLibraryIdentifier getFromLibraryIdentifier() {
-    return ResPsiImplUtil.getFromLibraryIdentifier(this);
-  }
-
-  @NotNull
-  public String getName() {
-    return ResPsiImplUtil.getName(this);
-  }
-
-  @NotNull
   public PsiElement getIdentifier() {
     return ResPsiImplUtil.getIdentifier(this);
+  }
+
+  @Nullable
+  public ResModuleLibraryIdentifier getFromLibraryIdentifier() {
+    return ResPsiImplUtil.getFromLibraryIdentifier(this);
   }
 
   public boolean shouldGoDeeper() {
