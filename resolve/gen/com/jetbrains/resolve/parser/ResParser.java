@@ -1304,7 +1304,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // '⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}'|ELANGLE|ERANGLE
+  // '⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}'
   public static boolean MathBracketName(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathBracketName")) return false;
     boolean r;
@@ -1319,8 +1319,6 @@ public class ResParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, BAR);
     if (!r) r = consumeToken(b, LBRACE);
     if (!r) r = consumeToken(b, RBRACE);
-    if (!r) r = consumeToken(b, ELANGLE);
-    if (!r) r = consumeToken(b, ERANGLE);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1819,13 +1817,12 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // identifier|symbol|mathidentifier|int|true|false
+  // identifier|mathidentifier|int|true|false
   public static boolean MathSymbolName(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathSymbolName")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MATH_SYMBOL_NAME, "<math symbol name>");
     r = consumeToken(b, IDENTIFIER);
-    if (!r) r = consumeToken(b, SYMBOL);
     if (!r) r = consumeToken(b, MATHIDENTIFIER);
     if (!r) r = consumeToken(b, INT);
     if (!r) r = consumeToken(b, TRUE);

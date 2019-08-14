@@ -143,14 +143,12 @@ public interface ResTypes {
   IElementType DOT = new ResTokenType(".");
   IElementType EEXISTS = new ResTokenType("EEXISTS");
   IElementType EFORALL = new ResTokenType("EFORALL");
-  IElementType ELANGLE = new ResTokenType("ELANGLE");
   IElementType ELSE = new ResTokenType("else");
   IElementType END = new ResTokenType("end");
   IElementType ENHANCED = new ResTokenType("enhanced");
   IElementType ENHANCEMENT = new ResTokenType("Enhancement");
   IElementType ENSURES = new ResTokenType("ensures");
   IElementType EQUALS = new ResTokenType("=");
-  IElementType ERANGLE = new ResTokenType("ERANGLE");
   IElementType EVALUATES = new ResTokenType("evaluates");
   IElementType EXEMPLAR = new ResTokenType("exemplar");
   IElementType EXISTS = new ResTokenType("∃");
@@ -210,7 +208,6 @@ public interface ResTypes {
   IElementType RPAREN = new ResTokenType(")");
   IElementType SEMICOLON = new ResTokenType(";");
   IElementType STRING = new ResTokenType("string");
-  IElementType SYMBOL = new ResTokenType("symbol");
   IElementType THEN = new ResTokenType("then");
   IElementType THEOREM = new ResTokenType("Theorem");
   IElementType TICK = new ResTokenType("`");

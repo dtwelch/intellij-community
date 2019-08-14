@@ -66,18 +66,6 @@
         <!--<add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ResolveUtils"/>
         <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="ResolveUtils"/>-->
       </action>
-      <action id="resolve.FormatFile" class="com.jetbrains.resolve.action.fmt.ResolveFileFormatAction"
-              text="Format Math in File by Settings">
-        <keyboard-shortcut keymap="$default" first-keystroke="control shift S"/>
-      </action>
-      <action id="resolve.FormatDir" class="com.jetbrains.resolve.action.fmt.ResolveDirFormatAction"
-              text="Format Math in Directory by Settings">
-        <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
-      </action>
-      <action id="resolve.FormatLaTeXFile" class="com.jetbrains.resolve.action.fmt.ResolveLaTeXFormatAction"
-              text="Format Math in File for LaTeX">
-        <keyboard-shortcut keymap="$default" first-keystroke="control shift L"/>
-      </action>
       <add-to-group group-id="CodeMenu" anchor="last"/>
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
       <add-to-group group-id="EditorLangPopupMenu" anchor="last"/>

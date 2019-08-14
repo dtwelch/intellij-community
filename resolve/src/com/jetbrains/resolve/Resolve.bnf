@@ -471,8 +471,8 @@ MathEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
 MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
-MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}'|ELANGLE|ERANGLE) {elementType=MathSymbolName}
-MathSymbolName  ::= (identifier|symbol|mathidentifier|int|true|false)
+MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
+MathSymbolName  ::= (identifier|mathidentifier|int|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
 left MathQualifiedReferenceExp ::= '::' MathSymbolName {elementType=MathReferenceExp}

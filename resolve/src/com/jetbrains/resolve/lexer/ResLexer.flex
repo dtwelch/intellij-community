@@ -37,14 +37,8 @@ DIGIT   =  [:digit:]
 
 INT_DIGIT     = [0-9]
 NUM_INT       = "0" | ([1-9] {INT_DIGIT}*)
-CMD           = {BACKSLASH}{IDENT}
 
 MATH_NON_IDENTIFIER_SYM    = ({U_ARROW} | {U_LETTER} | {U_OPERATOR} | {U_RELATION} | {U_GREEK})
-
-/*EQ          = "=" ;
-NEQ         = "≠" ;
-NEQ_CMD     = "\\neq" ;
-NEQ_ABBREV  = "/=" ;*/
 IDENT   = {LETTER} ({LETTER} | {DIGIT} )*
 
 U_ARROW       = ("⟵"|"⟸"|"⟶"|"⟹"|"⟷"|"⟺"|"↩"|"↪"|"↽"|
@@ -65,17 +59,13 @@ U_GREEK       = ("α"|"β"|"γ"|"δ"|"ε"|"ζ"|"η"|"θ"|"ι"|"κ"|"μ"|"ν"|"ξ
 
 STR     = "\""
 STRING = {STR} ( [^\"\\\n\r] | "\\" ("\\" | {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
-//STRING = {STR} ( [^\"\\\n\r] ( {STR} | {ESCAPES} | [0-8xuU] ) )* {STR}?
 
-//if we allow '|' in here, then math outfix exprs need to be | |x| o b| (space between the |x| and the leftmost
-ASCII       = ("+" | "-" | "*" | "<" | ">" | "!" | "=" | "/" | "~")
+ASCII = ("+" | "-" | "*" | "<" | ">" | "!" | "=" | "/" | "~")
 
-MATH_PRIMED_ID = ( {IDENT} | {CMD} | {MATH_NON_IDENTIFIER_SYM} |  {ASCII} )+ ("`"+|"'")+
+//we can add more chars here relatively easily later.
+SUBSCRIPT = ("₀" | "₁" | "₂" | "₊" | "₋")
+MATH_IDENT = ({IDENT} | {MATH_NON_IDENTIFIER_SYM} | {ASCII})+ ({SUBSCRIPT})* ("'"|"`")*
 
-MATH_ID = ( {CMD} | {MATH_NON_IDENTIFIER_SYM} | {ASCII} )+
-
-MATHIDENT = ({MATH_PRIMED_ID} | {MATH_ID} | {IDENT})
-BACKSLASH = "\\"
 ESCAPES = [abfnrtv]
 
 %%
@@ -129,26 +119,10 @@ ESCAPES = [abfnrtv]
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
 "λ"                                     { return LAMBDA; }
-{BACKSLASH}"langle"                     { return ELANGLE; }
-{BACKSLASH}"rangle"                     { return ERANGLE; }
-{BACKSLASH}"forall"                     { return EFORALL; }
-{BACKSLASH}"exists"                     { return EEXISTS; }
-{BACKSLASH}"lambda"                     { return LAMBDA; }
-{BACKSLASH}"and"                        { return AND; }
-{BACKSLASH}"or"                         { return OR; }
-{BACKSLASH}"neq"                        { return NEQUALS; }  //cmd variant
-
-//{BACKSLASH}{IDENT}                     { return CMD; }
-{BACKSLASH}"triangleq"                  { return TRIANGLEQ; }
 "≜"                                    { return TRIANGLEQ; }
-
 "="                                     { return EQUALS; }
-"/="                                    { return NEQUALS; }  //builtin ascii abbrev
 "≠"                                     { return NEQUALS; }  //non-ascii variant
-{BACKSLASH}"neq"                         { return NEQUALS; }  //builtin ascii abbrev
-{BACKSLASH}"and"                         { return AND; }  //builtin ascii abbrev
 "∧"                                     { return AND;}
-{BACKSLASH}"or"                         { return OR; }  //builtin ascii abbrev
 "∨"                                     { return OR;}
 
 ":="                                    { return COLON_EQUALS; }
@@ -237,7 +211,7 @@ ESCAPES = [abfnrtv]
 "evaluates"                             { return EVALUATES; }
 
 {IDENT}                                 { return IDENTIFIER; }
-{MATHIDENT}                             { return MATHIDENTIFIER; }
+{MATH_IDENT}                            { return MATHIDENTIFIER; }
 {NUM_INT}                               { return INT; }
 .                                       { return BAD_CHARACTER; }
 }

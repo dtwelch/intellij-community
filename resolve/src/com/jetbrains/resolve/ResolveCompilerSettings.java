@@ -12,8 +12,8 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
 
   private boolean noAutoStandardUses = false;
   private boolean showCompilerEnvVarsOnRun = false;
-  private boolean useMathAsciiAbbreviations = false;
-  private boolean useMathUnicodeSymbols = true;
+  //private boolean useMathAsciiAbbreviations = false;
+  //private boolean useMathUnicodeSymbols = true;
 
   public static ResolveCompilerSettings getInstance() {
     return ServiceManager.getService(ResolveCompilerSettings.class);
@@ -47,7 +47,7 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
   }
 
   //formatting getters and setters
-  public boolean isUseMathAsciiAbbreviations() {
+  /*public boolean isUseMathAsciiAbbreviations() {
     return useMathAsciiAbbreviations;
   }
 
@@ -61,5 +61,5 @@ public class ResolveCompilerSettings implements PersistentStateComponent<Resolve
 
   public void setUseMathUnicodeSymbols(boolean useUnicode) {
     this.useMathUnicodeSymbols = useUnicode;
-  }
+  }*/
 }
