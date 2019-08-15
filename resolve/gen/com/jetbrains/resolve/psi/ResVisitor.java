@@ -150,6 +150,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathDefnDecl(o);
   }
 
+  public void visitMathComprehensionExp(@NotNull ResMathComprehensionExp o) {
+    visitMathExp(o);
+  }
+
   public void visitMathEqualsApplyExp(@NotNull ResMathEqualsApplyExp o) {
     visitMathExp(o);
   }
@@ -214,6 +218,10 @@ public class ResVisitor extends PsiElementVisitor {
     visitMathExp(o);
   }
 
+  public void visitMathQuotedExp(@NotNull ResMathQuotedExp o) {
+    visitMathExp(o);
+  }
+
   public void visitMathRecognitionDecl(@NotNull ResMathRecognitionDecl o) {
     visitCompositeElement(o);
   }
@@ -233,6 +241,10 @@ public class ResVisitor extends PsiElementVisitor {
 
   public void visitMathSymbolName(@NotNull ResMathSymbolName o) {
     visitCompositeElement(o);
+  }
+
+  public void visitMathTermTyExp(@NotNull ResMathTermTyExp o) {
+    visitMathExp(o);
   }
 
   public void visitMathTheoremDecl(@NotNull ResMathTheoremDecl o) {

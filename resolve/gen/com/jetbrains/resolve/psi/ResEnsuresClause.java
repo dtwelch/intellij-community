@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ResEnsuresClause extends ResCompositeElement {
 
   @Nullable
+  ResEntailsClause getEntailsClause();
+
+  @Nullable
   ResMathExp getMathExp();
 
   @Nullable

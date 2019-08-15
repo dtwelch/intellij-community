@@ -102,6 +102,9 @@ ESCAPES = [abfnrtv]
 "⟨"                                     { return LANGLE; }
 "⟩"                                     { return RANGLE; }
 
+"⎝"                                    { return LCUP; }
+"⎠"                                    { return RCUP; }
+
 "⌈"                                     { return LCEIL; }
 "⌉"                                     { return RCEIL; }
 
@@ -118,12 +121,17 @@ ESCAPES = [abfnrtv]
 // Builtin
 "∃"                                     { return EXISTS; }
 "∀"                                     { return FORALL; }
+"Exists"                                { return EXISTS; }
+"Forall"                                { return FORALL; }
 "λ"                                     { return LAMBDA; }
 "≜"                                    { return TRIANGLEQ; }
 "="                                     { return EQUALS; }
 "≠"                                     { return NEQUALS; }  //non-ascii variant
 "∧"                                     { return AND;}
 "∨"                                     { return OR;}
+
+"Form"                                  { return FORMULA; }
+"Term"                                  { return TERM; }
 
 ":="                                    { return COLON_EQUALS; }
 ":=:"                                   { return COLON_EQUALS_COLON; }

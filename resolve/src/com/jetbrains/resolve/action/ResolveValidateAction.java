@@ -88,7 +88,6 @@ public class ResolveValidateAction extends ResolveAction {
                                             @Nullable ResolveCompilerListener customListener) {
     Main.InitConfig env = new Main.InitConfig();
     AbstractUserInterfaceControl control = new DefaultUserInterfaceControl(env);
-    control.registerSupplementalASCIIAbbreviations();
 
     String[] argsArray = new String[args.size()];
     Main.evaluateArguments(env, args.toArray(argsArray));

@@ -11,6 +11,12 @@ public interface ResMathCategoricalDefnDecl extends ResMathDefnDecl {
   ResMathExp getMathExp();
 
   @NotNull
+  List<ResMathInfixDefnSig> getMathInfixDefnSigList();
+
+  @NotNull
+  List<ResMathOutfixDefnSig> getMathOutfixDefnSigList();
+
+  @NotNull
   List<ResMathPrefixDefnSig> getMathPrefixDefnSigList();
 
   @NotNull

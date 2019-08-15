@@ -5,21 +5,21 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResMathQuantifiedExp extends ResMathExp {
+public interface ResMathComprehensionExp extends ResMathExp {
 
   @Nullable
   ResMathExp getMathExp();
 
-  @Nullable
+  @NotNull
   ResMathVarDeclGroup getMathVarDeclGroup();
 
-  @Nullable
-  PsiElement getComma();
+  @NotNull
+  PsiElement getBar();
+
+  @NotNull
+  PsiElement getLbrace();
 
   @Nullable
-  PsiElement getExists();
-
-  @Nullable
-  PsiElement getForall();
+  PsiElement getRbrace();
 
 }

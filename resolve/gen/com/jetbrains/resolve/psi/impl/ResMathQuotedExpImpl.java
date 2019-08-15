@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResEnsuresClauseImpl extends ResCompositeElementImpl implements ResEnsuresClause {
+public class ResMathQuotedExpImpl extends ResMathExpImpl implements ResMathQuotedExp {
 
-  public ResEnsuresClauseImpl(@NotNull ASTNode node) {
+  public ResMathQuotedExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitEnsuresClause(this);
+    visitor.visitMathQuotedExp(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,27 +26,9 @@ public class ResEnsuresClauseImpl extends ResCompositeElementImpl implements Res
   }
 
   @Override
-  @Nullable
-  public ResEntailsClause getEntailsClause() {
-    return findChildByClass(ResEntailsClause.class);
-  }
-
-  @Override
-  @Nullable
-  public ResMathExp getMathExp() {
-    return findChildByClass(ResMathExp.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getSemicolon() {
-    return findChildByType(SEMICOLON);
-  }
-
-  @Override
   @NotNull
-  public PsiElement getEnsures() {
-    return findNotNullChildByType(ENSURES);
+  public PsiElement getString() {
+    return findNotNullChildByType(STRING);
   }
 
 }

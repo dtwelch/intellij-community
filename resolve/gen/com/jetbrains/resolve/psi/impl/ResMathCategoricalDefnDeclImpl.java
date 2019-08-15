@@ -33,6 +33,18 @@ public class ResMathCategoricalDefnDeclImpl extends ResAbstractMathDefnImpl impl
 
   @Override
   @NotNull
+  public List<ResMathInfixDefnSig> getMathInfixDefnSigList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathInfixDefnSig.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ResMathOutfixDefnSig> getMathOutfixDefnSigList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathOutfixDefnSig.class);
+  }
+
+  @Override
+  @NotNull
   public List<ResMathPrefixDefnSig> getMathPrefixDefnSigList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathPrefixDefnSig.class);
   }

@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResMathQuantifiedExpImpl extends ResMathExpImpl implements ResMathQuantifiedExp {
+public class ResMathTermTyExpImpl extends ResMathExpImpl implements ResMathTermTyExp {
 
-  public ResMathQuantifiedExpImpl(@NotNull ASTNode node) {
+  public ResMathTermTyExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitMathQuantifiedExp(this);
+    visitor.visitMathTermTyExp(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,33 +26,39 @@ public class ResMathQuantifiedExpImpl extends ResMathExpImpl implements ResMathQ
   }
 
   @Override
-  @Nullable
-  public ResMathExp getMathExp() {
-    return findChildByClass(ResMathExp.class);
+  @NotNull
+  public List<ResMathExp> getMathExpList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathExp.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getColon() {
+    return findNotNullChildByType(COLON);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getLparen() {
+    return findNotNullChildByType(LPAREN);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getRparen() {
+    return findNotNullChildByType(RPAREN);
   }
 
   @Override
   @Nullable
-  public ResMathVarDeclGroup getMathVarDeclGroup() {
-    return findChildByClass(ResMathVarDeclGroup.class);
+  public PsiElement getFormula() {
+    return findChildByType(FORMULA);
   }
 
   @Override
   @Nullable
-  public PsiElement getComma() {
-    return findChildByType(COMMA);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getExists() {
-    return findChildByType(EXISTS);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getForall() {
-    return findChildByType(FORALL);
+  public PsiElement getTerm() {
+    return findChildByType(TERM);
   }
 
 }

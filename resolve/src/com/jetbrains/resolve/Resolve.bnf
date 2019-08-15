@@ -36,6 +36,9 @@
         LANGLE    = '⟨'
         RANGLE    = '⟩'
 
+        LCUP = '⎝'
+        RCUP = '⎠'
+
         LCEIL = '⌈'
         RCEIL = '⌉'
 
@@ -51,6 +54,8 @@
         LAMBDA = 'λ'
         EXISTS = '∃'
         FORALL = '∀'
+        EFORALL = 'Forall'
+        EExists = 'Exists'
         AND = '∧'
         OR = '∨'
         EQUALS = '='
@@ -59,6 +64,9 @@
         TRIANGLEQ = '≜'
         COLON_EQUALS_COLON = ':=:'
         //BAD_CHARACTER = '"\\"'
+
+        FORMULA      = 'Form'
+        TERM         = 'Term'
 
         // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
         // this in grammarkit's issue section. But for now this is just the way it is.
@@ -367,7 +375,7 @@ MathTheoremDecl ::= ('Corollary'|'Theorem') identifier ':' MathAssertionExp ';' 
 MathRecognitionDecl ::= 'Recognition' MathAssertionExp ';' {pin=1}
 
 MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
-MathPrefixDefnSigs is MathExp ';' {pin=2}
+MathDefnSigs is MathExp ';' {pin=2}
 
 MathStandardDefnDecl ::= ('Literal')? ('Coercer')? ('Valued')? ('Implicit')?
 'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';' {pin=6}
@@ -382,7 +390,7 @@ MathPrefixDefnSig ::= MathPrefixNameList MathDefinitionParams? ':' MathExp {pin=
 private MathPrefixNameList ::= MSymName (',' MSymName)* {recoverWhile=MathPrefixListRec}
 private MSymName ::= (MathAndOrName|MathSymbolName)
 private MathPrefixListRec ::= !(':'|';'|'(')
-private MathPrefixDefnSigs ::= MathPrefixDefnSig (',' MathPrefixDefnSig)* {recoverWhile=CategoricalSigListRec}
+private MathDefnSigs ::= MathDefnSig (',' MathDefnSig)* {recoverWhile=CategoricalSigListRec}
 private CategoricalSigListRec ::= !(is)
 
 MathInfixDefnSig ::= '(' MathVarDecl ')' MathSymbolName '(' MathVarDecl ')' ':' MathExp {pin=4}
@@ -404,8 +412,8 @@ MathVarDef ::= MathSymbolName
 
 IntializationClause ::= initialization (EnsuresClause) ;
 RequiresClause ::= requires MathAssertionExp (EntailsClause)? ';' {pin=1}
-EnsuresClause ::= ensures MathAssertionExp ';' {pin=1}
-ConstraintsClause ::= constraints MathAssertionExp ';' {pin=1}
+EnsuresClause ::= ensures MathAssertionExp (EntailsClause)? ';' {pin=1}
+ConstraintsClause ::= constraints MathAssertionExp (EntailsClause)? ';' {pin=1}
 ConventionsClause ::= conventions MathAssertionExp (EntailsClause)? ';' {pin=1}
 CorrespondenceClause ::= correspondence MathAssertionExp ';' {pin=1}
 ChangingClause ::= changing ExpArgumentList ';' {pin=1}
@@ -416,7 +424,7 @@ EntailsClause ::= which_entails MathExp {pin=1}
 // mathematical expressions
 
 MathAssertionExp ::= MathQuantifiedExp | MathExp
-MathQuantifiedExp ::= (EFORALL|EEXISTS|'∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
+MathQuantifiedExp ::= ('∃'|'∀') MathVarDeclGroup ',' MathAssertionExp {pin=1}
 
 MathExp ::=
           MathAndOrApplyExp
@@ -435,13 +443,7 @@ MathEqualsApplyExp ::= MathExp MathEqualsNotEqualsName MathExp {pin=2}
 MathAndOrApplyExp ::= MathExp MathAndOrName MathExp {pin=2}
 
 MathInfixApplyExp ::= MathExp MathOpSymbolName MathExp {pin=2}
-
-//MathBinderAppExp ::= mathbinderidentifier MathVarDeclGroup ',' (MathFunctionAppList|MathExp) {pin=1} //recoverWhile=Rec
-//&(!(';'|')'))
-//SimpBinderName ::=  mathidentifier
-
 MathTypeAssertionExp ::= MathExp ':' MathExp
-
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 
 MathFunctionAppList ::= '(' MathArgList ')'
@@ -450,16 +452,23 @@ private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}
 
-//TODO: LAMBDAsss.
 private MathPrimeExp ::=  MathIncomingExp | MathSymbolExp | MathSelectorExp
         | MathAlternativeExp
         | MathEqualsNotEqualsOpExp
         | MathAndOrOpExp
         | MathTypeAssertionExp
         | MathLambdaExp
+        | MathComprehensionExp
         | MathOutfixApplyExp
         | MathCartProdExp
-     //   | MathSetRestrictionExp
+        | MathQuotedExp
+        | MathTermTyExp
+
+//TODO: This should be taken out when/if :-) we figure out how to do the typing
+//on things like conditional definitions.
+MathTermTyExp ::= (term|formula) '(' MathArgList ')' ':' MathExp ;
+
+MathQuotedExp ::= string {extends = MathExp}
 
 private LamPart ::= LAMBDA MathVarDeclGroup ',' {pin=3}
 MathLambdaExp ::= LamPart MathExp {pin=1 extends=MathExp}
@@ -470,7 +479,7 @@ MathEqualsNotEqualsName ::= (EQUALS|NEQUALS) {elementType=MathSymbolName}
 MathAndOrName ::= (AND|OR) {elementType=MathSymbolName}
 
 private MathOpSymbolName ::= MathSymbolExp
-MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'|'|'{'|'}') {elementType=MathSymbolName}
+MathBracketName ::= ('⟨'|'⟩'|'⌈'|'⌉'|'∥'|'['|']'|'⎝'|'⎠'|'|'|LBRACE|RBRACE) {elementType=MathSymbolName}
 MathSymbolName  ::= (identifier|mathidentifier|int|true|false)
 
 MathSymbolExp ::=  MathReferenceExp MathQualifiedReferenceExp? {elementType=MathReferenceExp}
@@ -480,25 +489,13 @@ MathReferenceExp ::= MathSymbolName {methods=[getReference getQualifier getIdent
 MathCartProdExp ::= 'Cart_Prod' ResMathCartVarGroup+  end {pin=1}
 private ResMathCartVarGroup ::= MathVarDeclGroup ';' {pin=1}
 
-/*
-mathAlternativesExp
-    :   mathAltItemExp+
-        mathAltItemConclusionExp
-    ;
-
-mathAltItemExp
-    :   PIECEWISECURLY result=mathExp
-        ('if' condition=mathExp)
-    ;
-
-mathAltItemConclusionExp
-    :     PIECEWISECURLY result=mathExp 'otherwise'
-    ;
-*/
 MathAlternativeExp ::= MathAlternativesList MathAlternativeItemConclusionExp
 MathAlternativesList ::= MathAlternativeItemExp+
 MathAlternativeItemExp ::= PIECEWISE MathExp IF_MATH MathExp  {pin=3}
 private MathAlternativeItemConclusionExp ::= PIECEWISE MathExp otherwise {pin=3}
 
-//MathSetRestrictionExp ::= '{' MathVarDecl '|' MathExp '}' {pin=1}
-
+/*mathComprehensionExp
+    :   LCURLY binder=mathVarDecl BAR fml=mathFormulaExp RCURLY
+    ;*/
+private CompPart ::= LBRACE MathVarDeclGroup BAR {pin=3}
+MathComprehensionExp ::= CompPart MathExp RBRACE {pin=1 extends=MathExp}

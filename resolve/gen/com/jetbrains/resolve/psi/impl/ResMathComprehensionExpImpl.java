@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResEnsuresClauseImpl extends ResCompositeElementImpl implements ResEnsuresClause {
+public class ResMathComprehensionExpImpl extends ResMathExpImpl implements ResMathComprehensionExp {
 
-  public ResEnsuresClauseImpl(@NotNull ASTNode node) {
+  public ResMathComprehensionExpImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitEnsuresClause(this);
+    visitor.visitMathComprehensionExp(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,26 +27,32 @@ public class ResEnsuresClauseImpl extends ResCompositeElementImpl implements Res
 
   @Override
   @Nullable
-  public ResEntailsClause getEntailsClause() {
-    return findChildByClass(ResEntailsClause.class);
-  }
-
-  @Override
-  @Nullable
   public ResMathExp getMathExp() {
     return findChildByClass(ResMathExp.class);
   }
 
   @Override
-  @Nullable
-  public PsiElement getSemicolon() {
-    return findChildByType(SEMICOLON);
+  @NotNull
+  public ResMathVarDeclGroup getMathVarDeclGroup() {
+    return findNotNullChildByClass(ResMathVarDeclGroup.class);
   }
 
   @Override
   @NotNull
-  public PsiElement getEnsures() {
-    return findNotNullChildByType(ENSURES);
+  public PsiElement getBar() {
+    return findNotNullChildByType(BAR);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getLbrace() {
+    return findNotNullChildByType(LBRACE);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getRbrace() {
+    return findChildByType(RBRACE);
   }
 
 }
