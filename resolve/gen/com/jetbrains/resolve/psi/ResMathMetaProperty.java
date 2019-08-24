@@ -5,18 +5,21 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ResConstraintsClause extends ResCompositeElement {
-
-  @Nullable
-  ResEntailsClause getEntailsClause();
+public interface ResMathMetaProperty extends ResCompositeElement {
 
   @Nullable
   ResMathExp getMathExp();
 
   @Nullable
-  PsiElement getSemicolon();
+  PsiElement getColon();
 
   @NotNull
-  PsiElement getConstraints();
+  PsiElement getProperty();
+
+  @Nullable
+  PsiElement getSemicolon();
+
+  @Nullable
+  PsiElement getInt();
 
 }

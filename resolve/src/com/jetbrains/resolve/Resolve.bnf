@@ -67,7 +67,7 @@
 
         FORMULA      = 'Form'
         TERM         = 'Term'
-
+        PROPERTY     = 'Pty'
         // TODO: These need to be declared in here because they begin with a capital letter... I need to ask about
         // this in grammarkit's issue section. But for now this is just the way it is.
         // Keywords (capitalized)
@@ -378,7 +378,12 @@ MathCategoricalDefnDecl ::= 'Categorical' 'Definition' for
 MathDefnSigs is MathExp ';' {pin=2}
 
 MathStandardDefnDecl ::= ('Literal')? ('Coercer')? ('Valued')? ('Implicit')?
-'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';' {pin=6}
+'Definition'  MathDefnSig (('is' | TRIANGLEQ) (MathMetaPropList|MathAssertionExp))? ';' {pin=6}
+
+private MathMetaPropList ::=
+         '(' MathMetaProperty+ ')' {pin=2}
+
+MathMetaProperty ::= 'Pty' int ':' MathAssertionExp ';' {pin=1}
 
 MathInductiveDefnDecl ::= 'Inductive' 'Definition' MathDefnSig is
 '(i.)' MathAssertionExp ';'

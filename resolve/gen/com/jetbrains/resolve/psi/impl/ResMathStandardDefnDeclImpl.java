@@ -38,6 +38,12 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
   }
 
   @Override
+  @NotNull
+  public List<ResMathMetaProperty> getMathMetaPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ResMathMetaProperty.class);
+  }
+
+  @Override
   @Nullable
   public ResMathOutfixDefnSig getMathOutfixDefnSig() {
     return findChildByClass(ResMathOutfixDefnSig.class);
@@ -77,6 +83,18 @@ public class ResMathStandardDefnDeclImpl extends ResAbstractMathDefnImpl impleme
   @Nullable
   public PsiElement getLiteral() {
     return findChildByType(LITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getLparen() {
+    return findChildByType(LPAREN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getRparen() {
+    return findChildByType(RPAREN);
   }
 
   @Override

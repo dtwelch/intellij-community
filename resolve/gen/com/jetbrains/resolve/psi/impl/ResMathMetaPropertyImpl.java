@@ -10,25 +10,19 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.jetbrains.resolve.ResTypes.*;
 import com.jetbrains.resolve.psi.*;
 
-public class ResConstraintsClauseImpl extends ResCompositeElementImpl implements ResConstraintsClause {
+public class ResMathMetaPropertyImpl extends ResCompositeElementImpl implements ResMathMetaProperty {
 
-  public ResConstraintsClauseImpl(@NotNull ASTNode node) {
+  public ResMathMetaPropertyImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ResVisitor visitor) {
-    visitor.visitConstraintsClause(this);
+    visitor.visitMathMetaProperty(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ResVisitor) accept((ResVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public ResEntailsClause getEntailsClause() {
-    return findChildByClass(ResEntailsClause.class);
   }
 
   @Override
@@ -39,14 +33,26 @@ public class ResConstraintsClauseImpl extends ResCompositeElementImpl implements
 
   @Override
   @Nullable
+  public PsiElement getColon() {
+    return findChildByType(COLON);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getProperty() {
+    return findNotNullChildByType(PROPERTY);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getSemicolon() {
     return findChildByType(SEMICOLON);
   }
 
   @Override
-  @NotNull
-  public PsiElement getConstraints() {
-    return findNotNullChildByType(CONSTRAINTS);
+  @Nullable
+  public PsiElement getInt() {
+    return findChildByType(INT);
   }
 
 }

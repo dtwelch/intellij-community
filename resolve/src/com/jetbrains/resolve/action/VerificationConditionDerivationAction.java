@@ -59,7 +59,6 @@ public class VerificationConditionDerivationAction
     controller.mainVerifierWindowFrame.getClearSessionAction().actionPerformed(null);
 
     MainWindow mainWindow = controller.getMainVerifierWindowFrame();
-    mainWindow.getUserInterface().registerSupplementalASCIIAbbreviations();
     mainWindow.getUserInterface().getEnvironment().vcs = true;
 
     Task.Backgroundable task = new Task.Backgroundable(project, "Running VCGen...", true) {

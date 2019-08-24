@@ -132,6 +132,7 @@ ESCAPES = [abfnrtv]
 
 "Form"                                  { return FORMULA; }
 "Term"                                  { return TERM; }
+"Pty"                                   { return PROPERTY; }
 
 ":="                                    { return COLON_EQUALS; }
 ":=:"                                   { return COLON_EQUALS_COLON; }

@@ -122,6 +122,9 @@ public class ResParser implements PsiParser, LightPsiParser {
     else if (t == MATH_INFIX_DEFN_SIG) {
       r = MathInfixDefnSig(b, 0);
     }
+    else if (t == MATH_META_PROPERTY) {
+      r = MathMetaProperty(b, 0);
+    }
     else if (t == MATH_OUTFIX_DEFN_SIG) {
       r = MathOutfixDefnSig(b, 0);
     }
@@ -537,7 +540,7 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // constraints MathAssertionExp ';'
+  // constraints MathAssertionExp (EntailsClause)? ';'
   public static boolean ConstraintsClause(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ConstraintsClause")) return false;
     if (!nextTokenIs(b, CONSTRAINTS)) return false;
@@ -546,9 +549,27 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, CONSTRAINTS);
     p = r; // pin = 1
     r = r && report_error_(b, MathAssertionExp(b, l + 1));
+    r = p && report_error_(b, ConstraintsClause_2(b, l + 1)) && r;
     r = p && consumeToken(b, SEMICOLON) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // (EntailsClause)?
+  private static boolean ConstraintsClause_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConstraintsClause_2")) return false;
+    ConstraintsClause_2_0(b, l + 1);
+    return true;
+  }
+
+  // (EntailsClause)
+  private static boolean ConstraintsClause_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ConstraintsClause_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = EntailsClause(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -1540,6 +1561,51 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // '(' MathMetaProperty+ ')'
+  static boolean MathMetaPropList(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathMetaPropList")) return false;
+    if (!nextTokenIs(b, LPAREN)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeToken(b, LPAREN);
+    r = r && MathMetaPropList_1(b, l + 1);
+    p = r; // pin = 2
+    r = r && consumeToken(b, RPAREN);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // MathMetaProperty+
+  private static boolean MathMetaPropList_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathMetaPropList_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = MathMetaProperty(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!MathMetaProperty(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "MathMetaPropList_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'Pty' int ':' MathAssertionExp ';'
+  public static boolean MathMetaProperty(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathMetaProperty")) return false;
+    if (!nextTokenIs(b, PROPERTY)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MATH_META_PROPERTY, null);
+    r = consumeTokens(b, 1, PROPERTY, INT, COLON);
+    p = r; // pin = 1
+    r = r && report_error_(b, MathAssertionExp(b, l + 1));
+    r = p && consumeToken(b, SEMICOLON) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
   // MathExp (',' MathExp)*
   static boolean MathNonStdAppList(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathNonStdAppList")) return false;
@@ -1774,7 +1840,7 @@ public class ResParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // ('Literal')? ('Coercer')? ('Valued')? ('Implicit')?
-  // 'Definition'  MathDefnSig (('is' | TRIANGLEQ) MathAssertionExp)? ';'
+  // 'Definition'  MathDefnSig (('is' | TRIANGLEQ) (MathMetaPropList|MathAssertionExp))? ';'
   public static boolean MathStandardDefnDecl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl")) return false;
     boolean r, p;
@@ -1820,20 +1886,20 @@ public class ResParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (('is' | TRIANGLEQ) MathAssertionExp)?
+  // (('is' | TRIANGLEQ) (MathMetaPropList|MathAssertionExp))?
   private static boolean MathStandardDefnDecl_6(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_6")) return false;
     MathStandardDefnDecl_6_0(b, l + 1);
     return true;
   }
 
-  // ('is' | TRIANGLEQ) MathAssertionExp
+  // ('is' | TRIANGLEQ) (MathMetaPropList|MathAssertionExp)
   private static boolean MathStandardDefnDecl_6_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = MathStandardDefnDecl_6_0_0(b, l + 1);
-    r = r && MathAssertionExp(b, l + 1);
+    r = r && MathStandardDefnDecl_6_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1846,6 +1912,15 @@ public class ResParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, IS);
     if (!r) r = consumeToken(b, TRIANGLEQ);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // MathMetaPropList|MathAssertionExp
+  private static boolean MathStandardDefnDecl_6_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MathStandardDefnDecl_6_0_1")) return false;
+    boolean r;
+    r = MathMetaPropList(b, l + 1);
+    if (!r) r = MathAssertionExp(b, l + 1);
     return r;
   }
 

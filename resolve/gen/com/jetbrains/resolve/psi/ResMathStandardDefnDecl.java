@@ -13,6 +13,9 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
   @Nullable
   ResMathInfixDefnSig getMathInfixDefnSig();
 
+  @NotNull
+  List<ResMathMetaProperty> getMathMetaPropertyList();
+
   @Nullable
   ResMathOutfixDefnSig getMathOutfixDefnSig();
 
@@ -33,6 +36,12 @@ public interface ResMathStandardDefnDecl extends ResMathDefnDecl {
 
   @Nullable
   PsiElement getLiteral();
+
+  @Nullable
+  PsiElement getLparen();
+
+  @Nullable
+  PsiElement getRparen();
 
   @Nullable
   PsiElement getSemicolon();

@@ -55,6 +55,7 @@ public interface ResTypes {
   IElementType MATH_INFIX_APPLY_EXP = new ResCompositeElementType("MATH_INFIX_APPLY_EXP");
   IElementType MATH_INFIX_DEFN_SIG = new ResCompositeElementType("MATH_INFIX_DEFN_SIG");
   IElementType MATH_LAMBDA_EXP = new ResCompositeElementType("MATH_LAMBDA_EXP");
+  IElementType MATH_META_PROPERTY = new ResCompositeElementType("MATH_META_PROPERTY");
   IElementType MATH_NESTED_EXP = new ResCompositeElementType("MATH_NESTED_EXP");
   IElementType MATH_OUTFIX_APPLY_EXP = new ResCompositeElementType("MATH_OUTFIX_APPLY_EXP");
   IElementType MATH_OUTFIX_DEFN_SIG = new ResCompositeElementType("MATH_OUTFIX_DEFN_SIG");
@@ -197,6 +198,7 @@ public interface ResTypes {
   IElementType PRESERVES = new ResTokenType("preserves");
   IElementType PRIME = new ResTokenType("'");
   IElementType PROCEDURE = new ResTokenType("Procedure");
+  IElementType PROPERTY = new ResTokenType("Pty");
   IElementType RANGLE = new ResTokenType("⟩");
   IElementType RAW_STRING = new ResTokenType("raw_string");
   IElementType RBRACE = new ResTokenType("}");
@@ -358,6 +360,9 @@ public interface ResTypes {
       }
       else if (type == MATH_LAMBDA_EXP) {
         return new ResMathLambdaExpImpl(node);
+      }
+      else if (type == MATH_META_PROPERTY) {
+        return new ResMathMetaPropertyImpl(node);
       }
       else if (type == MATH_NESTED_EXP) {
         return new ResMathNestedExpImpl(node);
