@@ -189,8 +189,8 @@ public class MathSymbolCompletionContributor extends CompletionContributor {
     SYMBOL_MAP.put("rangle", "⟩");
     SYMBOL_MAP.put("lceil", "⌈");
     SYMBOL_MAP.put("rceil", "⌉");
-    //SYMBOL_MAP.put("lcup", "⎝");
-    //SYMBOL_MAP.put("rcup", "⎠");
+    SYMBOL_MAP.put("lcup", "⎝");
+    SYMBOL_MAP.put("rcup", "⎠");
     SYMBOL_MAP.put("dblbar", "∥");
 
     //Greek
