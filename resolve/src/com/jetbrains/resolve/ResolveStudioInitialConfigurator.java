@@ -232,7 +232,7 @@ public class ResolveStudioInitialConfigurator {
 
   private static void patchRootAreaExtensions() {
     ExtensionsArea rootArea = Extensions.getArea(null);
-    System.setProperty("apple.laf.useScreenMenuBar", "true");
+    //System.setProperty("apple.laf.useScreenMenuBar", "true");
 
     //rootArea.unregisterExtensionPoint("com.intellij.runLineMarkerContributor");
     for (ToolWindowEP ep : Extensions.getExtensions(ToolWindowEP.EP_NAME)) {

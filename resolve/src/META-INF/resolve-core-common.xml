@@ -41,6 +41,7 @@
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveRealizationParameterList"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveCodeBlockContextType"/>
     <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveReprContextType"/>
+    <liveTemplateContext implementation="com.jetbrains.resolve.template.ResolveLiveTemplateContextType$ResolveTypeModelContextType"/>
 
     <!-- run single file (prog) -->
     <configurationType implementation="com.jetbrains.resolve.runconfig.ResolveRunConfigurationType"/>

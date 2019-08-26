@@ -167,4 +167,18 @@ public abstract class ResolveLiveTemplateContextType extends TemplateContextType
                                  TokenSet.create(ResTypes.TYPE_REPR_DECL)) != null;
     }
   }
+
+  public static class ResolveTypeModelContextType extends ResolveLiveTemplateContextType {
+    protected ResolveTypeModelContextType() {
+      super("RESOLVE_MODEL", "RESOLVE model type",
+            ResolveEverywhereContextType.class);
+    }
+
+    @Override
+    protected boolean isInContext(@NotNull PsiElement element) {
+      return TreeUtil.findParent(element.getNode(),
+                                 TokenSet.create(ResTypes.TYPE_MODEL_DECL)) != null;
+    }
+  }
+
 }
