@@ -452,7 +452,7 @@ MathTypeAssertionExp ::= MathExp ':' MathExp
 MathIncomingExp ::= '#' MathSymbolExp {pin=1}
 
 MathFunctionAppList ::= '(' MathArgList ')'
-private MathOutfixAppList ::= MathBracketName MathNonStdAppList MathBracketName {pin=3}
+private MathOutfixAppList ::= MathBracketName MathNonStdAppList MathBracketName {pin=3 extends=MathExp}
 private MathNonStdAppList ::= MathExp (',' MathExp)* {pin=1}
 
 private MathArgList ::= MathExp (',' MathExp)* {pin=1 recoverWhile=ParamListRec}

@@ -1520,6 +1520,12 @@ public class ResParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // MathSymbolExp
+  static boolean MathIncomingApp(PsiBuilder b, int l) {
+    return MathSymbolExp(b, l + 1);
+  }
+
+  /* ********************************************************** */
   // 'Inductive' 'Definition' MathDefnSig is
   // '(i.)' MathAssertionExp ';'
   // '(ii.)' MathAssertionExp ';'
@@ -3849,7 +3855,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // '#' MathSymbolExp
+  // '#' MathIncomingApp
   public static boolean MathIncomingExp(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "MathIncomingExp")) return false;
     if (!nextTokenIsSmart(b, POUND)) return false;
@@ -3857,7 +3863,7 @@ public class ResParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, MATH_INCOMING_EXP, null);
     r = consumeTokenSmart(b, POUND);
     p = r; // pin = 1
-    r = r && MathSymbolExp(b, l + 1);
+    r = r && MathIncomingApp(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
